@@ -1,7 +1,8 @@
 "use client";
 
-import { useIDEStore } from "@/store/useIDEStore";
 import { getPortfolioFile } from "@/data/files";
+import { useIDEStore } from "@/store/useIDEStore";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function EditorTabs() {
   const openFiles = useIDEStore((state) => state.openFiles);
@@ -10,61 +11,64 @@ export default function EditorTabs() {
   const closeFile = useIDEStore((state) => state.closeFile);
 
   return (
-    <div className="flex h-[32px] items-center overflow-x-auto overflow-y-hidden bg-[var(--bg-app)] no-scrollbar shrink-0 select-none border-b border-[var(--border)]">
-      {openFiles.map((path) => {
-        const file = getPortfolioFile(path);
-        const isActive = activeFile === path;
-        
-        if (!file) return null;
+    <div className="h-9 border-b border-[var(--border)] bg-[var(--bg-panel)]">
+      <div className="ide-scrollbar flex h-full overflow-x-auto">
+        <AnimatePresence initial={false}>
+          {openFiles.length ? (
+            openFiles.map((path) => {
+              const file = getPortfolioFile(path);
 
-        return (
-          <div
-            key={path}
-            onClick={() => setActiveFile(path)}
-            className={`group flex h-full items-center gap-2 border-r border-[var(--border)] px-2.5 cursor-pointer transition-colors relative min-w-[100px] max-w-[180px] ${
-              isActive 
-                ? "bg-[var(--bg-editor)] text-[var(--text)]" 
-                : "bg-[#121518] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]"
-            }`}
-          >
-            {/* Active Accent Top */}
-            {isActive && (
-              <div className="absolute top-0 left-0 right-0 h-[1px] bg-[var(--accent)]" />
-            )}
-            
-            <div className="flex items-center gap-1.5 truncate">
-              <FileIcon name={file.name} isActive={isActive} />
-              <span className="truncate text-[11px] font-medium">{file.name}</span>
+              if (!file) {
+                return null;
+              }
+
+              const isActive = path === activeFile;
+
+              return (
+                <motion.div
+                  key={path}
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className={`relative flex h-full min-w-0 items-center border-r border-[var(--border)] text-[12px] leading-none transition ${
+                    isActive
+                      ? "bg-[var(--bg-main)] text-[var(--text)]"
+                      : "bg-[var(--bg-panel)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setActiveFile(path)}
+                    className="min-w-0 flex-1 px-2 text-left"
+                  >
+                    <span className="block truncate">{file.name}</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Close ${file.name}`}
+                    onClick={() => closeFile(path)}
+                    className="mr-2 flex h-4 w-4 shrink-0 items-center justify-center text-[12px] leading-none text-[var(--text-muted)] transition hover:text-[var(--text)]"
+                  >
+                    x
+                  </button>
+                  {isActive ? (
+                    <motion.span
+                      layoutId="active-tab-line"
+                      className="absolute inset-x-0 bottom-0 h-0.5 bg-[var(--accent)]"
+                    />
+                  ) : null}
+                </motion.div>
+              );
+            })
+          ) : (
+            <div className="flex h-full items-center px-2 text-[12px] leading-none text-[var(--text-muted)]">
+              No open tabs
             </div>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                closeFile(path);
-              }}
-              className={`flex items-center justify-center rounded-[2px] p-0.5 hover:bg-[var(--bg-active)] ml-auto ${
-                isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-              }`}
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>
-          </div>
-        );
-      })}
+          )}
+        </AnimatePresence>
+      </div>
     </div>
-  );
-}
-
-function FileIcon({ name, isActive }: { name: string; isActive: boolean }) {
-  const ext = name.split(".").pop();
-  const color = isActive ? "currentColor" : undefined;
-  
-  if (ext === "tsx" || ext === "ts") {
-    return (
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color || "#3178c6"} strokeWidth="2.5" className="shrink-0"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-    );
-  }
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="shrink-0 opacity-70"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
   );
 }

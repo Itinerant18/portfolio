@@ -1,8 +1,11 @@
 "use client";
 
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import { defaultFilePath } from "@/data/files";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+
+export type ThemeMode = "dark" | "light";
+export type PaletteMode = "commands" | "files";
 
 export interface ChatMessage {
   id: string;
@@ -11,58 +14,53 @@ export interface ChatMessage {
 }
 
 interface IDEState {
-  // File & Editor State
   openFiles: string[];
   activeFile: string;
-  openFile: (file: string) => void;
-  closeFile: (file: string) => void;
-  setActiveFile: (file: string) => void;
-
-  // Panel States
   sidebarOpen: boolean;
   aiPanelOpen: boolean;
   terminalOpen: boolean;
-  splitView: boolean;
+  theme: ThemeMode;
+  commandPaletteOpen: boolean;
+  paletteMode: PaletteMode;
+  searchQuery: string;
+  chatMessages: ChatMessage[];
+  openFile: (file: string) => void;
+  closeFile: (file: string) => void;
+  setActiveFile: (file: string) => void;
   toggleSidebar: () => void;
   toggleAIPanel: () => void;
   toggleTerminal: () => void;
-  toggleSplitView: () => void;
-  setAIPanel: (val: boolean) => void;
-
-  // Modals
-  commandPaletteOpen: boolean;
-  paletteMode: "commands" | "files";
-  openCommandPalette: (mode?: "commands" | "files") => void;
+  toggleTheme: () => void;
+  openCommandPalette: (mode?: PaletteMode) => void;
   closeCommandPalette: () => void;
-  searchQuery: string;
-  setSearchQuery: (q: string) => void;
-
-  // AI Chat State
-  chatMessages: ChatMessage[];
-  addMessage: (msg: ChatMessage) => void;
+  setSearchQuery: (query: string) => void;
+  closeAllTabs: () => void;
+  focusAIPanel: () => void;
+  addMessage: (message: ChatMessage) => void;
   clearChat: () => void;
 }
+
+const initialMessages: ChatMessage[] = [
+  {
+    id: "assistant-welcome",
+    role: "assistant",
+    content: "Session ready. Ask about projects, architecture, or experience.",
+  },
+];
 
 export const useIDEStore = create<IDEState>()(
   persist(
     (set) => ({
       openFiles: [defaultFilePath],
       activeFile: defaultFilePath,
-      sidebarOpen: true,
-      aiPanelOpen: true,
+      sidebarOpen: false,
+      aiPanelOpen: false,
       terminalOpen: true,
-      splitView: false,
+      theme: "dark",
       commandPaletteOpen: false,
-      paletteMode: "files",
+      paletteMode: "commands",
       searchQuery: "",
-      chatMessages: [
-        {
-          id: "welcome",
-          role: "assistant",
-          content: "Hello! I am your AI portfolio assistant. Ask me anything about this developer's projects or skills.",
-        },
-      ],
-
+      chatMessages: initialMessages,
       openFile: (file) =>
         set((state) => ({
           activeFile: file,
@@ -70,35 +68,68 @@ export const useIDEStore = create<IDEState>()(
             ? state.openFiles
             : [...state.openFiles, file],
         })),
-      
       closeFile: (file) =>
         set((state) => {
-          const remaining = state.openFiles.filter((f) => f !== file);
-          let newActive = state.activeFile;
-          if (state.activeFile === file) {
-            newActive = remaining[remaining.length - 1] || "";
-          }
-          return { openFiles: remaining, activeFile: newActive };
+          const remaining = state.openFiles.filter((entry) => entry !== file);
+          const nextActive =
+            state.activeFile === file
+              ? remaining[remaining.length - 1] ?? ""
+              : state.activeFile;
+
+          return {
+            openFiles: remaining,
+            activeFile: nextActive,
+          };
         }),
-
       setActiveFile: (file) => set({ activeFile: file }),
-      
-      toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-      toggleAIPanel: () => set((state) => ({ aiPanelOpen: !state.aiPanelOpen })),
-      toggleTerminal: () => set((state) => ({ terminalOpen: !state.terminalOpen })),
-      toggleSplitView: () => set((state) => ({ splitView: !state.splitView })),
-      setAIPanel: (val) => set({ aiPanelOpen: val }),
-
-      openCommandPalette: (mode = "files") =>
-        set({ commandPaletteOpen: true, paletteMode: mode, searchQuery: "" }),
-      closeCommandPalette: () => set({ commandPaletteOpen: false, searchQuery: "" }),
-      setSearchQuery: (q) => set({ searchQuery: q }),
-
-      addMessage: (msg) => set((state) => ({ chatMessages: [...state.chatMessages, msg] })),
-      clearChat: () => set({ chatMessages: [] }),
+      toggleSidebar: () =>
+        set((state) => ({
+          sidebarOpen: !state.sidebarOpen,
+        })),
+      toggleAIPanel: () =>
+        set((state) => ({
+          aiPanelOpen: !state.aiPanelOpen,
+        })),
+      toggleTerminal: () =>
+        set((state) => ({
+          terminalOpen: !state.terminalOpen,
+        })),
+      toggleTheme: () =>
+        set((state) => ({
+          theme: state.theme === "dark" ? "light" : "dark",
+        })),
+      openCommandPalette: (mode = "commands") =>
+        set({
+          commandPaletteOpen: true,
+          paletteMode: mode,
+          searchQuery: "",
+        }),
+      closeCommandPalette: () =>
+        set({
+          commandPaletteOpen: false,
+          searchQuery: "",
+        }),
+      setSearchQuery: (query) => set({ searchQuery: query }),
+      closeAllTabs: () =>
+        set({
+          openFiles: [],
+          activeFile: "",
+        }),
+      focusAIPanel: () =>
+        set({
+          aiPanelOpen: true,
+        }),
+      addMessage: (message) =>
+        set((state) => ({
+          chatMessages: [...state.chatMessages, message],
+        })),
+      clearChat: () =>
+        set({
+          chatMessages: initialMessages,
+        }),
     }),
     {
-      name: "cursor-portfolio-v1",
+      name: "cursor-portfolio-v4",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         openFiles: state.openFiles,
@@ -106,7 +137,8 @@ export const useIDEStore = create<IDEState>()(
         sidebarOpen: state.sidebarOpen,
         aiPanelOpen: state.aiPanelOpen,
         terminalOpen: state.terminalOpen,
+        theme: state.theme,
       }),
-    }
-  )
+    },
+  ),
 );

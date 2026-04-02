@@ -2,111 +2,149 @@
 
 import { useIDEStore } from "@/store/useIDEStore";
 import { executeTerminalCommand } from "@/utils/commands";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface TerminalEntry {
   id: string;
   command: string;
-  output: string[];
+  lines: string[];
+}
+
+function createId() {
+  return `terminal-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 export default function Terminal() {
-  const terminalOpen = useIDEStore((state) => state.terminalOpen);
   const openFile = useIDEStore((state) => state.openFile);
-  const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
-  const [input, setInput] = useState("");
   const [entries, setEntries] = useState<TerminalEntry[]>([
     {
-      id: "initial",
+      id: "boot",
       command: "",
-      output: ["Cursor Portfolio Shell v1.0.0", "Type 'help' to see commands."],
+      lines: ['Type "help" to list commands.'],
     },
   ]);
+  const [input, setInput] = useState("");
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const prompt = useMemo(() => "nyla@portfolio $", []);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "auto",
+    });
   }, [entries]);
 
-  const prompt = useMemo(() => "user@portfolio:~$", []);
-
-  const handleCommand = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     const trimmed = input.trim();
+
+    if (!trimmed) {
+      return;
+    }
+
+    setHistory((current) => [trimmed, ...current.filter((item) => item !== trimmed)].slice(0, 20));
+    setHistoryIndex(-1);
+    setInput("");
+
     const result = executeTerminalCommand(trimmed, { openFile });
 
     if (result.clear) {
       setEntries([]);
-    } else {
-      setEntries((prev) => [
-        ...prev,
-        { id: Date.now().toString(), command: trimmed, output: result.lines },
-      ]);
+      return;
     }
-    setInput("");
-  };
 
-  if (!terminalOpen) return null;
+    setEntries((current) => [
+      ...current,
+      {
+        id: createId(),
+        command: trimmed,
+        lines: result.lines,
+      },
+    ]);
+  }
+
+  function moveHistory(direction: "up" | "down") {
+    if (!history.length) {
+      return;
+    }
+
+    if (direction === "up") {
+      const nextIndex = Math.min(historyIndex + 1, history.length - 1);
+      setHistoryIndex(nextIndex);
+      setInput(history[nextIndex] ?? "");
+      return;
+    }
+
+    const nextIndex = historyIndex - 1;
+
+    if (nextIndex < 0) {
+      setHistoryIndex(-1);
+      setInput("");
+      return;
+    }
+
+    setHistoryIndex(nextIndex);
+    setInput(history[nextIndex] ?? "");
+  }
 
   return (
-    <div className="flex h-[160px] w-full flex-col border-t border-[var(--border)] bg-[#050607] font-mono text-[11px] shrink-0 select-text">
-      {/* Tab Strip - Integrated Feel */}
-      <div className="flex h-[28px] items-center justify-between px-3 shrink-0 bg-[var(--bg-app)] border-b border-[var(--border-muted)]">
-        <div className="flex items-center gap-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-tighter">
-           <div className="flex items-center gap-1 text-[var(--text)] border-b border-b-[var(--accent)] h-[28px]">
-             <span>Terminal</span>
-           </div>
-           <span className="hover:text-[var(--text)] cursor-pointer">Output</span>
-           <span className="hover:text-[var(--text)] cursor-pointer">Debug</span>
-        </div>
-        <div className="flex items-center gap-2">
-           <button className="p-1 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)]">
-             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 5v14M5 12h14"/></svg>
-           </button>
-           <button onClick={toggleTerminal} className="p-1 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)]">
-             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12"/></svg>
-           </button>
-        </div>
+    <section className="flex h-full min-h-0 flex-col border-t border-[var(--border)] bg-[#010409]">
+      <div className="flex h-8 items-center border-b border-[var(--border)] px-2 text-[12px] leading-none text-[var(--text-muted)]">
+        TERMINAL
       </div>
 
-      <div 
-        ref={scrollRef} 
-        className="flex-1 overflow-y-auto no-scrollbar p-2 space-y-0.5"
-        onClick={() => document.getElementById("terminal-input")?.focus()}
+      <div
+        ref={scrollRef}
+        className="ide-scrollbar flex-1 overflow-y-auto px-2 py-2 font-mono text-[12px]"
+        onClick={() => inputRef.current?.focus()}
       >
         {entries.map((entry) => (
-          <div key={entry.id} className="space-y-0.5">
-            {entry.command && (
-              <div className="flex gap-1.5 items-center">
-                <span className="text-[#4AF626] font-bold">{prompt}</span>
-                <span className="text-[var(--text)]">{entry.command}</span>
+          <div key={entry.id} className="mb-2 last:mb-0">
+            {entry.command ? (
+              <div className="flex items-center gap-2 leading-[18px] text-[var(--text)]">
+                <span className="text-[var(--accent)]">{prompt}</span>
+                <span>{entry.command}</span>
               </div>
-            )}
-            <div className="space-y-0">
-              {entry.output.map((line, i) => (
-                <div key={i} className="text-[var(--text-muted)] leading-tight">{line}</div>
-              ))}
-            </div>
+            ) : null}
+
+            {entry.lines.map((line, index) => (
+              <div
+                key={`${entry.id}-${index}`}
+                className="leading-[18px] text-[var(--text-muted)]"
+              >
+                {line}
+              </div>
+            ))}
           </div>
         ))}
-        
-        <form onSubmit={handleCommand} className="flex gap-1.5 items-center">
-          <span className="text-[#4AF626] font-bold">{prompt}</span>
-          <input
-            id="terminal-input"
-            className="flex-1 bg-transparent text-[var(--text)] outline-none border-none p-0"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            autoFocus
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </form>
       </div>
-    </div>
+
+      <form onSubmit={handleSubmit} className="border-t border-[var(--border)] px-2 py-2">
+        <label className="flex items-center gap-2">
+          <span className="text-[var(--accent)]">{prompt}</span>
+          <input
+            ref={inputRef}
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowUp") {
+                event.preventDefault();
+                moveHistory("up");
+              }
+
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+                moveHistory("down");
+              }
+            }}
+            placeholder='Try "help" or "open projects.ts"'
+            className="min-w-0 flex-1 bg-transparent text-[12px] text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
+          />
+        </label>
+      </form>
+    </section>
   );
 }

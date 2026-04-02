@@ -1,72 +1,135 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useIDEStore } from "@/store/useIDEStore";
 
 const menuItems = ["File", "Edit", "Selection", "View", "Go", "Run", "Terminal", "Help"];
 
+function IconButton({
+  title,
+  onClick,
+  children,
+  className = "",
+}: {
+  title: string;
+  onClick: () => void;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      className={`flex h-6 w-6 items-center justify-center text-[var(--text-muted)] transition hover:bg-[var(--bg-hover)] hover:text-[var(--text)] ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function TopBar() {
+  const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
+  const toggleTheme = useIDEStore((state) => state.toggleTheme);
+  const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
   const toggleSidebar = useIDEStore((state) => state.toggleSidebar);
   const toggleAIPanel = useIDEStore((state) => state.toggleAIPanel);
-  const toggleSplitView = useIDEStore((state) => state.toggleSplitView);
-  const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
 
   return (
-    <header className="flex h-[32px] w-full items-center justify-between border-b border-[var(--border)] bg-[var(--bg-app)] px-2 shrink-0 select-none">
-      {/* Left Menu - Dense */}
-      <div className="flex items-center gap-0.5">
-        <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-[2px] bg-[var(--accent)] text-[9px] font-black text-white">
+    <header className="relative flex h-9 shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg-main)] px-2">
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="flex h-4 w-4 items-center justify-center border border-[var(--border)] bg-[var(--bg-panel)] text-[10px] font-semibold text-[var(--text)]">
           C
         </div>
-        <div className="flex items-center gap-1">
+        <nav className="hidden items-center gap-3 lg:flex">
           {menuItems.map((item) => (
             <button
               key={item}
-              className="px-1.5 py-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)] transition-all"
+              type="button"
+              onClick={() => {
+                if (item === "File") {
+                  openCommandPalette("files");
+                }
+
+                if (item === "Terminal") {
+                  toggleTerminal();
+                }
+              }}
+              className="text-[12px] leading-none text-[var(--text-muted)] transition hover:text-[var(--text)]"
             >
               {item}
             </button>
           ))}
-        </div>
+        </nav>
       </div>
 
-      {/* Center Title - Small & Precise */}
-      <div className="absolute left-1/2 -translate-x-1/2 text-[11px] text-[var(--text-muted)] font-medium pointer-events-none truncate max-w-[30%]">
-        cursor-portfolio — index.tsx
+      <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-[12px] leading-none text-[var(--text-muted)]">
+        portfolio
       </div>
 
-      {/* Right Actions - Functional */}
       <div className="flex items-center gap-1">
         <button
-          onClick={() => openCommandPalette("files")}
-          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)]"
-          title="Search Files (Ctrl+P)"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        </button>
-        <button
-          onClick={toggleSplitView}
-          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)]"
-          title="Toggle Split Editor"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
-        </button>
-        <button
-          onClick={toggleSidebar}
-          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)]"
-          title="Toggle Explorer"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="15" y1="3" x2="15" y2="21"></line></svg>
-        </button>
-        <button
+          type="button"
           onClick={toggleAIPanel}
-          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)]"
-          title="Toggle AI Panel"
+          className="px-2 text-[12px] leading-none text-[var(--text-muted)] lg:hidden"
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          AI
         </button>
-        <div className="ml-1 flex h-5 w-5 items-center justify-center bg-[var(--bg-active)] text-[9px] font-bold border border-[var(--border)]">
-          JD
-        </div>
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          className="px-2 text-[12px] leading-none text-[var(--text-muted)] lg:hidden"
+        >
+          Files
+        </button>
+
+        <IconButton title="Search" onClick={() => openCommandPalette("files")}>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20L16.5 16.5" />
+          </svg>
+        </IconButton>
+
+        <IconButton title="Git" onClick={() => openCommandPalette("commands")}>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
+            <circle cx="6" cy="6" r="2" />
+            <circle cx="18" cy="6" r="2" />
+            <circle cx="12" cy="18" r="2" />
+            <path d="M8 7.5l3 8" />
+            <path d="M16 7.5l-3 8" />
+          </svg>
+        </IconButton>
+
+        <IconButton title="Settings" onClick={toggleTheme}>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1 1 0 0 0 .2 1.1l.1.1a1 1 0 0 1 0 1.4l-1 1a1 1 0 0 1-1.4 0l-.1-.1a1 1 0 0 0-1.1-.2 1 1 0 0 0-.6.9V20a1 1 0 0 1-1 1h-1.4a1 1 0 0 1-1-1v-.2a1 1 0 0 0-.7-.9 1 1 0 0 0-1 .2l-.2.1a1 1 0 0 1-1.4 0l-1-1a1 1 0 0 1 0-1.4l.1-.1a1 1 0 0 0 .2-1.1 1 1 0 0 0-.9-.6H4a1 1 0 0 1-1-1v-1.4a1 1 0 0 1 1-1h.2a1 1 0 0 0 .9-.7 1 1 0 0 0-.2-1l-.1-.2a1 1 0 0 1 0-1.4l1-1a1 1 0 0 1 1.4 0l.1.1a1 1 0 0 0 1.1.2 1 1 0 0 0 .6-.9V4a1 1 0 0 1 1-1h1.4a1 1 0 0 1 1 1v.2a1 1 0 0 0 .7.9 1 1 0 0 0 1-.2l.2-.1a1 1 0 0 1 1.4 0l1 1a1 1 0 0 1 0 1.4l-.1.1a1 1 0 0 0-.2 1.1 1 1 0 0 0 .9.6H20a1 1 0 0 1 1 1v1.4a1 1 0 0 1-1 1h-.2a1 1 0 0 0-.9.7" />
+          </svg>
+        </IconButton>
       </div>
     </header>
   );

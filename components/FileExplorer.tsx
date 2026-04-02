@@ -1,86 +1,97 @@
 "use client";
 
-import { useIDEStore } from "@/store/useIDEStore";
 import { portfolioFiles } from "@/data/files";
+import { useIDEStore } from "@/store/useIDEStore";
 import { useState } from "react";
 
-export default function FileExplorer() {
-  const activeFile = useIDEStore((state) => state.activeFile);
-  const openFile = useIDEStore((state) => state.openFile);
-  const [collapsedFolders, setCollapsedFolders] = useState<string[]>([]);
-
-  const toggleFolder = (folder: string) => {
-    setCollapsedFolders((prev) =>
-      prev.includes(folder) ? prev.filter((f) => f !== folder) : [...prev, folder]
-    );
-  };
-
+function FolderIcon({ open }: { open: boolean }) {
   return (
-    <div className="flex h-full flex-col select-none bg-[var(--bg-sidebar)]">
-      {/* Tight Header */}
-      <div className="flex items-center justify-between border-b border-[var(--border)] px-2.5 h-[32px] shrink-0">
-        <span className="font-bold text-[var(--text-muted)] uppercase tracking-wider text-[10px]">Explorer</span>
-        <button className="p-1 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)]">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto no-scrollbar py-1">
-        {/* Project Folder */}
-        <div className="flex flex-col">
-          <div 
-            className="flex items-center gap-1 px-2 py-0.5 hover:bg-[var(--bg-hover)] cursor-pointer group h-[22px]"
-            onClick={() => toggleFolder("PORTFOLIO")}
-          >
-            <svg 
-              className={`transition-transform duration-75 text-[var(--text-muted)] ${collapsedFolders.includes("PORTFOLIO") ? "-rotate-90" : ""}`}
-              width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"
-            >
-              <path d="m6 9 6 6 6-6"/>
-            </svg>
-            <span className="text-[10px] font-black text-[var(--text)] uppercase tracking-tight">PORTFOLIO</span>
-          </div>
-
-          {!collapsedFolders.includes("PORTFOLIO") && (
-            <div className="flex flex-col">
-              {portfolioFiles.map((file) => {
-                const isActive = activeFile === file.path;
-                return (
-                  <div
-                    key={file.path}
-                    onClick={() => openFile(file.path)}
-                    className={`flex items-center gap-1.5 pl-5 pr-2 py-0.5 cursor-pointer h-[22px] transition-colors ${
-                      isActive ? "bg-[var(--bg-active)] text-[var(--text)] shadow-[inset_2px_0_0_0_var(--accent)]" : "text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
-                    }`}
-                  >
-                    <FileIcon name={file.name} isActive={isActive} />
-                    <span className="truncate text-[11px] font-medium">{file.name}</span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <path d="M3 7h6l2 2h10v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
+      {open ? <path d="M7 12h10" /> : <path d="M12 9v6M9 12h6" />}
+    </svg>
   );
 }
 
-function FileIcon({ name, isActive }: { name: string; isActive: boolean }) {
-  const ext = name.split(".").pop();
-  const color = isActive ? "currentColor" : undefined;
-  
-  if (ext === "tsx" || ext === "ts") {
-    return (
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color || "#3178c6"} strokeWidth="2.5" className="shrink-0"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-    );
-  }
-  if (ext === "json") {
-    return (
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color || "#cbcb41"} strokeWidth="2.5" className="shrink-0"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-    );
-  }
+function FileIcon() {
   return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="shrink-0 opacity-70"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <path d="M8 3h6l5 5v13H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+      <path d="M14 3v5h5" />
+    </svg>
+  );
+}
+
+export default function FileExplorer() {
+  const [expanded, setExpanded] = useState(true);
+  const activeFile = useIDEStore((state) => state.activeFile);
+  const openFile = useIDEStore((state) => state.openFile);
+  const toggleSidebar = useIDEStore((state) => state.toggleSidebar);
+
+  return (
+    <div className="flex h-full min-h-0 w-full flex-col bg-[var(--bg-main)] text-[12px]">
+      <div className="flex h-9 items-center border-b border-[var(--border)] px-2">
+        <span className="leading-none text-[var(--text-muted)]">EXPLORER</span>
+      </div>
+
+      <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto p-2">
+        <button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          className="flex h-6 w-full items-center gap-1.5 px-2 text-left text-[var(--text-muted)] transition hover:bg-[var(--bg-panel)] hover:text-[var(--text)]"
+        >
+          <FolderIcon open={expanded} />
+          <span className="leading-none">SRC</span>
+        </button>
+
+        {expanded ? (
+          <div className="pl-4">
+            {portfolioFiles.map((file) => {
+              const isActive = file.path === activeFile;
+
+              return (
+                <button
+                  key={file.path}
+                  type="button"
+                  onClick={() => {
+                    openFile(file.path);
+
+                    if (window.innerWidth < 1024) {
+                      toggleSidebar();
+                    }
+                  }}
+                  className={`flex h-6 w-full items-center gap-1.5 px-2 text-left transition ${
+                    isActive
+                      ? "bg-[#1F2937] text-[var(--text)]"
+                      : "text-[var(--text-muted)] hover:bg-[var(--bg-panel)] hover:text-[var(--text)]"
+                  }`}
+                >
+                  <FileIcon />
+                  <span className="truncate leading-none">{file.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
+    </div>
   );
 }
