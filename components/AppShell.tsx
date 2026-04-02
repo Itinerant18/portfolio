@@ -5,6 +5,7 @@ import FileExplorer from "@/components/FileExplorer";
 import SidebarAI from "@/components/SidebarAI";
 import Terminal from "@/components/Terminal";
 import TopBar from "@/components/TopBar";
+import StatusBar from "@/components/StatusBar";
 import { useIDEStore } from "@/store/useIDEStore";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
@@ -17,6 +18,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const mobileSidebarOpen = useIDEStore((state) => state.mobileSidebarOpen);
   const mobileAIPanelOpen = useIDEStore((state) => state.mobileAIPanelOpen);
   const terminalOpen = useIDEStore((state) => state.terminalOpen);
+  const zoomLevel = useIDEStore((state) => state.zoomLevel);
+  const zoomIn = useIDEStore((state) => state.zoomIn);
+  const zoomOut = useIDEStore((state) => state.zoomOut);
   const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
   const closeCommandPalette = useIDEStore((state) => state.closeCommandPalette);
   const toggleMobileSidebar = useIDEStore((state) => state.toggleMobileSidebar);
@@ -45,6 +49,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
     const handleKeyDown = (event: KeyboardEvent) => {
       const isModifier = event.ctrlKey || event.metaKey;
       const isDesktop = window.innerWidth >= 1024;
+
+      if (isModifier && event.key === "=") {
+        event.preventDefault();
+        zoomIn();
+      }
+
+      if (isModifier && event.key === "-") {
+        event.preventDefault();
+        zoomOut();
+      }
 
       if (isModifier && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -103,6 +117,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
     toggleMobileAIPanel,
     toggleMobileSidebar,
     toggleTerminal,
+    zoomIn,
+    zoomOut,
   ]);
 
   return (
@@ -110,6 +126,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <div
         className="grid h-screen grid-cols-1 overflow-hidden bg-[var(--bg)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
         style={{
+          zoom: zoomLevel,
           gridTemplateColumns:
             isDesktop
               ? aiPanelOpen && sidebarOpen
@@ -121,9 +138,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
                     : "minmax(0, 1fr)"
               : "minmax(0, 1fr)",
           gridTemplateRows: terminalOpen
-            ? "36px minmax(0, 1fr) 180px"
-            : "36px minmax(0, 1fr) 0px",
-        }}
+            ? "36px minmax(0, 1fr) 180px 22px"
+            : "36px minmax(0, 1fr) 0px 22px",
+        } as React.CSSProperties}
       >
         <div className="col-start-1 row-start-1 min-w-0" style={{ gridColumn: "1 / -1" }}>
           <TopBar />
@@ -174,6 +191,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
           style={{ gridColumn: "1 / -1" }}
         >
           <Terminal />
+        </div>
+
+        <div
+          className="col-start-1 row-start-4 min-h-0 min-w-0"
+          style={{ gridColumn: "1 / -1" }}
+        >
+          <StatusBar />
         </div>
       </div>
 

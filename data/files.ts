@@ -31,25 +31,10 @@ export const Hero = () => {
 };`,
   },
   {
-    name: "projects.ts",
-    path: "src/projects.ts",
+    name: "projects.js",
+    path: "src/projects.js",
     language: "ts",
-    content: `export const featuredProjects = [
-  {
-    title: "Project Alpha",
-    role: "Lead UI Developer",
-    tech: ["Next.js", "Tailwind", "Framer Motion"],
-    url: "https://alpha.example.com",
-    summary: "A real-time data visualization dashboard."
-  },
-  {
-    title: "CodeFlow SDK",
-    role: "Author",
-    tech: ["TypeScript", "Rust", "WASM"],
-    url: "https://codeflow.sdk",
-    summary: "High-performance processing library for web IDEs."
-  }
-];`,
+    content: `export const featuredProjects = [];`,
   },
   {
     name: "skills.json",
@@ -76,58 +61,28 @@ export const Hero = () => {
 }`,
   },
   {
-    name: "about.tsx",
-    path: "src/about.tsx",
+    name: "about.html",
+    path: "src/about.html",
     language: "tsx",
-    content: `export default function Bio() {
-  /*
-   * With over 8 years of experience in product engineering,
-   * I focus on the intersection of design and performance.
-   * I believe that great developer tools are the key to 
-   * unlocking team potential.
-   */
-  
-  return (
-    <section>
-      <h2>Background</h2>
-      <p>Based in San Francisco, working globally.</p>
-    </section>
-  );
-}`,
+    content: `<!-- about.html -->`,
   },
   {
     name: "experience.ts",
     path: "src/experience.ts",
     language: "ts",
-    content: `export const timeline = [
-  {
-    company: "TechGlobal",
-    role: "Senior Staff Engineer",
-    period: "2021 - Present",
-    focus: "Product UI & Design Systems"
+    content: `// experience`,
   },
   {
-    company: "Innovate Solutions",
-    role: "Senior Software Engineer",
-    period: "2018 - 2021",
-    focus: "Cloud Dashboards"
-  }
-];`,
-  },
-  {
-    name: "contact.ts",
-    path: "src/contact.ts",
+    name: "contact.css",
+    path: "src/contact.css",
     language: "ts",
-    content: `export const CONTACT_INFO = {
-  email: "hello@johndoe.dev",
-  github: "johndoe",
-  linkedin: "johndoe-dev",
-  twitter: "@johndoe_ui"
-} as const;
-
-export function connect() {
-  console.log("Ready for high-impact opportunities.");
-}`,
+    content: `/* contact */`,
+  },
+  {
+    name: "README.md",
+    path: "README.md",
+    language: "ts",
+    content: `# README`,
   },
 ];
 

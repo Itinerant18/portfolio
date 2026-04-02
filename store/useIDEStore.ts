@@ -45,6 +45,10 @@ interface IDEState {
   focusAIPanel: () => void;
   addMessage: (message: ChatMessage) => void;
   clearChat: () => void;
+  zoomLevel: number;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  resetZoom: () => void;
 }
 
 const initialMessages: ChatMessage[] = [
@@ -156,6 +160,19 @@ export const useIDEStore = create<IDEState>()(
         set({
           chatMessages: initialMessages,
         }),
+      zoomLevel: 1,
+      zoomIn: () =>
+        set((state) => ({
+          zoomLevel: Math.min(state.zoomLevel + 0.1, 2.5),
+        })),
+      zoomOut: () =>
+        set((state) => ({
+          zoomLevel: Math.max(state.zoomLevel - 0.1, 0.5),
+        })),
+      resetZoom: () =>
+        set({
+          zoomLevel: 1,
+        }),
     }),
     {
       name: "cursor-portfolio-v5",
@@ -167,6 +184,7 @@ export const useIDEStore = create<IDEState>()(
         aiPanelOpen: state.aiPanelOpen,
         terminalOpen: state.terminalOpen,
         theme: state.theme,
+        zoomLevel: state.zoomLevel,
       }),
     },
   ),

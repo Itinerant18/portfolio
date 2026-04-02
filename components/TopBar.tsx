@@ -8,23 +8,26 @@ import { useEffect, useRef, useState } from "react";
 type MenuKey =
   | "File"
   | "Edit"
-  | "Selection"
   | "View"
   | "Go"
+  | "Run"
   | "Run"
   | "Terminal"
   | "Help";
 
+type MenuContext = "action" | "divider" | "header";
+
 interface MenuAction {
-  label: string;
+  type?: MenuContext;
+  label?: string;
   shortcut?: string;
-  run: () => void | Promise<void>;
+  run?: () => void | Promise<void>;
+  className?: string;
 }
 
 const menuOrder: MenuKey[] = [
   "File",
   "Edit",
-  "Selection",
   "View",
   "Go",
   "Run",
@@ -42,11 +45,13 @@ function IconButton({
   title,
   onClick,
   children,
+  isActive = false,
   className = "",
 }: {
   title: string;
   onClick: () => void;
   children: ReactNode;
+  isActive?: boolean;
   className?: string;
 }) {
   return (
@@ -54,7 +59,35 @@ function IconButton({
       type="button"
       title={title}
       onClick={onClick}
-      className={`flex h-6 w-6 items-center justify-center text-[var(--text-muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text-primary)] ${className}`}
+      className={`flex h-6 w-6 items-center justify-center rounded transition ${
+        isActive
+          ? "bg-[var(--hover)] text-[var(--text-primary)]"
+          : "text-[var(--text-muted)] hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
+      } ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function WindowButton({
+  onClick,
+  children,
+  close = false,
+}: {
+  onClick: () => void;
+  children: ReactNode;
+  close?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex h-9 w-11 items-center justify-center transition-colors ${
+        close
+          ? "hover:bg-[#e81123] hover:text-white"
+          : "hover:bg-[#30363d] hover:text-[var(--text-primary)]"
+      } text-[var(--text-muted)]`}
     >
       {children}
     </button>
@@ -65,8 +98,10 @@ export default function TopBar() {
   const activeFile = useIDEStore((state) => state.activeFile);
   const sidebarOpen = useIDEStore((state) => state.sidebarOpen);
   const aiPanelOpen = useIDEStore((state) => state.aiPanelOpen);
+  const terminalOpen = useIDEStore((state) => state.terminalOpen);
   const openFile = useIDEStore((state) => state.openFile);
   const closeFile = useIDEStore((state) => state.closeFile);
+  const closeAllTabs = useIDEStore((state) => state.closeAllTabs);
   const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
   const toggleTheme = useIDEStore((state) => state.toggleTheme);
   const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
@@ -77,6 +112,14 @@ export default function TopBar() {
   const resetTerminal = useIDEStore((state) => state.resetTerminal);
   const menuRef = useRef<HTMLDivElement>(null);
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
+  const [topBarMessage, setTopBarMessage] = useState("portfolio");
+
+  const handleCloseClick = () => {
+    setTopBarMessage("You cannot close a portfolio... nice try! 😉");
+    setTimeout(() => {
+      setTopBarMessage("portfolio");
+    }, 3000);
+  };
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -137,11 +180,9 @@ export default function TopBar() {
 
   const menuActions: Record<MenuKey, MenuAction[]> = {
     File: [
-      { label: "Open Home", run: () => openFile("src/home.tsx") },
-      { label: "Open Projects", run: () => openFile("src/projects.ts") },
-      { label: "Open Skills", run: () => openFile("src/skills.json") },
-      { label: "Open Experience", run: () => openFile("src/experience.ts") },
-      { label: "Open Contact", run: () => openFile("src/contact.ts") },
+      { label: "New Tab", shortcut: "Ctrl+T", run: () => {} },
+      { label: "Open File...", shortcut: "Ctrl+P", run: () => openCommandPalette("files") },
+      { type: "divider" },
       {
         label: "Close Tab",
         shortcut: "Ctrl+W",
@@ -151,36 +192,63 @@ export default function TopBar() {
           }
         },
       },
+      {
+        label: "Close All Tabs",
+        run: closeAllTabs,
+        className: "bg-[#e5c07b] text-[#1b1e22] hover:bg-[#d1b071] hover:text-[#1b1e22]",
+      },
+      { type: "divider" },
+      { type: "header", label: "OPEN RECENT" },
+      { label: "home.tsx", run: () => openFile("src/home.tsx") },
+      { label: "about.html", run: () => openFile("src/about.html") },
+      { label: "projects.js", run: () => openFile("src/projects.js") },
+      { label: "skills.json", run: () => openFile("src/skills.json") },
+      { type: "divider" },
+      { label: "Download Resume", run: () => window.open("#", "_blank") },
     ],
     Edit: [
-      { label: "Copy Active File Path", run: copyActiveFilePath },
-      { label: "Clear Terminal", run: resetTerminal },
-    ],
-    Selection: [
+      { label: "Find...", shortcut: "Ctrl+P", run: () => openCommandPalette("files") },
+      { type: "divider" },
       { label: "Select All", shortcut: "Ctrl+A", run: selectEditorContent },
+      { label: "Copy", shortcut: "Ctrl+C", run: () => { document.execCommand("copy"); } },
     ],
     View: [
-      {
-        label: aiPanelOpen ? "Hide Chat" : "Show Chat",
-        run: toggleAIPanel,
-      },
-      {
-        label: sidebarOpen ? "Hide Explorer" : "Show Explorer",
-        run: toggleSidebar,
-      },
+      { label: "Command Palette", shortcut: "Ctrl+P", run: () => openCommandPalette("commands") },
+      { type: "divider" },
+      { label: "Toggle Sidebar", shortcut: "Ctrl+B", run: toggleSidebar },
       { label: "Toggle Terminal", shortcut: "Ctrl+`", run: toggleTerminal },
-      { label: "Toggle Theme", run: toggleTheme },
+      {
+        label: "✨ Aahana's Copilot",
+        shortcut: "Ctrl+Shift+C",
+        run: toggleAIPanel,
+        className: "text-[#d2a8ff] hover:bg-[#d2a8ff] hover:text-[#1b1e22]",
+      },
+      { type: "divider" },
+      {
+        label: "Enter Full Screen",
+        shortcut: "F11",
+        run: () => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          } else {
+            document.exitFullscreen().catch(() => {});
+          }
+        },
+      },
+      { label: "Zoom In", shortcut: "Ctrl++", run: useIDEStore.getState().zoomIn },
+      { label: "Zoom Out", shortcut: "Ctrl+-", run: useIDEStore.getState().zoomOut },
+      { label: "Reset Zoom", run: useIDEStore.getState().resetZoom },
     ],
     Go: [
       { label: "Go to File", shortcut: "Ctrl+P", run: () => openCommandPalette("files") },
-      { label: "Go to Projects", run: () => openFile("src/projects.ts") },
+      { label: "Go to Projects", run: () => openFile("src/projects.js") },
       { label: "Go to Skills", run: () => openFile("src/skills.json") },
     ],
     Run: [
       {
         label: "Run Portfolio Demo",
         run: () => {
-          openFile("src/projects.ts");
+          openFile("src/projects.js");
           resetTerminal();
         },
       },
@@ -191,20 +259,22 @@ export default function TopBar() {
       { label: "Clear Terminal", run: resetTerminal },
     ],
     Help: [
-      { label: "About Me", run: () => openFile("src/about.tsx") },
-      { label: "Contact Me", run: () => openFile("src/contact.ts") },
+      { label: "About Me", run: () => openFile("src/about.html") },
+      { label: "Contact Me", run: () => openFile("src/contact.css") },
       { label: "GitHub", run: () => openExternal(contactDetails.github) },
       { label: "LinkedIn", run: () => openExternal(contactDetails.linkedin) },
     ],
   };
 
   const handleMenuAction = async (action: MenuAction) => {
-    await action.run();
+    if (action.run) {
+      await action.run();
+    }
     setOpenMenu(null);
   };
 
   return (
-    <header className="relative flex h-9 shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg)] px-2">
+    <header className="relative flex h-9 shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg)] pl-2 select-none">
       <div ref={menuRef} className="flex min-w-0 items-center gap-3">
         <div className="flex h-4 w-4 items-center justify-center border border-[var(--border)] bg-[var(--panel)] text-[10px] font-semibold text-[var(--text-primary)]">
           C
@@ -224,7 +294,7 @@ export default function TopBar() {
               <button
                 type="button"
                 onClick={() => setOpenMenu((current) => (current === item ? null : item))}
-                className={`h-6 px-1 text-[12px] leading-none transition ${
+                className={`h-6 px-1 text-[13px] leading-none transition ${
                   openMenu === item
                     ? "bg-[var(--hover)] text-[var(--text-primary)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -234,96 +304,155 @@ export default function TopBar() {
               </button>
 
               {openMenu === item ? (
-                <div className="absolute left-0 top-full z-50 mt-px min-w-[190px] border border-[var(--border)] bg-[var(--panel)] py-1">
-                  {menuActions[item].map((action) => (
-                    <button
-                      key={action.label}
-                      type="button"
-                      onClick={() => void handleMenuAction(action)}
-                      className="flex h-7 w-full items-center justify-between gap-3 px-2 text-left text-[12px] text-[var(--text-muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
-                    >
-                      <span>{action.label}</span>
-                      {action.shortcut ? (
-                        <span className="text-[11px] text-[var(--text-muted)]">
-                          {action.shortcut}
-                        </span>
-                      ) : null}
-                    </button>
-                  ))}
+                <div className="absolute left-0 top-full z-50 mt-px min-w-[210px] border border-[#30363d] bg-[#3e3936] py-1 shadow-lg">
+                  {menuActions[item].map((action, i) => {
+                    if (action.type === "divider") {
+                      return <div key={i} className="my-1 border-t border-[#4a4742]" />;
+                    }
+                    if (action.type === "header") {
+                      return (
+                        <div key={i} className="px-3 py-1.5 text-[11px] font-mono tracking-widest text-[#a69c86] uppercase mb-1">
+                          {action.label}
+                        </div>
+                      );
+                    }
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => void handleMenuAction(action)}
+                        className={`flex h-8 w-full items-center justify-between gap-3 px-3 text-left font-mono text-[13px] transition ${
+                          action.className
+                            ? action.className
+                            : "text-[#e5dfc5] hover:bg-[#e5c07b] hover:text-[#1b1e22]"
+                        }`}
+                      >
+                        <span className="font-semibold">{action.label}</span>
+                        {action.shortcut ? (
+                          <span className={`${action.className ? '' : 'text-[#8b826b] group-hover:text-[#1b1e22]'} font-medium`}>
+                            {action.shortcut}
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
                 </div>
               ) : null}
             </div>
           ))}
+
+          <div className="ml-1 flex items-center gap-0.5 opacity-90">
+            <button
+              type="button"
+              title="Toggle Copilot UI"
+              onClick={toggleAIPanel}
+              className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              title="New Chat"
+              onClick={() => useIDEStore.getState().clearChat()}
+              className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+            </button>
+          </div>
         </nav>
       </div>
 
-      <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-[12px] leading-none text-[var(--text-muted)]">
-        portfolio
+      <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-[12px] leading-none text-[var(--text-muted)] transition-colors">
+        {topBarMessage}
       </div>
 
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          onClick={toggleMobileAIPanel}
-          className="px-2 text-[12px] leading-none text-[var(--text-muted)] lg:hidden"
-        >
-          AI
-        </button>
-        <button
-          type="button"
-          onClick={toggleMobileSidebar}
-          className="px-2 text-[12px] leading-none text-[var(--text-muted)] lg:hidden"
-        >
-          Files
-        </button>
-
-        <IconButton title="Search" onClick={() => openCommandPalette("files")}>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
+      <div className="flex h-full items-center">
+        <div className="flex items-center gap-1.5 pr-3">
+          <IconButton
+            title="Toggle Sidebar"
+            onClick={toggleSidebar}
+            isActive={sidebarOpen}
           >
-            <circle cx="11" cy="11" r="7" />
-            <path d="M20 20L16.5 16.5" />
-          </svg>
-        </IconButton>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+              <path d="M9 3v18"/>
+            </svg>
+          </IconButton>
 
-        <IconButton title="GitHub" onClick={() => openExternal(contactDetails.github)}>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
+          <IconButton
+            title="Toggle Terminal"
+            onClick={toggleTerminal}
+            isActive={terminalOpen}
           >
-            <circle cx="6" cy="6" r="2" />
-            <circle cx="18" cy="6" r="2" />
-            <circle cx="12" cy="18" r="2" />
-            <path d="M8 7.5l3 8" />
-            <path d="M16 7.5l-3 8" />
-          </svg>
-        </IconButton>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+              <path d="M3 15h18"/>
+            </svg>
+          </IconButton>
 
-        <IconButton title="Settings" onClick={toggleTheme}>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
+          <IconButton
+            title="Toggle Copilot"
+            onClick={toggleAIPanel}
+            isActive={aiPanelOpen}
           >
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1 1 0 0 0 .2 1.1l.1.1a1 1 0 0 1 0 1.4l-1 1a1 1 0 0 1-1.4 0l-.1-.1a1 1 0 0 0-1.1-.2 1 1 0 0 0-.6.9V20a1 1 0 0 1-1 1h-1.4a1 1 0 0 1-1-1v-.2a1 1 0 0 0-.7-.9 1 1 0 0 0-1 .2l-.2.1a1 1 0 0 1-1.4 0l-1-1a1 1 0 0 1 0-1.4l.1-.1a1 1 0 0 0 .2-1.1 1 1 0 0 0-.9-.6H4a1 1 0 0 1-1-1v-1.4a1 1 0 0 1 1-1h.2a1 1 0 0 0 .9-.7 1 1 0 0 0-.2-1l-.1-.2a1 1 0 0 1 0-1.4l1-1a1 1 0 0 1 1.4 0l.1.1a1 1 0 0 0 1.1.2 1 1 0 0 0 .6-.9V4a1 1 0 0 1 1-1h1.4a1 1 0 0 1 1 1v.2a1 1 0 0 0 .7.9 1 1 0 0 0 1-.2l.2-.1a1 1 0 0 1 1.4 0l1 1a1 1 0 0 1 0 1.4l-.1.1a1 1 0 0 0-.2 1.1 1 1 0 0 0 .9.6H20a1 1 0 0 1 1 1v1.4a1 1 0 0 1-1 1h-.2a1 1 0 0 0-.9.7" />
-          </svg>
-        </IconButton>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+              <path d="M15 3v18"/>
+            </svg>
+          </IconButton>
+
+          <IconButton
+            title="Search"
+            onClick={() => openCommandPalette("files")}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20L16.5 16.5" />
+            </svg>
+          </IconButton>
+
+          <IconButton
+            title="Settings"
+            onClick={toggleTheme}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </IconButton>
+        </div>
+
+        <div className="flex h-full items-center">
+          <WindowButton onClick={() => {}}>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+              <rect width="10" height="1" x="3" y="8" />
+            </svg>
+          </WindowButton>
+          <WindowButton
+            onClick={() => {
+              if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+              } else {
+                document.exitFullscreen().catch(() => {});
+              }
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect width="8" height="8" x="2" y="6" />
+              <polyline points="4 6 4 2 12 2 12 10 8 10" />
+            </svg>
+          </WindowButton>
+          <WindowButton close onClick={handleCloseClick}>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <line x1="3" y1="3" x2="13" y2="13" />
+              <line x1="13" y1="3" x2="3" y2="13" />
+            </svg>
+          </WindowButton>
+        </div>
       </div>
     </header>
   );
