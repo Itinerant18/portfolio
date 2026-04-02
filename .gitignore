@@ -41,7 +41,8 @@ next-env.d.ts
 .continue/
 .cursor/
 .gemini/
-.github/
+.vscode/
+.idea/
 .kiro/
 .opencode/
 .qoder/
