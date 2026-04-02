@@ -50,7 +50,7 @@ export default function CodeEditor() {
   }, [file]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[var(--bg-main)]">
+    <div className="flex h-full min-h-0 flex-col bg-[var(--panel)] text-[var(--text-primary)]">
       <EditorTabs />
 
       <div className="min-h-0 flex-1 overflow-hidden">
@@ -59,8 +59,8 @@ export default function CodeEditor() {
             Open a file from the explorer to start browsing the workspace.
           </div>
         ) : (
-          <div className="ide-scrollbar h-full overflow-auto bg-[var(--bg-main)]">
-            <div className="min-w-max py-2 text-[13px]">
+          <div className="ide-scrollbar h-full overflow-auto bg-[var(--panel)]">
+            <div data-ide-editor-content="true" className="min-w-max py-2 text-[13px]">
               {highlightedLines.map((line, index) => {
                 const isActive = activeLine === index + 1;
 

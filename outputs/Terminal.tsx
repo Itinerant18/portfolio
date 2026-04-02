@@ -10,22 +10,21 @@ interface TerminalEntry {
   lines: string[];
 }
 
-const initialEntries: TerminalEntry[] = [
-  {
-    id: "boot",
-    command: "",
-    lines: ['Type "help" to list commands.'],
-  },
-];
-
 function createId() {
   return `terminal-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 export default function Terminal() {
   const openFile = useIDEStore((state) => state.openFile);
-  const terminalResetKey = useIDEStore((state) => state.terminalResetKey);
-  const [entries, setEntries] = useState<TerminalEntry[]>(initialEntries);
+  // BUG FIX #9: Pull toggleTerminal so we can add a close button to terminal header
+  const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
+  const [entries, setEntries] = useState<TerminalEntry[]>([
+    {
+      id: "boot",
+      command: "",
+      lines: ['Type "help" to list commands.'],
+    },
+  ]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -39,17 +38,6 @@ export default function Terminal() {
       behavior: "auto",
     });
   }, [entries]);
-
-  useEffect(() => {
-    setEntries(initialEntries);
-    setHistory([]);
-    setHistoryIndex(-1);
-    setInput("");
-
-    window.setTimeout(() => {
-      inputRef.current?.focus();
-    }, 10);
-  }, [terminalResetKey]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -106,8 +94,31 @@ export default function Terminal() {
 
   return (
     <section className="flex h-full min-h-0 flex-col border-t border-[var(--border)] bg-[#010409]">
-      <div className="flex h-8 items-center border-b border-[var(--border)] px-2 text-[12px] leading-none text-[var(--text-muted)]">
-        TERMINAL
+      {/* BUG FIX #9: Added close (×) button and clear button to terminal header */}
+      <div className="flex h-8 items-center justify-between border-b border-[var(--border)] px-2">
+        <div className="flex items-center gap-3">
+          <span className="text-[12px] leading-none text-[var(--text-muted)]">TERMINAL</span>
+          {/* Accent dot shows terminal is active */}
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] opacity-70" />
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            title="Clear terminal"
+            onClick={() => setEntries([])}
+            className="flex h-5 items-center px-1.5 text-[11px] text-[var(--text-muted)] transition hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
+          >
+            clear
+          </button>
+          <button
+            type="button"
+            title="Close terminal (Ctrl+`)"
+            onClick={toggleTerminal}
+            className="flex h-5 w-5 items-center justify-center text-[14px] leading-none text-[var(--text-muted)] transition hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
+          >
+            ×
+          </button>
+        </div>
       </div>
 
       <div

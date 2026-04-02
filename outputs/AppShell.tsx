@@ -8,38 +8,25 @@ import TopBar from "@/components/TopBar";
 import { useIDEStore } from "@/store/useIDEStore";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const theme = useIDEStore((state) => state.theme);
   const sidebarOpen = useIDEStore((state) => state.sidebarOpen);
   const aiPanelOpen = useIDEStore((state) => state.aiPanelOpen);
-  const mobileSidebarOpen = useIDEStore((state) => state.mobileSidebarOpen);
-  const mobileAIPanelOpen = useIDEStore((state) => state.mobileAIPanelOpen);
   const terminalOpen = useIDEStore((state) => state.terminalOpen);
   const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
   const closeCommandPalette = useIDEStore((state) => state.closeCommandPalette);
-  const toggleMobileSidebar = useIDEStore((state) => state.toggleMobileSidebar);
+  const toggleSidebar = useIDEStore((state) => state.toggleSidebar);
   const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
   const toggleAIPanel = useIDEStore((state) => state.toggleAIPanel);
-  const toggleMobileAIPanel = useIDEStore((state) => state.toggleMobileAIPanel);
-  const closeMobilePanels = useIDEStore((state) => state.closeMobilePanels);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const toggleTheme = useIDEStore((state) => state.toggleTheme);
+  // BUG FIX #6: Pull closeActiveTab from store for Ctrl+W binding
+  const closeActiveTab = useIDEStore((state) => state.closeActiveTab);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
-
-  useEffect(() => {
-    const updateViewport = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-
-    updateViewport();
-    window.addEventListener("resize", updateViewport);
-
-    return () => window.removeEventListener("resize", updateViewport);
-  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -61,20 +48,29 @@ export default function AppShell({ children }: { children: ReactNode }) {
         toggleTerminal();
       }
 
+      // BUG FIX #6: Ctrl+W closes the active editor tab (matches VSCode convention)
+      if (isModifier && event.key.toLowerCase() === "w") {
+        // Only intercept if not a native browser close attempt on desktop
+        event.preventDefault();
+        closeActiveTab();
+      }
+
+      // BUG FIX #1: Ctrl+Shift+T toggles theme (was missing — commands.ts listed wrong shortcut)
+      if (isModifier && event.shiftKey && event.key.toLowerCase() === "t") {
+        event.preventDefault();
+        toggleTheme();
+      }
+
       if (isModifier && event.key.toLowerCase() === "b" && !isDesktop) {
         event.preventDefault();
-        toggleMobileSidebar();
+        toggleSidebar();
       }
 
       if (isModifier && event.shiftKey && event.key.toLowerCase() === "a") {
         event.preventDefault();
 
-        if (isDesktop) {
-          if (!aiPanelOpen) {
-            toggleAIPanel();
-          }
-        } else {
-          toggleMobileAIPanel();
+        if (!isDesktop) {
+          toggleAIPanel();
         }
 
         window.setTimeout(() => {
@@ -86,7 +82,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
         closeCommandPalette();
 
         if (!isDesktop) {
-          closeMobilePanels();
+          if (aiPanelOpen) {
+            toggleAIPanel();
+          }
+
+          if (sidebarOpen) {
+            toggleSidebar();
+          }
         }
       }
     };
@@ -95,90 +97,49 @@ export default function AppShell({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
     aiPanelOpen,
+    closeActiveTab,
     closeCommandPalette,
-    closeMobilePanels,
     openCommandPalette,
     sidebarOpen,
     toggleAIPanel,
-    toggleMobileAIPanel,
-    toggleMobileSidebar,
+    toggleSidebar,
     toggleTerminal,
+    toggleTheme,
   ]);
 
   return (
     <>
       <div
-        className="grid h-screen grid-cols-1 overflow-hidden bg-[var(--bg)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
+        className="grid h-screen grid-cols-1 overflow-hidden bg-[var(--bg-main)] text-[var(--text)] transition-[grid-template-rows] duration-200 lg:grid-cols-[260px_minmax(0,1fr)_300px]"
         style={{
-          gridTemplateColumns:
-            isDesktop
-              ? aiPanelOpen && sidebarOpen
-                ? "260px minmax(0, 1fr) 300px"
-                : aiPanelOpen
-                  ? "260px minmax(0, 1fr)"
-                  : sidebarOpen
-                    ? "minmax(0, 1fr) 300px"
-                    : "minmax(0, 1fr)"
-              : "minmax(0, 1fr)",
           gridTemplateRows: terminalOpen
             ? "36px minmax(0, 1fr) 180px"
             : "36px minmax(0, 1fr) 0px",
         }}
       >
-        <div className="col-start-1 row-start-1 min-w-0" style={{ gridColumn: "1 / -1" }}>
+        <div className="col-start-1 row-start-1 min-w-0 lg:col-span-3">
           <TopBar />
         </div>
 
-        {aiPanelOpen ? (
-          <aside className="hidden min-h-0 min-w-0 border-r border-[var(--border)] bg-[var(--sidebar)] lg:col-start-1 lg:row-start-2 lg:block">
-            <SidebarAI />
-          </aside>
-        ) : null}
+        <aside className="hidden min-h-0 min-w-0 border-r border-[var(--border)] bg-[var(--bg-main)] lg:col-start-1 lg:row-start-2 lg:block">
+          <SidebarAI />
+        </aside>
 
-        <main
-          className={`col-start-1 row-start-2 min-h-0 min-w-0 bg-[var(--panel)] ${
-            aiPanelOpen && sidebarOpen
-              ? "lg:col-start-2"
-              : aiPanelOpen
-                ? "lg:col-start-2"
-                : "lg:col-start-1"
-          }`}
-          style={{
-            gridColumn: isDesktop
-              ? aiPanelOpen && sidebarOpen
-                ? "2 / 3"
-                : aiPanelOpen
-                  ? "2 / 3"
-                  : sidebarOpen
-                    ? "1 / 2"
-                    : "1 / -1"
-              : "1 / -1",
-          }}
-        >
+        <main className="col-start-1 row-start-2 min-h-0 min-w-0 bg-[var(--bg-main)] lg:col-start-2">
           {children}
         </main>
 
-        {sidebarOpen ? (
-          <aside
-            className="hidden min-h-0 min-w-0 border-l border-[var(--border)] bg-[var(--sidebar)] lg:row-start-2 lg:block"
-            style={{
-              gridColumn: isDesktop ? (aiPanelOpen ? "3 / 4" : "2 / 3") : undefined,
-            }}
-          >
-            <FileExplorer />
-          </aside>
-        ) : null}
+        <aside className="hidden min-h-0 min-w-0 border-l border-[var(--border)] bg-[var(--bg-main)] lg:col-start-3 lg:row-start-2 lg:block">
+          <FileExplorer />
+        </aside>
 
-        <div
-          className="col-start-1 row-start-3 min-h-0 min-w-0 overflow-hidden"
-          style={{ gridColumn: "1 / -1" }}
-        >
+        <div className="col-start-1 row-start-3 min-h-0 min-w-0 overflow-hidden lg:col-span-3">
           <Terminal />
         </div>
       </div>
 
       <AnimatePresence initial={false}>
-        {mobileAIPanelOpen ? (
+        {aiPanelOpen ? (
           <motion.div
             key="mobile-ai"
             className="fixed inset-x-0 top-9 z-50 bg-black/45 lg:hidden"
@@ -186,14 +147,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={toggleMobileAIPanel}
+            onClick={toggleAIPanel}
           >
             <motion.aside
               initial={{ x: -12, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -12, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-y-0 left-0 w-[260px] border-r border-[var(--border)] bg-[var(--sidebar)]"
+              className="absolute inset-y-0 left-0 w-[260px] border-r border-[var(--border)] bg-[var(--bg-main)]"
               onClick={(event) => event.stopPropagation()}
             >
               <SidebarAI />
@@ -203,7 +164,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </AnimatePresence>
 
       <AnimatePresence initial={false}>
-        {mobileSidebarOpen ? (
+        {sidebarOpen ? (
           <motion.div
             key="mobile-files"
             className="fixed inset-x-0 top-9 z-50 bg-black/45 lg:hidden"
@@ -211,14 +172,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={toggleMobileSidebar}
+            onClick={toggleSidebar}
           >
             <motion.aside
               initial={{ x: 12, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 12, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-y-0 right-0 w-[300px] border-l border-[var(--border)] bg-[var(--sidebar)]"
+              className="absolute inset-y-0 right-0 w-[300px] border-l border-[var(--border)] bg-[var(--bg-main)]"
               onClick={(event) => event.stopPropagation()}
             >
               <FileExplorer />

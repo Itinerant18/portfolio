@@ -18,10 +18,7 @@ interface IDEState {
   activeFile: string;
   sidebarOpen: boolean;
   aiPanelOpen: boolean;
-  mobileSidebarOpen: boolean;
-  mobileAIPanelOpen: boolean;
   terminalOpen: boolean;
-  terminalResetKey: number;
   theme: ThemeMode;
   commandPaletteOpen: boolean;
   paletteMode: PaletteMode;
@@ -29,14 +26,11 @@ interface IDEState {
   chatMessages: ChatMessage[];
   openFile: (file: string) => void;
   closeFile: (file: string) => void;
+  closeActiveTab: () => void;
   setActiveFile: (file: string) => void;
   toggleSidebar: () => void;
   toggleAIPanel: () => void;
-  toggleMobileSidebar: () => void;
-  toggleMobileAIPanel: () => void;
-  closeMobilePanels: () => void;
   toggleTerminal: () => void;
-  resetTerminal: () => void;
   toggleTheme: () => void;
   openCommandPalette: (mode?: PaletteMode) => void;
   closeCommandPalette: () => void;
@@ -60,12 +54,9 @@ export const useIDEStore = create<IDEState>()(
     (set) => ({
       openFiles: [defaultFilePath],
       activeFile: defaultFilePath,
-      sidebarOpen: true,
-      aiPanelOpen: true,
-      mobileSidebarOpen: false,
-      mobileAIPanelOpen: false,
+      sidebarOpen: false,
+      aiPanelOpen: false,
       terminalOpen: true,
-      terminalResetKey: 0,
       theme: "dark",
       commandPaletteOpen: false,
       paletteMode: "commands",
@@ -91,6 +82,19 @@ export const useIDEStore = create<IDEState>()(
             activeFile: nextActive,
           };
         }),
+      // BUG FIX #6: Added missing closeActiveTab action (Ctrl+W)
+      closeActiveTab: () =>
+        set((state) => {
+          if (!state.activeFile) return state;
+          const remaining = state.openFiles.filter((f) => f !== state.activeFile);
+          const currentIndex = state.openFiles.indexOf(state.activeFile);
+          const nextActive =
+            remaining[currentIndex - 1] ??
+            remaining[currentIndex] ??
+            remaining[remaining.length - 1] ??
+            "";
+          return { openFiles: remaining, activeFile: nextActive };
+        }),
       setActiveFile: (file) => set({ activeFile: file }),
       toggleSidebar: () =>
         set((state) => ({
@@ -100,27 +104,9 @@ export const useIDEStore = create<IDEState>()(
         set((state) => ({
           aiPanelOpen: !state.aiPanelOpen,
         })),
-      toggleMobileSidebar: () =>
-        set((state) => ({
-          mobileSidebarOpen: !state.mobileSidebarOpen,
-        })),
-      toggleMobileAIPanel: () =>
-        set((state) => ({
-          mobileAIPanelOpen: !state.mobileAIPanelOpen,
-        })),
-      closeMobilePanels: () =>
-        set({
-          mobileSidebarOpen: false,
-          mobileAIPanelOpen: false,
-        }),
       toggleTerminal: () =>
         set((state) => ({
           terminalOpen: !state.terminalOpen,
-        })),
-      resetTerminal: () =>
-        set((state) => ({
-          terminalOpen: true,
-          terminalResetKey: state.terminalResetKey + 1,
         })),
       toggleTheme: () =>
         set((state) => ({
@@ -146,7 +132,6 @@ export const useIDEStore = create<IDEState>()(
       focusAIPanel: () =>
         set({
           aiPanelOpen: true,
-          mobileAIPanelOpen: true,
         }),
       addMessage: (message) =>
         set((state) => ({
@@ -158,7 +143,7 @@ export const useIDEStore = create<IDEState>()(
         }),
     }),
     {
-      name: "cursor-portfolio-v5",
+      name: "cursor-portfolio-v4",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         openFiles: state.openFiles,

@@ -22,7 +22,15 @@ function FolderIcon({ open }: { open: boolean }) {
   );
 }
 
-function FileIcon() {
+function FileIcon({ language }: { language?: string }) {
+  // BUG FIX #2 (enhancement): Show different accent colors per file type
+  const colorMap: Record<string, string> = {
+    tsx: "text-[#79c0ff]",
+    ts: "text-[#7ee787]",
+    json: "text-[#ffa657]",
+  };
+  const colorClass = language ? (colorMap[language] ?? "text-[var(--text-muted)]") : "text-[var(--text-muted)]";
+
   return (
     <svg
       width="14"
@@ -32,7 +40,7 @@ function FileIcon() {
       stroke="currentColor"
       strokeWidth="2"
       aria-hidden="true"
-      className="shrink-0"
+      className={`shrink-0 ${colorClass}`}
     >
       <path d="M8 3h6l5 5v13H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
       <path d="M14 3v5h5" />
@@ -44,19 +52,19 @@ export default function FileExplorer() {
   const [expanded, setExpanded] = useState(true);
   const activeFile = useIDEStore((state) => state.activeFile);
   const openFile = useIDEStore((state) => state.openFile);
-  const toggleMobileSidebar = useIDEStore((state) => state.toggleMobileSidebar);
+  const toggleSidebar = useIDEStore((state) => state.toggleSidebar);
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col bg-[var(--sidebar)] text-[12px] text-[var(--text-primary)]">
+    <div className="flex h-full min-h-0 w-full flex-col bg-[var(--bg-main)] text-[12px]">
       <div className="flex h-9 items-center border-b border-[var(--border)] px-2">
-        <span className="leading-none text-[var(--text)]">EXPLORER</span>
+        <span className="leading-none text-[var(--text-muted)]">EXPLORER</span>
       </div>
 
       <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto p-2">
         <button
           type="button"
           onClick={() => setExpanded((value) => !value)}
-          className="flex h-6 w-full items-center gap-1.5 px-2 text-left text-[var(--text-muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text)]"
+          className="flex h-6 w-full items-center gap-1.5 px-2 text-left text-[var(--text-muted)] transition hover:bg-[var(--bg-panel)] hover:text-[var(--text)]"
         >
           <FolderIcon open={expanded} />
           <span className="leading-none">SRC</span>
@@ -75,17 +83,22 @@ export default function FileExplorer() {
                     openFile(file.path);
 
                     if (window.innerWidth < 1024) {
-                      toggleMobileSidebar();
+                      toggleSidebar();
                     }
                   }}
                   className={`flex h-6 w-full items-center gap-1.5 px-2 text-left transition ${
                     isActive
-                      ? "bg-[var(--hover)] text-[var(--text)]"
-                      : "text-[var(--text-muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
+                      // BUG FIX #2: Was bg-[#1F2937] — hardcoded dark color that broke light theme.
+                      // Now uses accent-soft CSS variable which works across both themes.
+                      ? "bg-[var(--accent-soft)] text-[var(--text)]"
+                      : "text-[var(--text-muted)] hover:bg-[var(--bg-panel)] hover:text-[var(--text)]"
                   }`}
                 >
-                  <FileIcon />
+                  <FileIcon language={file.language} />
                   <span className="truncate leading-none">{file.name}</span>
+                  {isActive && (
+                    <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
+                  )}
                 </button>
               );
             })}

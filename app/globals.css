@@ -5,34 +5,42 @@
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", "SF Mono",
     Consolas, "Liberation Mono", Menlo, monospace;
 
-  --bg-main: #0d1117;
-  --bg-panel: #161b22;
-  --bg-hover: #21262d;
+  --bg: #0d1117;
+  --panel: #161b22;
+  --sidebar: #0f141a;
+  --hover: #21262d;
   --border: #30363d;
-  --text: #e6edf3;
+  --text-primary: #c9d1d9;
   --text-muted: #8b949e;
   --accent: #7c3aed;
 
-  --text-primary: var(--text);
+  --bg-main: var(--bg);
+  --bg-panel: var(--panel);
+  --bg-hover: var(--hover);
+  --text: var(--text-primary);
   --border-color: var(--border);
-  --surface-glass: var(--bg-main);
-  --surface-elevated: var(--bg-main);
+  --surface-glass: var(--panel);
+  --surface-elevated: var(--panel);
   --accent-soft: rgba(124, 58, 237, 0.15);
 }
 
 [data-theme="light"] {
-  --bg-main: #f6f8fa;
-  --bg-panel: #eef2f6;
-  --bg-hover: #e1e7ef;
+  --bg: #f6f8fa;
+  --panel: #eef2f6;
+  --sidebar: #edf2f8;
+  --hover: #e1e7ef;
   --border: #d0d7de;
-  --text: #1f2328;
+  --text-primary: #1f2328;
   --text-muted: #57606a;
   --accent: #7c3aed;
 
-  --text-primary: var(--text);
+  --bg-main: var(--bg);
+  --bg-panel: var(--panel);
+  --bg-hover: var(--hover);
+  --text: var(--text-primary);
   --border-color: var(--border);
-  --surface-glass: var(--bg-main);
-  --surface-elevated: var(--bg-main);
+  --surface-glass: var(--panel);
+  --surface-elevated: var(--panel);
   --accent-soft: rgba(124, 58, 237, 0.12);
 }
 
@@ -48,7 +56,7 @@ body {
 
 html {
   color-scheme: dark;
-  background: var(--bg-main);
+  background: var(--bg);
 }
 
 [data-theme="light"] {
@@ -57,8 +65,8 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg-main);
-  color: var(--text);
+  background: var(--bg);
+  color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.4;
@@ -81,7 +89,7 @@ button {
 
 ::selection {
   background: rgba(124, 58, 237, 0.22);
-  color: var(--text);
+  color: var(--text-primary);
 }
 
 pre,
@@ -91,7 +99,7 @@ kbd {
 }
 
 .glass-panel {
-  background: var(--bg-main);
+  background: var(--panel);
   box-shadow: none;
   backdrop-filter: none;
 }
@@ -101,7 +109,7 @@ kbd {
 }
 
 .surface-elevated {
-  background: var(--bg-main);
+  background: var(--panel);
 }
 
 .ide-scrollbar {
@@ -136,11 +144,11 @@ html[data-theme="dark"] .bg-black\/25 {
 }
 
 html[data-theme="dark"] .bg-black\/10 {
-  background-color: #161b22 !important;
+  background-color: var(--panel) !important;
 }
 
 html[data-theme="dark"] .bg-white\/5 {
-  background-color: #161b22 !important;
+  background-color: var(--panel) !important;
 }
 
 html[data-theme="dark"] .bg-white\/10,

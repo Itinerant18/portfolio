@@ -1,9 +1,42 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { contactDetails } from "@/data/content";
 import { useIDEStore } from "@/store/useIDEStore";
+import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const menuItems = ["File", "Edit", "Selection", "View", "Go", "Run", "Terminal", "Help"];
+type MenuKey =
+  | "File"
+  | "Edit"
+  | "Selection"
+  | "View"
+  | "Go"
+  | "Run"
+  | "Terminal"
+  | "Help";
+
+interface MenuAction {
+  label: string;
+  shortcut?: string;
+  run: () => void | Promise<void>;
+}
+
+const menuOrder: MenuKey[] = [
+  "File",
+  "Edit",
+  "Selection",
+  "View",
+  "Go",
+  "Run",
+  "Terminal",
+  "Help",
+];
+
+function withProtocol(value: string) {
+  return value.startsWith("http://") || value.startsWith("https://")
+    ? value
+    : `https://${value}`;
+}
 
 function IconButton({
   title,
@@ -21,7 +54,7 @@ function IconButton({
       type="button"
       title={title}
       onClick={onClick}
-      className={`flex h-6 w-6 items-center justify-center text-[var(--text-muted)] transition hover:bg-[var(--bg-hover)] hover:text-[var(--text)] ${className}`}
+      className={`flex h-6 w-6 items-center justify-center text-[var(--text-muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text-primary)] ${className}`}
     >
       {children}
     </button>
@@ -29,36 +62,197 @@ function IconButton({
 }
 
 export default function TopBar() {
+  const activeFile = useIDEStore((state) => state.activeFile);
+  const sidebarOpen = useIDEStore((state) => state.sidebarOpen);
+  const aiPanelOpen = useIDEStore((state) => state.aiPanelOpen);
+  const openFile = useIDEStore((state) => state.openFile);
+  const closeFile = useIDEStore((state) => state.closeFile);
   const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
   const toggleTheme = useIDEStore((state) => state.toggleTheme);
   const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
   const toggleSidebar = useIDEStore((state) => state.toggleSidebar);
   const toggleAIPanel = useIDEStore((state) => state.toggleAIPanel);
+  const toggleMobileSidebar = useIDEStore((state) => state.toggleMobileSidebar);
+  const toggleMobileAIPanel = useIDEStore((state) => state.toggleMobileAIPanel);
+  const resetTerminal = useIDEStore((state) => state.resetTerminal);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpenMenu(null);
+      }
+    }
+
+    window.addEventListener("mousedown", handlePointerDown);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("mousedown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const openExternal = (value: string) => {
+    window.open(withProtocol(value), "_blank", "noopener,noreferrer");
+  };
+
+  const selectEditorContent = () => {
+    const target = document.querySelector("[data-ide-editor-content='true']");
+
+    if (!target) {
+      return;
+    }
+
+    const selection = window.getSelection();
+
+    if (!selection) {
+      return;
+    }
+
+    const range = document.createRange();
+    range.selectNodeContents(target);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  };
+
+  const copyActiveFilePath = async () => {
+    if (!activeFile || !navigator.clipboard) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(activeFile);
+    } catch {
+      // Ignore clipboard failures in unsupported contexts.
+    }
+  };
+
+  const menuActions: Record<MenuKey, MenuAction[]> = {
+    File: [
+      { label: "Open Home", run: () => openFile("src/home.tsx") },
+      { label: "Open Projects", run: () => openFile("src/projects.ts") },
+      { label: "Open Skills", run: () => openFile("src/skills.json") },
+      { label: "Open Experience", run: () => openFile("src/experience.ts") },
+      { label: "Open Contact", run: () => openFile("src/contact.ts") },
+      {
+        label: "Close Tab",
+        shortcut: "Ctrl+W",
+        run: () => {
+          if (activeFile) {
+            closeFile(activeFile);
+          }
+        },
+      },
+    ],
+    Edit: [
+      { label: "Copy Active File Path", run: copyActiveFilePath },
+      { label: "Clear Terminal", run: resetTerminal },
+    ],
+    Selection: [
+      { label: "Select All", shortcut: "Ctrl+A", run: selectEditorContent },
+    ],
+    View: [
+      {
+        label: aiPanelOpen ? "Hide Chat" : "Show Chat",
+        run: toggleAIPanel,
+      },
+      {
+        label: sidebarOpen ? "Hide Explorer" : "Show Explorer",
+        run: toggleSidebar,
+      },
+      { label: "Toggle Terminal", shortcut: "Ctrl+`", run: toggleTerminal },
+      { label: "Toggle Theme", run: toggleTheme },
+    ],
+    Go: [
+      { label: "Go to File", shortcut: "Ctrl+P", run: () => openCommandPalette("files") },
+      { label: "Go to Projects", run: () => openFile("src/projects.ts") },
+      { label: "Go to Skills", run: () => openFile("src/skills.json") },
+    ],
+    Run: [
+      {
+        label: "Run Portfolio Demo",
+        run: () => {
+          openFile("src/projects.ts");
+          resetTerminal();
+        },
+      },
+      { label: "Open Live Preview", run: () => openFile("src/home.tsx") },
+    ],
+    Terminal: [
+      { label: "New Terminal", run: resetTerminal },
+      { label: "Clear Terminal", run: resetTerminal },
+    ],
+    Help: [
+      { label: "About Me", run: () => openFile("src/about.tsx") },
+      { label: "Contact Me", run: () => openFile("src/contact.ts") },
+      { label: "GitHub", run: () => openExternal(contactDetails.github) },
+      { label: "LinkedIn", run: () => openExternal(contactDetails.linkedin) },
+    ],
+  };
+
+  const handleMenuAction = async (action: MenuAction) => {
+    await action.run();
+    setOpenMenu(null);
+  };
 
   return (
-    <header className="relative flex h-9 shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg-main)] px-2">
-      <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-4 w-4 items-center justify-center border border-[var(--border)] bg-[var(--bg-panel)] text-[10px] font-semibold text-[var(--text)]">
+    <header className="relative flex h-9 shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg)] px-2">
+      <div ref={menuRef} className="flex min-w-0 items-center gap-3">
+        <div className="flex h-4 w-4 items-center justify-center border border-[var(--border)] bg-[var(--panel)] text-[10px] font-semibold text-[var(--text-primary)]">
           C
         </div>
-        <nav className="hidden items-center gap-3 lg:flex">
-          {menuItems.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => {
-                if (item === "File") {
-                  openCommandPalette("files");
-                }
 
-                if (item === "Terminal") {
-                  toggleTerminal();
+        <nav className="hidden items-center gap-3 lg:flex">
+          {menuOrder.map((item) => (
+            <div
+              key={item}
+              className="relative"
+              onMouseEnter={() => {
+                if (openMenu) {
+                  setOpenMenu(item);
                 }
               }}
-              className="text-[12px] leading-none text-[var(--text-muted)] transition hover:text-[var(--text)]"
             >
-              {item}
-            </button>
+              <button
+                type="button"
+                onClick={() => setOpenMenu((current) => (current === item ? null : item))}
+                className={`h-6 px-1 text-[12px] leading-none transition ${
+                  openMenu === item
+                    ? "bg-[var(--hover)] text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                {item}
+              </button>
+
+              {openMenu === item ? (
+                <div className="absolute left-0 top-full z-50 mt-px min-w-[190px] border border-[var(--border)] bg-[var(--panel)] py-1">
+                  {menuActions[item].map((action) => (
+                    <button
+                      key={action.label}
+                      type="button"
+                      onClick={() => void handleMenuAction(action)}
+                      className="flex h-7 w-full items-center justify-between gap-3 px-2 text-left text-[12px] text-[var(--text-muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
+                    >
+                      <span>{action.label}</span>
+                      {action.shortcut ? (
+                        <span className="text-[11px] text-[var(--text-muted)]">
+                          {action.shortcut}
+                        </span>
+                      ) : null}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
           ))}
         </nav>
       </div>
@@ -70,14 +264,14 @@ export default function TopBar() {
       <div className="flex items-center gap-1">
         <button
           type="button"
-          onClick={toggleAIPanel}
+          onClick={toggleMobileAIPanel}
           className="px-2 text-[12px] leading-none text-[var(--text-muted)] lg:hidden"
         >
           AI
         </button>
         <button
           type="button"
-          onClick={toggleSidebar}
+          onClick={toggleMobileSidebar}
           className="px-2 text-[12px] leading-none text-[var(--text-muted)] lg:hidden"
         >
           Files
@@ -98,7 +292,7 @@ export default function TopBar() {
           </svg>
         </IconButton>
 
-        <IconButton title="Git" onClick={() => openCommandPalette("commands")}>
+        <IconButton title="GitHub" onClick={() => openExternal(contactDetails.github)}>
           <svg
             width="14"
             height="14"
