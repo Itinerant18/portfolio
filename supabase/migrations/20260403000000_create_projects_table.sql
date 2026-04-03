@@ -3,10 +3,12 @@ create table if not exists public.projects (
   id text primary key,
   name text not null,
   short_description text,
+  why text,
   problem text,
   type text,
   primary_tech text,
   tech_stack text[],
+  tech_groups jsonb,
   features text[],
   architecture text,
   high_level text,
@@ -14,7 +16,7 @@ create table if not exists public.projects (
   data_models text[],
   backend text,
   data_storage text,
-  changelog text[],
+  changelog jsonb,
   links jsonb not null,
   updated_at timestamptz not null default now(),
   is_fork boolean not null default false,
@@ -30,9 +32,10 @@ create policy "Allow public read access"
   for select
   using (true);
 
--- Create policy to allow authenticated upserts (or service role)
--- Note: In a production app, you'd want more restrictive policies.
-create policy "Allow all access for authenticated users"
+-- Create policy to allow anon upserts (for background sync)
+-- Note: In a production app, you should use a Service Role key instead.
+create policy "Allow anon upserts"
   on public.projects
   for all
-  using (auth.role() = 'authenticated');
+  using (true)
+  with check (true);

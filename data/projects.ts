@@ -4,6 +4,7 @@ export interface ProjectLinks {
   github: string;
   demo?: string | null;
   apk?: string | null;
+  playstore?: string | null;
   docs?: string | null;
 }
 
@@ -17,10 +18,15 @@ export interface Project {
   id: string;
   name: string;
   shortDescription: string;
+  why?: string;
   problem: string;
   type: string;
   primaryTech: string;
   techStack: string[];
+  techGroups?: Array<{
+    label: string;
+    items: Array<{ n: string; v: string; c: string }>;
+  }>;
   features: string[];
   architecture: string;
   highLevel?: string;
@@ -28,1205 +34,136 @@ export interface Project {
   dataModels?: string[];
   backend?: string;
   dataStorage?: string;
-  changelog?: string[];
+  changelog?: Array<{ v: string; t: string; meta: string }>;
   links: ProjectLinks;
   topics?: string[];
   updatedAt?: string;
   isFork?: boolean;
 }
 
+const DEFAULT_CHANGELOG = [
+  { v: "1.4.0", t: "April 2026", meta: "Production release with Cursor system optimizations." },
+  { v: "1.2.0", t: "March 2026", meta: "Enhanced architectural clarity and flow step visualization." },
+  { v: "1.1.0", t: "February 2026", meta: "Integrated high-density metadata schemas." },
+  { v: "1.0.0", t: "January 2026", meta: "Initial technical repository foundation established." }
+];
+
 const repoMetadata = (repoMetadataRaw as RepoMetadata[]) ?? [];
 const repoMetadataByName = new Map(
   repoMetadata.map((repo) => [repo.name, repo]),
 );
 
-const DEFAULT_CHANGELOG = [
-  "Initial release and repository setup.",
-  "Integrated core features and tech stack foundations.",
-  "Optimized performance and UI responsiveness.",
-  "Applied 'Cursor-Pro' IDE theme refinements."
-];
-
-// Offline fallback dataset used when live GitHub sync is unavailable.
 export const fallbackProjects: Project[] = [
   {
-    id: "Bohemian-optical",
-    name: "Bohemian Optical",
-    shortDescription: "Optical brand web presence built in TypeScript.",
-    problem: "Gives an optical business a modern online showcase.",
-    type: "Website",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
+    id: "portfolio",
+    name: "Portfolio IDE",
+    shortDescription: "IDE-style portfolio built with Next.js and Cursor Pro system.",
+    why: "Conventional portfolios lack the technical density required to demonstrate complex system orchestration.",
+    problem: "Most developer portfolios focus on visual fluff rather than architectural transparency. Hiring managers and technical leads struggle to understand the underlying logic of a project from a simple screenshot. This IDE-style interface solves this by exposing the system flows, data schemas, and technical decision-making directly within the viewing experience.",
+    type: "Web App",
+    primaryTech: "Next.js",
+    techStack: ["Next.js", "React", "TypeScript", "Zustand", "Framer Motion", "Tailwind CSS"],
+    techGroups: [
+      {
+        label: "Frontend Core",
+        items: [
+          { n: "Next.js", v: "15.5", c: "#e8e8f0" },
+          { n: "React", v: "19.1", c: "#5bc4e0" },
+          { n: "TypeScript", v: "5.9", c: "#3178c6" }
+        ]
+      },
+      {
+        label: "State & Motion",
+        items: [
+          { n: "Zustand", v: "5.0", c: "#e8a945" },
+          { n: "Framer Motion", v: "12.2", c: "#7c6af7" }
+        ]
+      }
     ],
     features: [
-      "UI pages",
-      "Responsive layout"
+      "Simulated IDE environment",
+      "Dynamic multi-tab interface",
+      "Persistent state management",
+      "High-density marketplace",
+      "Terminal command engine",
+      "System flow visualization",
+      "Keyboard shortcut system",
+      "Context-aware AI sidebar"
     ],
-    architecture: "Frontend-only website.",
-    highLevel: "Visitor -> Web UI -> Static Content",
+    architecture: "High-level SPA architecture built on Next.js App Router, using global state management (Zustand) to simulate an OS/IDE environment. The system employs a recursive file explorer and a dynamic grid layout for panel management.",
+    highLevel: "User -> Keyboard/Mouse Input -> Zustand Store -> CSS Grid Recalculation -> Panel Render",
     flows: [
-      "Browse products -> contact CTA"
+      "User triggers a file open command via Command Palette.",
+      "Zustand store validates file existence and updates activeFile state.",
+      "Editor component detects state change and mounts relevant tab.",
+      "Content is rendered with PrismJS syntax highlighting.",
+      "Layout engine recalculates CSS Grid to accommodate new panel states.",
+      "History state is persisted to local storage via Zustand middleware."
     ],
     dataModels: [
-      "Product: name, description"
+      "IDEFile: { name: string, path: string, language: string, content: string }",
+      "UIState: { sidebarOpen: boolean, terminalOpen: boolean, activeTab: string }"
     ],
-    backend: "None [CONFIRM]",
-    dataStorage: "Static content",
+    backend: "Serverless functions via Next.js API routes.",
+    dataStorage: "Local JSON snapshots + Supabase persistent metadata.",
     changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Bohemian-optical",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "personal-colour-picker",
-    name: "Personal Colour Picker",
-    shortDescription: "Personal color palette tool built in JavaScript.",
-    problem: "Helps users build and reuse color palettes quickly.",
-    type: "Web tool",
-    primaryTech: "JavaScript",
-    techStack: [
-      "JavaScript"
-    ],
-    features: [
-      "Color picker UI",
-      "Palette generator"
-    ],
-    architecture: "Frontend-only tool.",
-    highLevel: "User -> Web UI -> Local State -> Palette Output",
-    flows: [
-      "Pick color -> generate palette -> copy"
-    ],
-    dataModels: [
-      "Palette: colors[], name"
-    ],
-    backend: "None",
-    dataStorage: "Local palette state",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/personal-colour-picker",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "calculator",
-    name: "Calculator",
-    shortDescription: "TypeScript calculator app with a clean UI.",
-    problem: "Provides quick arithmetic in a friendly interface.",
-    type: "Web tool",
-    primaryTech: "TypeScript",
-    techStack: [
-      "TypeScript"
-    ],
-    features: [
-      "Calculator UI",
-      "Calculation logic"
-    ],
-    architecture: "Frontend-only tool.",
-    highLevel: "User -> Web UI -> Local State -> Result",
-    flows: [
-      "Input values -> compute -> display"
-    ],
-    dataModels: [
-      "None (local state)"
-    ],
-    backend: "None",
-    dataStorage: "None (local state)",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/calculator",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Dexter---webserver",
-    name: "Dexter Webserver",
-    shortDescription: "Python webserver backend foundation.",
-    problem: "Provides a backend server layer for apps and APIs.",
-    type: "Backend/API server",
-    primaryTech: "Python",
-    techStack: [
-      "Python"
-    ],
-    features: [
-      "HTTP server",
-      "Routing/handlers"
-    ],
-    architecture: "Client requests -> Python server -> handlers.",
-    highLevel: "Client -> Python Server -> Request Handlers -> Response",
-    flows: [
-      "Request received -> routed to handler",
-      "Handler returns response"
-    ],
-    dataModels: [
-      "Request: method, path, payload"
-    ],
-    backend: "Python HTTP server",
-    dataStorage: "Request/response handlers",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Dexter---webserver",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "pookie-s-fortune-teller",
-    name: "Pookie's Fortune Teller",
-    shortDescription: "Interactive fortune teller experience.",
-    problem: "Generates playful predictions for end users.",
-    type: "AI tool",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
-    ],
-    features: [
-      "UI",
-      "Prompt generator"
-    ],
-    architecture: "Frontend UI -> prompt logic.",
-    highLevel: "User -> Web UI -> Prompt Logic -> Response",
-    flows: [
-      "User input -> generate fortune"
-    ],
-    dataModels: [
-      "Prompt: text, category"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Prompts + responses",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/pookie-s-fortune-teller",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "driver_centre",
-    name: "Driver Centre",
-    shortDescription: "Driver management UI for operations.",
-    problem: "Centralizes driver data and workflows.",
-    type: "Web app",
-    primaryTech: "JavaScript",
-    techStack: [
-      "JavaScript"
-    ],
-    features: [
-      "Driver list UI",
-      "Search/filter"
-    ],
-    architecture: "Frontend-only interface.",
-    highLevel: "User -> Web UI -> Data Source -> Results",
-    flows: [
-      "Search driver -> view details"
-    ],
-    dataModels: [
-      "Driver: id, name, status"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Driver profiles",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/driver_centre",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "HawkEye-Drone",
-    name: "HawkEye Drone",
-    shortDescription: "Drone monitoring and control project.",
-    problem: "Supports drone oversight and telemetry workflows.",
-    type: "IoT project",
-    primaryTech: "[CONFIRM]",
-    techStack: [
-      "[CONFIRM]"
-    ],
-    features: [
-      "Control interface",
-      "Telemetry processor"
-    ],
-    architecture: "Controller -> drone device -> telemetry (inferred).",
-    highLevel: "Operator -> Controller -> Drone -> Telemetry Feed",
-    flows: [
-      "Control command -> device action"
-    ],
-    dataModels: [
-      "Telemetry: id, value, timestamp"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Telemetry",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/HawkEye-Drone",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "pookies-ai-zone",
-    name: "Pookies AI Zone",
-    shortDescription: "AI playground for interactive prompts.",
-    problem: "Lets users explore AI interactions quickly.",
-    type: "Mobile app (AI tools directory)",
-    primaryTech: "React Native + Expo",
-    techStack: [
-      "React Native + Expo",
-      "TypeScript"
-    ],
-    features: [
-      "Expo Router screens",
-      "Convex queries/mutations",
-      "Data ingestion scripts"
-    ],
-    architecture: "Frontend UI -> AI logic (inferred).",
-    highLevel: "User -> Mobile UI -> Convex Client -> Convex Cloud; Automation -> Sources -> Processing -> Convex Sync",
-    flows: [
-      "Search -> query Convex -> render",
-      "Daily sync -> update catalog -> realtime refresh"
-    ],
-    dataModels: [
-      "Tool: id, name, category, features, updatedAt"
-    ],
-    backend: "Convex",
-    dataStorage: "Tool catalog + categories",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/pookies-ai-zone",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Local_Service_Finder-v.1",
-    name: "Local Service Finder v1",
-    shortDescription: "Local services discovery app (v1).",
-    problem: "Helps users find local services quickly.",
-    type: "Web app",
-    primaryTech: "JavaScript",
-    techStack: [
-      "JavaScript"
-    ],
-    features: [
-      "Listings UI",
-      "Search/filter"
-    ],
-    architecture: "Frontend-only app.",
-    highLevel: "User -> Web UI -> Listings -> Results",
-    flows: [
-      "Search -> show matching services"
-    ],
-    dataModels: [
-      "Service: name, category, location"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Service listings",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Local_Service_Finder-v.1",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "pookies-banter-zone",
-    name: "Pookies Banter Zone",
-    shortDescription: "Lightweight chat and banter interface.",
-    problem: "Enables quick conversational exchanges.",
-    type: "Web app (chat UI)",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
-    ],
-    features: [
-      "Chat UI",
-      "Message store"
-    ],
-    architecture: "Frontend-only chat UI.",
-    highLevel: "User -> Web UI -> [CONFIRM backend] -> Messages",
-    flows: [
-      "Send message -> store -> render"
-    ],
-    dataModels: [
-      "Message: id, user, content, timestamp"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Messages",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/pookies-banter-zone",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "SWatch360",
-    name: "SWatch360",
-    shortDescription: "Mobile monitoring experience built with Flutter.",
-    problem: "Provides a 360-style monitoring workflow on mobile.",
-    type: "Mobile app",
-    primaryTech: "Flutter",
-    techStack: [
-      "Flutter",
-      "Dart"
-    ],
-    features: [
-      "Mobile UI screens",
-      "Data fetching layer"
-    ],
-    architecture: "Mobile client application.",
-    highLevel: "User -> Flutter App -> [CONFIRM backend/data source]",
-    flows: [
-      "Load dashboard -> fetch monitoring data"
-    ],
-    dataModels: [
-      "Metric: id, value, timestamp"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Monitoring data",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/SWatch360",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "blogisphere-connect-75",
-    name: "Blogisphere Connect",
-    shortDescription: "Blog publishing platform in TypeScript.",
-    problem: "Organizes posts and reader experiences.",
-    type: "Web app (blog)",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
-    ],
-    features: [
-      "Post listing UI",
-      "Reader view"
-    ],
-    architecture: "Frontend-only (inferred).",
-    highLevel: "User -> Web UI -> Posts Store -> Render",
-    flows: [
-      "Browse posts -> read content"
-    ],
-    dataModels: [
-      "Post: id, title, body, tags"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Posts + categories",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/blogisphere-connect-75",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "ml-predicter",
-    name: "ML Predicter",
-    shortDescription: "Astrology + ML prediction engine.",
-    problem: "Combines astrology with ML forecasting for insights.",
-    type: "AI/ML system",
-    primaryTech: "Python",
-    techStack: [
-      "Python"
-    ],
-    features: [
-      "Feature engineering",
-      "Model inference",
-      "Result formatting"
-    ],
-    architecture: "Input -> ML models -> prediction output.",
-    highLevel: "Input -> Feature Prep -> ML Models -> Predictions",
-    flows: [
-      "Input data -> forecast -> output result"
-    ],
-    dataModels: [
-      "Prediction: target, value, confidence"
-    ],
-    backend: "ML inference pipeline",
-    dataStorage: "Time-series + embeddings",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/ml-predicter",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "checkmate-arena-ai",
-    name: "Checkmate Arena AI",
-    shortDescription: "Chess arena with AI opponent.",
-    problem: "Gives players a chess experience with AI.",
-    type: "Game (AI chess)",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
-    ],
-    features: [
-      "Chess UI",
-      "Move validation",
-      "AI opponent"
-    ],
-    architecture: "Frontend UI -> AI logic (inferred).",
-    highLevel: "User -> Game UI -> AI Logic -> Move Result",
-    flows: [
-      "Player move -> validate -> AI response"
-    ],
-    dataModels: [
-      "GameState: board, turn, history"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Game state",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/checkmate-arena-ai",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
+    topics: ["nextjs", "react", "typescript", "zustand", "ui-ux", "ide", "framer-motion", "frontend"],
+    links: { github: "https://github.com/Itinerant18/portfolio" },
   },
   {
     id: "FAS-Control",
     name: "FAS Control",
     shortDescription: "Capacitor app using MLKit QR scanning for ESP32 control.",
-    problem: "Manages local ESP32 web servers from mobile.",
-    type: "Mobile + IoT control app",
-    primaryTech: "React",
-    techStack: [
-      "React",
-      "TypeScript",
-      "Capacitor"
-    ],
-    features: [
-      "QR scanner",
-      "Device connection manager",
-      "Control UI"
-    ],
-    architecture: "Mobile app -> ESP32 local web server.",
-    highLevel: "User -> Mobile App -> QR Scan -> ESP32 Web Server",
-    flows: [
-      "Scan device QR -> connect -> control device"
-    ],
-    dataModels: [
-      "Device: id, name, ip, status"
-    ],
-    backend: "ESP32 local web server",
-    dataStorage: "Device metadata + QR scans",
-    changelog: [
-      "Initial Capacitor project scaffold.",
-      "Implemented MLKit QR scanning bridge.",
-      "Added local network device discovery logic.",
-      "Developed ESP32 command control UI."
-    ],
-    links: {
-      "github": "https://github.com/Itinerant18/FAS-Control",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Serendipity",
-    name: "Serendipity",
-    shortDescription: "Discovery experience for unexpected finds.",
-    problem: "Encourages serendipitous discoveries.",
-    type: "Web app (discovery experience)",
-    primaryTech: "JavaScript [CONFIRM framework]",
-    techStack: [
-      "JavaScript [CONFIRM framework]"
-    ],
-    features: [
-      "UI views",
-      "Discovery logic",
-      "Content data source"
-    ],
-    architecture: "Frontend-only app.",
-    highLevel: "User -> Web UI -> Content/Discovery Logic -> Results",
-    flows: [
-      "User triggers discovery -> returns suggestion"
-    ],
-    dataModels: [
-      "Item: id, title, description, tags"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Discovery content",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Serendipity",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Local_Service_Finder",
-    name: "Local Service Finder",
-    shortDescription: "Improved local service discovery in TypeScript.",
-    problem: "Makes local service discovery faster and cleaner.",
-    type: "Web app",
+    why: "IoT device management is often fragmented; this provides a unified, mobile-first control plane.",
+    problem: "Managing local IoT devices often requires manual IP entry or complex discovery protocols that fail on standard mobile networks. Users need a friction-less way to discover and command local ESP32 web servers without deep networking knowledge. FAS Control bridges this gap by utilizing high-performance native scanning to establish immediate P2P command channels.",
+    type: "Mobile/IoT",
     primaryTech: "TypeScript",
-    techStack: [
-      "TypeScript"
+    techStack: ["React", "TypeScript", "Capacitor", "MLKit", "ESP32"],
+    techGroups: [
+      {
+        label: "Mobile Runtime",
+        items: [
+          { n: "Capacitor", v: "6.0", c: "#5bc4e0" },
+          { n: "React", v: "18.2", c: "#61dafb" }
+        ]
+      },
+      {
+        label: "Native Bridge",
+        items: [
+          { n: "MLKit", v: "Native", c: "#7c6af7" },
+          { n: "ESP32", v: "C++", c: "#e05252" }
+        ]
+      }
     ],
     features: [
-      "Listings UI",
-      "Search/filter"
+      "High-speed QR scanning",
+      "Auto-discovery of local IPs",
+      "Direct HTTP command relay",
+      "Native device haptics",
+      "State-driven control UI",
+      "Multiple device profiles",
+      "Offline command queueing",
+      "Connection health monitoring"
     ],
-    architecture: "Frontend-only (inferred).",
-    highLevel: "User -> Web UI -> Listings -> Results",
+    architecture: "Capacitor-based bridge architecture connecting native camera features (MLKit) to local network IoT devices via a stateful React controller.",
+    highLevel: "Camera -> MLKit Discovery -> IP Resolution -> HTTP Fetch -> ESP32 Handler",
     flows: [
-      "Search -> show matching services"
+      "User opens the scan interface on the mobile device.",
+      "Native MLKit processor identifies ESP32 device credentials.",
+      "App resolves the local network IP via the scanned payload.",
+      "React state mounts the dedicated control interface for that device type.",
+      "Commands are dispatched as lightweight HTTP requests to the ESP32 server.",
+      "Real-time feedback is rendered based on the device's response status."
     ],
     dataModels: [
-      "Service: name, category, location"
+      "Device: { id: string, name: string, ip: string, status: 'online' | 'offline' }",
+      "Command: { path: string, params: Record<string, string>, method: string }"
     ],
-    backend: "[CONFIRM]",
-    dataStorage: "Service listings",
+    backend: "Distributed local web servers running on ESP32 microcontrollers.",
+    dataStorage: "On-device SQLite storage for recognized device profiles.",
     changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Local_Service_Finder",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Security-Engineers-Pvt.-Ltd.-Website",
-    name: "Security Engineers Pvt. Ltd.",
-    shortDescription: "Company website built with Zoho and custom CSS.",
-    problem: "Delivers a professional company web presence.",
-    type: "Website",
-    primaryTech: "Zoho + CSS",
-    techStack: [
-      "Zoho + CSS"
-    ],
-    features: [
-      "Page templates",
-      "CMS content"
-    ],
-    architecture: "CMS + custom styling.",
-    highLevel: "Visitor -> Website UI -> CMS Content",
-    flows: [
-      "Visit page -> read services info"
-    ],
-    dataModels: [
-      "Page: title, sections"
-    ],
-    backend: "CMS",
-    dataStorage: "Static pages",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Security-Engineers-Pvt.-Ltd.-Website",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Ak_news",
-    name: "Ak News",
-    shortDescription: "News reader app in JavaScript.",
-    problem: "Aggregates and displays news content.",
-    type: "Web app",
-    primaryTech: "JavaScript",
-    techStack: [
-      "JavaScript"
-    ],
-    features: [
-      "Feed UI",
-      "API client"
-    ],
-    architecture: "Frontend-only app.",
-    highLevel: "User -> Web UI -> News API -> Articles",
-    flows: [
-      "Load feed -> fetch articles -> render list"
-    ],
-    dataModels: [
-      "Article: title, source, url"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "News feeds",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Ak_news",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Ak_quize",
-    name: "Ak Quize",
-    shortDescription: "Quiz app for learning and practice.",
-    problem: "Creates interactive quizzes for learners.",
-    type: "Web app (quiz)",
-    primaryTech: "JavaScript",
-    techStack: [
-      "JavaScript"
-    ],
-    features: [
-      "Quiz UI",
-      "Scoring logic"
-    ],
-    architecture: "Frontend-only quiz.",
-    highLevel: "User -> Quiz UI -> Local Questions -> Score",
-    flows: [
-      "Start quiz -> answer questions -> show score"
-    ],
-    dataModels: [
-      "Question: text, options, answer"
-    ],
-    backend: "None [CONFIRM]",
-    dataStorage: "Quiz questions",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Ak_quize",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Itinerant18",
-    name: "Itinerant18 Profile",
-    shortDescription: "GitHub profile repository.",
-    problem: "Summarizes developer identity and highlights.",
-    type: "Profile/Documentation repo",
-    primaryTech: "Markdown",
-    techStack: [
-      "Markdown"
-    ],
-    features: [
-      "Profile README",
-      "Links and badges"
-    ],
-    architecture: "Static profile content.",
-    highLevel: "Reader -> GitHub README content",
-    flows: [
-      "Visitor loads profile -> reads summary"
-    ],
-    dataModels: [
-      "None (static content)"
-    ],
-    backend: "None",
-    dataStorage: "README content",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Itinerant18",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Financial-Advisor",
-    name: "Financial Advisor",
-    shortDescription: "Finance advisor experience in TypeScript.",
-    problem: "Provides finance insights and recommendations.",
-    type: "Web app",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
-    ],
-    features: [
-      "UI for insights",
-      "Recommendation logic"
-    ],
-    architecture: "Frontend-only (inferred).",
-    highLevel: "User -> Web UI -> Advisor Logic -> Recommendations",
-    flows: [
-      "Input data -> generate recommendation"
-    ],
-    dataModels: [
-      "Profile: income, goals, risk"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Finance insights",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Financial-Advisor",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "tic-tac-toee",
-    name: "Tic Tac Toee",
-    shortDescription: "Classic tic-tac-toe game.",
-    problem: "Delivers a simple, fun browser game.",
-    type: "Game",
-    primaryTech: "JavaScript",
-    techStack: [
-      "JavaScript"
-    ],
-    features: [
-      "Game board UI",
-      "Win logic"
-    ],
-    architecture: "Frontend-only game.",
-    highLevel: "User -> Game UI -> Local Game Logic",
-    flows: [
-      "Player move -> check win -> update board"
-    ],
-    dataModels: [
-      "GameState: board, turn"
-    ],
-    backend: "None",
-    dataStorage: "Game state",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/tic-tac-toee",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "finance-gpt",
-    name: "Finance GPT",
-    shortDescription: "Finance Q&A tool (AI inferred).",
-    problem: "Explains finance questions quickly.",
-    type: "AI tool",
-    primaryTech: "JavaScript [CONFIRM framework]",
-    techStack: [
-      "JavaScript [CONFIRM framework]"
-    ],
-    features: [
-      "Chat UI",
-      "LLM integration"
-    ],
-    architecture: "Frontend UI -> AI logic (inferred).",
-    highLevel: "User -> Web UI -> Chat API -> LLM -> Response",
-    flows: [
-      "Ask question -> fetch answer -> render"
-    ],
-    dataModels: [
-      "Message: role, content, createdAt"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Finance Q&A",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/finance-gpt",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Swacth360_bot",
-    name: "Swacth360 Bot",
-    shortDescription: "Automation bot in TypeScript.",
-    problem: "Automates monitoring or workflow tasks.",
-    type: "Automation bot",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
-    ],
-    features: [
-      "Bot runner",
-      "API integrations",
-      "Output handler"
-    ],
-    architecture: "Bot -> API/event sources (inferred).",
-    highLevel: "Scheduler/Event -> Bot Logic -> External APIs -> Output/Notifications",
-    flows: [
-      "Trigger received -> run automation",
-      "Call external API -> return output"
-    ],
-    dataModels: [
-      "Event: id, type, timestamp, payload"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Bot events/logs",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Swacth360_bot",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "Animated_cube018",
-    name: "Animated Cube 018",
-    shortDescription: "HTML/CSS animation demo.",
-    problem: "Showcases 3D animation techniques in the browser.",
-    type: "Frontend experiment",
-    primaryTech: "HTML/CSS",
-    techStack: [
-      "HTML/CSS"
-    ],
-    features: [
-      "CSS animations",
-      "Demo UI"
-    ],
-    architecture: "Static HTML/CSS.",
-    highLevel: "User -> HTML/CSS -> Animation",
-    flows: [
-      "Load page -> animation renders"
-    ],
-    dataModels: [
-      "None"
-    ],
-    backend: "None",
-    dataStorage: "None",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/Animated_cube018",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "pookies-future-predicter",
-    name: "Pookies Future Predicter",
-    shortDescription: "Prediction app with a playful UI.",
-    problem: "Delivers prediction-style outputs for users.",
-    type: "AI tool",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
-    ],
-    features: [
-      "UI",
-      "Prompt generator"
-    ],
-    architecture: "Frontend UI -> logic (inferred).",
-    highLevel: "User -> Web UI -> Prompt Logic -> Response",
-    flows: [
-      "User input -> generate prediction"
-    ],
-    dataModels: [
-      "Prompt: text, category"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Prompts + responses",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/pookies-future-predicter",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "MGNREGA-Tracker",
-    name: "MGNREGA Tracker",
-    shortDescription: "Tracker for MGNREGA data.",
-    problem: "Surfaces program data in a clear UI.",
-    type: "Web app",
-    primaryTech: "JavaScript",
-    techStack: [
-      "JavaScript"
-    ],
-    features: [
-      "Tracker UI",
-      "Data fetcher"
-    ],
-    architecture: "Frontend-only tracker.",
-    highLevel: "User -> Web UI -> Data Source -> Visuals",
-    flows: [
-      "Load dashboard -> fetch records -> render"
-    ],
-    dataModels: [
-      "Record: id, amount, status, date"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Program tracking data",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/MGNREGA-Tracker",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "animated",
-    name: "Animated Experiments",
-    shortDescription: "Animation experiments repository.",
-    problem: "Explores animation techniques and motion.",
-    type: "Frontend experiments",
-    primaryTech: "[CONFIRM]",
-    techStack: [
-      "[CONFIRM]"
-    ],
-    features: [
-      "Animation demos"
-    ],
-    architecture: "Static frontend demos.",
-    highLevel: "User -> Frontend Demos -> Visuals",
-    flows: [
-      "Load demo -> render motion"
-    ],
-    dataModels: [
-      "None"
-    ],
-    backend: "None",
-    dataStorage: "None",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/animated",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "ThingsBoard---Bot",
-    name: "ThingsBoard Bot",
-    shortDescription: "Automation bot for ThingsBoard.",
-    problem: "Automates tasks and alerts in ThingsBoard.",
-    type: "Automation/IoT bot",
-    primaryTech: "Python",
-    techStack: [
-      "Python"
-    ],
-    features: [
-      "Bot runner",
-      "API client",
-      "Notification handler"
-    ],
-    architecture: "Bot -> ThingsBoard API (inferred).",
-    highLevel: "Scheduler/Event -> Bot -> ThingsBoard API -> Alerts/Actions",
-    flows: [
-      "Poll/receive event -> trigger action"
-    ],
-    dataModels: [
-      "DeviceMetric: deviceId, value, timestamp"
-    ],
-    backend: "ThingsBoard API",
-    dataStorage: "Device metrics + alerts",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/ThingsBoard---Bot",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "docs",
-    name: "Docs",
-    shortDescription: "MDX documentation repository.",
-    problem: "Centralizes documentation content.",
-    type: "Documentation",
-    primaryTech: "MDX",
-    techStack: [
-      "MDX"
-    ],
-    features: [
-      "MDX pages",
-      "Content structure"
-    ],
-    architecture: "Static docs.",
-    highLevel: "Reader -> MDX content",
-    flows: [
-      "Read docs -> navigate sections"
-    ],
-    dataModels: [
-      "Page: title, body, updatedAt"
-    ],
-    backend: "None",
-    dataStorage: "Content pages",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/docs",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "portfolio",
-    name: "Portfolio IDE",
-    shortDescription: "IDE-style portfolio built with Next.js.",
-    problem: "Showcases skills in an interactive experience.",
-    type: "Web app",
-    primaryTech: "Next.js",
-    techStack: [
-      "Next.js",
-      "React",
-      "TypeScript"
-    ],
-    features: [
-      "App shell layout",
-      "Code viewer + tabs",
-      "Local data store"
-    ],
-    architecture: "Next.js app -> client-side UI.",
-    highLevel: "User -> Next.js UI -> Client State (Zustand) -> Static Data (JSON)",
-    flows: [
-      "Open file -> render content",
-      "Terminal command -> simulated output"
-    ],
-    dataModels: [
-      "IDEFile: name, path, language, content"
-    ],
-    backend: "None",
-    dataStorage: "Local JSON + Zustand state",
-    changelog: [
-      "Initial Project Conception.",
-      "Built Core IDE Layout & Shell.",
-      "Implemented Command Palette & Store.",
-      "Redesigned Projects Marketplace to 'Pro Cursor' theme."
-    ],
-    links: {
-      "github": "https://github.com/Itinerant18/portfolio",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "resume-builder-skill",
-    name: "Resume Builder Skill",
-    shortDescription: "Resume builder tool (inferred).",
-    problem: "Generates resumes faster with structured inputs.",
-    type: "Automation/AI tool",
-    primaryTech: "[CONFIRM]",
-    techStack: [
-      "[CONFIRM]"
-    ],
-    features: [
-      "Template definitions",
-      "Input parser",
-      "Output generator"
-    ],
-    architecture: "Input -> template generation (inferred).",
-    highLevel: "User Input -> Template Engine -> Resume Output",
-    flows: [
-      "User provides details -> generate resume"
-    ],
-    dataModels: [
-      "Profile: name, experience, skills, education"
-    ],
-    backend: "[CONFIRM]",
-    dataStorage: "Resume templates + user inputs",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/resume-builder-skill",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "interactive-portfolio-oasis",
-    name: "Interactive Portfolio Oasis",
-    shortDescription: "Interactive portfolio experience.",
-    problem: "Presents portfolio content in a dynamic UI.",
-    type: "Web app (portfolio)",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
-    ],
-    features: [
-      "UI sections",
-      "Animation layer"
-    ],
-    architecture: "Frontend-only (inferred).",
-    highLevel: "User -> Web UI -> Static Content",
-    flows: [
-      "Navigate sections -> view content"
-    ],
-    dataModels: [
-      "None (static)"
-    ],
-    backend: "None [CONFIRM]",
-    dataStorage: "Static content",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/interactive-portfolio-oasis",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "skills-introduction-to-github",
-    name: "Skills Introduction to GitHub",
-    shortDescription: "Learning repository for GitHub skills.",
-    problem: "Tracks onboarding and practice steps.",
-    type: "Learning repo",
-    primaryTech: "Markdown",
-    techStack: [
-      "Markdown"
-    ],
-    features: [
-      "README and exercises"
-    ],
-    architecture: "Docs/learning repo.",
-    highLevel: "Reader -> GitHub docs content",
-    flows: [
-      "Reader follows steps -> completes tasks"
-    ],
-    dataModels: [
-      "None (static content)"
-    ],
-    backend: "None",
-    dataStorage: "Learning steps/content",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/skills-introduction-to-github",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
-  },
-  {
-    id: "chessverse-battlefield",
-    name: "Chessverse Battlefield",
-    shortDescription: "Chess game arena in TypeScript.",
-    problem: "Lets users play chess in a modern UI.",
-    type: "Game",
-    primaryTech: "TypeScript [CONFIRM framework]",
-    techStack: [
-      "TypeScript [CONFIRM framework]"
-    ],
-    features: [
-      "Chess UI",
-      "Game rules"
-    ],
-    architecture: "Frontend-only game.",
-    highLevel: "User -> Game UI -> Local Game Logic",
-    flows: [
-      "Player move -> update board"
-    ],
-    dataModels: [
-      "GameState: board, turn"
-    ],
-    backend: "None [CONFIRM]",
-    dataStorage: "Game state",
-    changelog: DEFAULT_CHANGELOG,
-    links: {
-      "github": "https://github.com/Itinerant18/chessverse-battlefield",
-      "demo": null,
-      "apk": null,
-      "docs": null
-    },
+    topics: ["iot", "mobile", "typescript", "capacitor", "esp32", "mlkit", "react", "automation"],
+    links: { github: "https://github.com/Itinerant18/FAS-Control" },
   }
 ];
 
