@@ -147,7 +147,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </div>
 
         {aiPanelOpen ? (
-          <aside className="hidden min-h-0 min-w-0 border-r border-[var(--border)] bg-[var(--sidebar)] lg:col-start-1 lg:row-start-2 lg:block">
+          <aside
+            className="hidden min-h-0 min-w-0 border-r border-[var(--border)] bg-[var(--sidebar)] lg:col-start-1 lg:block"
+            style={{
+               gridRow: terminalOpen ? "2 / 4" : "2 / 3"
+            }}
+          >
             <SidebarAI />
           </aside>
         ) : null}
@@ -177,9 +182,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
         {sidebarOpen ? (
           <aside
-            className="hidden min-h-0 min-w-0 border-l border-[var(--border)] bg-[var(--sidebar)] lg:row-start-2 lg:block"
+            className="hidden min-h-0 min-w-0 border-l border-[var(--border)] bg-[var(--sidebar)] lg:block"
             style={{
               gridColumn: isDesktop ? (aiPanelOpen ? "3 / 4" : "2 / 3") : undefined,
+              gridRow: terminalOpen ? "2 / 4" : "2 / 3"
             }}
           >
             <FileExplorer />
@@ -187,8 +193,18 @@ export default function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         <div
-          className="col-start-1 row-start-3 min-h-0 min-w-0 overflow-hidden"
-          style={{ gridColumn: "1 / -1" }}
+          className="row-start-3 min-h-0 min-w-0 overflow-hidden"
+          style={{
+            gridColumn: isDesktop
+              ? aiPanelOpen && sidebarOpen
+                ? "2 / 3"
+                : aiPanelOpen
+                  ? "2 / 3"
+                  : sidebarOpen
+                    ? "1 / 2"
+                    : "1 / -1"
+              : "1 / -1",
+          }}
         >
           <Terminal />
         </div>

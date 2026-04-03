@@ -1,0 +1,388 @@
+﻿[
+    {
+        "description": "",
+        "name": "portfolio",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2026-04-02T21:34:52Z",
+        "url": "https://github.com/Itinerant18/portfolio"
+    },
+    {
+        "description": "",
+        "name": "Swacth360_bot",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2026-04-02T11:47:45Z",
+        "url": "https://github.com/Itinerant18/Swacth360_bot"
+    },
+    {
+        "description": "",
+        "name": "Itinerant18",
+        "primaryLanguage": null,
+        "stargazerCount": 0,
+        "updatedAt": "2026-04-02T21:01:36Z",
+        "url": "https://github.com/Itinerant18/Itinerant18"
+    },
+    {
+        "description": "",
+        "name": "Dexter---webserver",
+        "primaryLanguage": {
+            "name": "Python"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-04-02T11:33:22Z",
+        "url": "https://github.com/Itinerant18/Dexter---webserver"
+    },
+    {
+        "description": "",
+        "name": "pookies-ai-zone",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-04-02T06:59:03Z",
+        "url": "https://github.com/Itinerant18/pookies-ai-zone"
+    },
+    {
+        "description": "Finding something good unintentationally",
+        "name": "Serendipity",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:35:57Z",
+        "url": "https://github.com/Itinerant18/Serendipity"
+    },
+    {
+        "description": "",
+        "name": "resume-builder-skill",
+        "primaryLanguage": null,
+        "stargazerCount": 0,
+        "updatedAt": "2026-03-16T07:52:37Z",
+        "url": "https://github.com/Itinerant18/resume-builder-skill"
+    },
+    {
+        "description": "Hestia Control: A React + TypeScript Capacitor app using MLKit for QR scanning to manage local ESP32 web servers.",
+        "name": "FAS-Control",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-13T04:58:51Z",
+        "url": "https://github.com/Itinerant18/FAS-Control"
+    },
+    {
+        "description": "My clone repository",
+        "name": "skills-introduction-to-github",
+        "primaryLanguage": null,
+        "stargazerCount": 0,
+        "updatedAt": "2026-02-28T05:07:29Z",
+        "url": "https://github.com/Itinerant18/skills-introduction-to-github"
+    },
+    {
+        "description": "",
+        "name": "SWatch360",
+        "primaryLanguage": {
+            "name": "Dart"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:35:44Z",
+        "url": "https://github.com/Itinerant18/SWatch360"
+    },
+    {
+        "description": "",
+        "name": "Financial-Advisor",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2025-01-17T06:04:04Z",
+        "url": "https://github.com/Itinerant18/Financial-Advisor"
+    },
+    {
+        "description": "",
+        "name": "finance-gpt",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2026-04-02T16:45:28Z",
+        "url": "https://github.com/Itinerant18/finance-gpt"
+    },
+    {
+        "description": "An AI SKILL that provide design intelligence for building professional UI/UX multiple platforms",
+        "name": "ui-ux-pro-max-skill",
+        "primaryLanguage": {
+            "name": "Python"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2026-01-25T19:44:52Z",
+        "url": "https://github.com/Itinerant18/ui-ux-pro-max-skill"
+    },
+    {
+        "description": "Perplexica is an AI-powered answering engine. It is an Open source alternative to Perplexity AI",
+        "name": "Perplexica",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2026-01-20T09:02:45Z",
+        "url": "https://github.com/Itinerant18/Perplexica"
+    },
+    {
+        "description": "",
+        "name": "pookie-s-fortune-teller",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:36:20Z",
+        "url": "https://github.com/Itinerant18/pookie-s-fortune-teller"
+    },
+    {
+        "description": "FULL Augment Code, Claude Code, Cluely, CodeBuddy, Comet, Cursor, Devin AI, Junie, Kiro, Leap.new, Lovable, Manus, NotionAI, Orchids.app, Perplexity, Poke, Qoder, Replit, Same.dev, Trae, Traycer AI, VSCode Agent, Warp.dev, Windsurf, Xcode, Z.ai Code, Dia & v0. (And other Open Sourced) System Prompts, Internal Tools & AI Models",
+        "name": "system-prompts-and-models-of-ai-tools",
+        "primaryLanguage": null,
+        "stargazerCount": 0,
+        "updatedAt": "2026-01-07T06:47:44Z",
+        "url": "https://github.com/Itinerant18/system-prompts-and-models-of-ai-tools"
+    },
+    {
+        "description": "",
+        "name": "ThingsBoard---Bot",
+        "primaryLanguage": {
+            "name": "Python"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2025-12-24T11:22:21Z",
+        "url": "https://github.com/Itinerant18/ThingsBoard---Bot"
+    },
+    {
+        "description": "",
+        "name": "pookies-future-predicter",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2025-12-22T12:29:02Z",
+        "url": "https://github.com/Itinerant18/pookies-future-predicter"
+    },
+    {
+        "description": "Core Features:  Astrology Engine: Calculates birth charts and daily horoscopes. ML Predictions: Performs time-series forecasting, classification, and clustering. Vector Embeddings: Powers AI-based article recommendations. Confidence Scoring: Combines astrology and ML results for more robust predictions.",
+        "name": "ml-predicter",
+        "primaryLanguage": {
+            "name": "Python"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:36:32Z",
+        "url": "https://github.com/Itinerant18/ml-predicter"
+    },
+    {
+        "description": "",
+        "name": "Local_Service_Finder-v.1",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:36:34Z",
+        "url": "https://github.com/Itinerant18/Local_Service_Finder-v.1"
+    },
+    {
+        "description": "",
+        "name": "Local_Service_Finder",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:36:36Z",
+        "url": "https://github.com/Itinerant18/Local_Service_Finder"
+    },
+    {
+        "description": "",
+        "name": "MGNREGA-Tracker",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2025-10-29T04:12:17Z",
+        "url": "https://github.com/Itinerant18/MGNREGA-Tracker"
+    },
+    {
+        "description": "",
+        "name": "pookies-banter-zone",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-13T04:43:54Z",
+        "url": "https://github.com/Itinerant18/pookies-banter-zone"
+    },
+    {
+        "description": "",
+        "name": "driver_centre",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:36:43Z",
+        "url": "https://github.com/Itinerant18/driver_centre"
+    },
+    {
+        "description": "",
+        "name": "calculator",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:36:47Z",
+        "url": "https://github.com/Itinerant18/calculator"
+    },
+    {
+        "description": "",
+        "name": "checkmate-arena-ai",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:36:49Z",
+        "url": "https://github.com/Itinerant18/checkmate-arena-ai"
+    },
+    {
+        "description": "",
+        "name": "docs",
+        "primaryLanguage": {
+            "name": "MDX"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2026-04-02T16:58:21Z",
+        "url": "https://github.com/Itinerant18/docs"
+    },
+    {
+        "description": "",
+        "name": "blogisphere-connect-75",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:36:52Z",
+        "url": "https://github.com/Itinerant18/blogisphere-connect-75"
+    },
+    {
+        "description": "",
+        "name": "interactive-portfolio-oasis",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2025-02-17T06:16:15Z",
+        "url": "https://github.com/Itinerant18/interactive-portfolio-oasis"
+    },
+    {
+        "description": "",
+        "name": "personal-colour-picker",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:36:59Z",
+        "url": "https://github.com/Itinerant18/personal-colour-picker"
+    },
+    {
+        "description": "",
+        "name": "chessverse-battlefield",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2026-03-04T08:35:36Z",
+        "url": "https://github.com/Itinerant18/chessverse-battlefield"
+    },
+    {
+        "description": "",
+        "name": "HawkEye-Drone",
+        "primaryLanguage": null,
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:37:02Z",
+        "url": "https://github.com/Itinerant18/HawkEye-Drone"
+    },
+    {
+        "description": "A company website built using Zoho and custom CSS.",
+        "name": "Security-Engineers-Pvt.-Ltd.-Website",
+        "primaryLanguage": null,
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:37:04Z",
+        "url": "https://github.com/Itinerant18/Security-Engineers-Pvt.-Ltd.-Website"
+    },
+    {
+        "description": "",
+        "name": "Bohemian-optical",
+        "primaryLanguage": {
+            "name": "TypeScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:37:06Z",
+        "url": "https://github.com/Itinerant18/Bohemian-optical"
+    },
+    {
+        "description": "YouTube video downloader in javascript.",
+        "name": "node-ytdl-core",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2024-11-07T16:15:32Z",
+        "url": "https://github.com/Itinerant18/node-ytdl-core"
+    },
+    {
+        "description": "",
+        "name": "Ak_news",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:37:11Z",
+        "url": "https://github.com/Itinerant18/Ak_news"
+    },
+    {
+        "description": "",
+        "name": "Ak_quize",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 1,
+        "updatedAt": "2026-03-04T08:37:12Z",
+        "url": "https://github.com/Itinerant18/Ak_quize"
+    },
+    {
+        "description": "",
+        "name": "Animated_cube018",
+        "primaryLanguage": {
+            "name": "HTML"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2022-11-23T15:33:09Z",
+        "url": "https://github.com/Itinerant18/Animated_cube018"
+    },
+    {
+        "description": "",
+        "name": "animated",
+        "primaryLanguage": null,
+        "stargazerCount": 0,
+        "updatedAt": "2022-11-23T15:08:07Z",
+        "url": "https://github.com/Itinerant18/animated"
+    },
+    {
+        "description": "",
+        "name": "tic-tac-toee",
+        "primaryLanguage": {
+            "name": "JavaScript"
+        },
+        "stargazerCount": 0,
+        "updatedAt": "2022-11-15T20:51:13Z",
+        "url": "https://github.com/Itinerant18/tic-tac-toee"
+    }
+]

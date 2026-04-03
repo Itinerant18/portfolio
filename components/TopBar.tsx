@@ -201,7 +201,7 @@ export default function TopBar() {
       { type: "header", label: "OPEN RECENT" },
       { label: "home.tsx", run: () => openFile("src/home.tsx") },
       { label: "about.html", run: () => openFile("src/about.html") },
-      { label: "projects.js", run: () => openFile("src/projects.js") },
+      { label: "projects.ts", run: () => openFile("src/projects.ts") },
       { label: "skills.json", run: () => openFile("src/skills.json") },
       { type: "divider" },
       { label: "Download Resume", run: () => window.open("#", "_blank") },

@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
     "framer-motion": "^12.23.12",
     "next": "^15.5.3",
     "prismjs": "^1.30.0",

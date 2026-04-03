@@ -29,6 +29,7 @@ interface IDEState {
   chatMessages: ChatMessage[];
   openFile: (file: string) => void;
   closeFile: (file: string) => void;
+  closeActiveTab: () => void;
   setActiveFile: (file: string) => void;
   toggleSidebar: () => void;
   toggleAIPanel: () => void;
@@ -93,6 +94,21 @@ export const useIDEStore = create<IDEState>()(
           return {
             openFiles: remaining,
             activeFile: nextActive,
+          };
+        }),
+      closeActiveTab: () =>
+        set((state) => {
+          if (!state.activeFile) {
+            return state;
+          }
+
+          const remaining = state.openFiles.filter(
+            (entry) => entry !== state.activeFile,
+          );
+
+          return {
+            openFiles: remaining,
+            activeFile: remaining[remaining.length - 1] ?? "",
           };
         }),
       setActiveFile: (file) => set({ activeFile: file }),

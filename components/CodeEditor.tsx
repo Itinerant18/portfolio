@@ -61,7 +61,7 @@ export default function CodeEditor() {
     switch (file.name) {
       case "home.tsx":
         return <HomeTab />;
-      case "projects.js":
+      case "projects.ts":
         return <ProjectsTab />;
       case "skills.json":
         return <SkillsTab />;
@@ -80,7 +80,7 @@ export default function CodeEditor() {
 
   const isCustomTab = file && [
     "home.tsx",
-    "projects.js",
+    "projects.ts",
     "skills.json",
     "experience.ts",
     "contact.css",
