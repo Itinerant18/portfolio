@@ -10,7 +10,7 @@ type MenuKey =
   | "Edit"
   | "View"
   | "Go"
-  | "Run"
+  | "Selection"
   | "Run"
   | "Terminal"
   | "Help";
@@ -28,6 +28,7 @@ interface MenuAction {
 const menuOrder: MenuKey[] = [
   "File",
   "Edit",
+  "Selection",
   "View",
   "Go",
   "Run",
@@ -59,11 +60,10 @@ function IconButton({
       type="button"
       title={title}
       onClick={onClick}
-      className={`flex h-6 w-6 items-center justify-center rounded transition ${
-        isActive
-          ? "bg-[var(--hover)] text-[var(--text-primary)]"
-          : "text-[var(--text-muted)] hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
-      } ${className}`}
+      className={`flex h-6 w-6 items-center justify-center rounded transition ${isActive
+        ? "bg-[var(--hover)] text-[var(--text-primary)]"
+        : "text-[var(--text-muted)] hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
+        } ${className}`}
     >
       {children}
     </button>
@@ -83,11 +83,10 @@ function WindowButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-9 w-11 items-center justify-center transition-colors ${
-        close
-          ? "hover:bg-[#e81123] hover:text-white"
-          : "hover:bg-[#30363d] hover:text-[var(--text-primary)]"
-      } text-[var(--text-muted)]`}
+      className={`flex h-9 w-11 items-center justify-center transition-colors ${close
+        ? "hover:bg-[#e81123] hover:text-white"
+        : "hover:bg-[#30363d] hover:text-[var(--text-primary)]"
+        } text-[var(--text-muted)]`}
     >
       {children}
     </button>
@@ -180,7 +179,7 @@ export default function TopBar() {
 
   const menuActions: Record<MenuKey, MenuAction[]> = {
     File: [
-      { label: "New Tab", shortcut: "Ctrl+T", run: () => {} },
+      { label: "New Tab", shortcut: "Ctrl+T", run: () => { } },
       { label: "Open File...", shortcut: "Ctrl+P", run: () => openCommandPalette("files") },
       { type: "divider" },
       {
@@ -212,6 +211,11 @@ export default function TopBar() {
       { label: "Select All", shortcut: "Ctrl+A", run: selectEditorContent },
       { label: "Copy", shortcut: "Ctrl+C", run: () => { document.execCommand("copy"); } },
     ],
+    Selection: [
+      { label: "Select All", shortcut: "Ctrl+A", run: selectEditorContent },
+      { label: "Expand Selection", shortcut: "Shift+Alt+Right", run: () => {} },
+      { label: "Shrink Selection", shortcut: "Shift+Alt+Left", run: () => {} },
+    ],
     View: [
       { label: "Command Palette", shortcut: "Ctrl+P", run: () => openCommandPalette("commands") },
       { type: "divider" },
@@ -229,9 +233,9 @@ export default function TopBar() {
         shortcut: "F11",
         run: () => {
           if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(() => {});
+            document.documentElement.requestFullscreen().catch(() => { });
           } else {
-            document.exitFullscreen().catch(() => {});
+            document.exitFullscreen().catch(() => { });
           }
         },
       },
@@ -294,11 +298,10 @@ export default function TopBar() {
               <button
                 type="button"
                 onClick={() => setOpenMenu((current) => (current === item ? null : item))}
-                className={`h-6 px-1 text-[13px] leading-none transition ${
-                  openMenu === item
-                    ? "bg-[var(--hover)] text-[var(--text-primary)]"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                }`}
+                className={`h-6 px-1 text-[13px] leading-none transition ${openMenu === item
+                  ? "bg-[var(--hover)] text-[var(--text-primary)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  }`}
               >
                 {item}
               </button>
@@ -321,11 +324,10 @@ export default function TopBar() {
                         key={i}
                         type="button"
                         onClick={() => void handleMenuAction(action)}
-                        className={`flex h-8 w-full items-center justify-between gap-3 px-3 text-left font-mono text-[13px] transition ${
-                          action.className
-                            ? action.className
-                            : "text-[#e5dfc5] hover:bg-[#e5c07b] hover:text-[#1b1e22]"
-                        }`}
+                        className={`flex h-8 w-full items-center justify-between gap-3 px-3 text-left font-mono text-[13px] transition ${action.className
+                          ? action.className
+                          : "text-[#e5dfc5] hover:bg-[#e5c07b] hover:text-[#1b1e22]"
+                          }`}
                       >
                         <span className="font-semibold">{action.label}</span>
                         {action.shortcut ? (
@@ -349,7 +351,7 @@ export default function TopBar() {
               className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </button>
             <button
@@ -359,75 +361,56 @@ export default function TopBar() {
               className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 5v14M5 12h14"/>
+                <path d="M12 5v14M5 12h14" />
               </svg>
             </button>
           </div>
         </nav>
       </div>
 
-      <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-[12px] leading-none text-[var(--text-muted)] transition-colors">
-        {topBarMessage}
+      <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none lg:pointer-events-auto">
+        <button
+          type="button"
+          onClick={() => openCommandPalette("files")}
+          className="flex h-[24px] w-[400px] items-center justify-center gap-2 rounded-md border border-[#2a2a32] bg-[#1a1a1f] px-4 text-[#8b8b9e] transition hover:border-[#38383f] hover:bg-[#202025]"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <span className="text-[11px] font-medium tracking-[0.02em] opacity-80">{topBarMessage === "portfolio" ? "insta" : topBarMessage}</span>
+        </button>
       </div>
 
       <div className="flex h-full items-center">
-        <div className="flex items-center gap-1.5 pr-3">
-          <IconButton
-            title="Toggle Sidebar"
-            onClick={toggleSidebar}
-            isActive={sidebarOpen}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
-              <path d="M9 3v18"/>
-            </svg>
-          </IconButton>
-
-          <IconButton
-            title="Toggle Terminal"
-            onClick={toggleTerminal}
-            isActive={terminalOpen}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
-              <path d="M3 15h18"/>
-            </svg>
-          </IconButton>
-
-          <IconButton
-            title="Toggle Copilot"
-            onClick={toggleAIPanel}
-            isActive={aiPanelOpen}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
-              <path d="M15 3v18"/>
-            </svg>
-          </IconButton>
-
-          <IconButton
-            title="Search"
-            onClick={() => openCommandPalette("files")}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="7" />
-              <path d="M20 20L16.5 16.5" />
-            </svg>
-          </IconButton>
-
-          <IconButton
-            title="Settings"
-            onClick={toggleTheme}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </IconButton>
+        <div className="flex items-center gap-[12px] pr-4 text-[#cccccc]">
+          <button className="text-[11px] font-medium opacity-80 hover:opacity-100 transition-opacity">Upgrade to Pro</button>
+          <button className="text-[11px] font-medium opacity-80 hover:opacity-100 transition-opacity">Agents Window {">/"}</button>
+          
+          <div className="flex items-center gap-[2px] ml-2">
+            <button onClick={toggleAIPanel} className={`w-6 h-6 flex items-center justify-center rounded-[4px] transition-colors ${aiPanelOpen ? "bg-[#2a2d31] text-[#cccccc]" : "text-[#8b8b9e] hover:bg-[#2a2d31] hover:text-[#cccccc]"}`}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="9" y1="3" x2="9" y2="21"/>
+              </svg>
+            </button>
+            <button onClick={toggleTerminal} className={`w-6 h-6 flex items-center justify-center rounded-[4px] transition-colors ${terminalOpen ? "bg-[#2a2d31] text-[#cccccc]" : "text-[#8b8b9e] hover:bg-[#2a2d31] hover:text-[#cccccc]"}`}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="3" y1="15" x2="21" y2="15"/>
+              </svg>
+            </button>
+            <button onClick={toggleSidebar} className={`w-6 h-6 flex items-center justify-center rounded-[4px] transition-colors ${sidebarOpen ? "bg-[#2a2d31] text-[#cccccc]" : "text-[#8b8b9e] hover:bg-[#2a2d31] hover:text-[#cccccc]"}`}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="15" y1="3" x2="15" y2="21"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="flex h-full items-center">
-          <WindowButton onClick={() => {}}>
+          <WindowButton onClick={() => { }}>
             <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
               <rect width="10" height="1" x="3" y="8" />
             </svg>
@@ -435,9 +418,9 @@ export default function TopBar() {
           <WindowButton
             onClick={() => {
               if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
+                document.documentElement.requestFullscreen().catch(() => { });
               } else {
-                document.exitFullscreen().catch(() => {});
+                document.exitFullscreen().catch(() => { });
               }
             }}
           >

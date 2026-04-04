@@ -120,20 +120,20 @@ export default function Terminal() {
   ];
 
   return (
-    <section className="flex h-full min-h-0 flex-col border-t border-[var(--border)] bg-[#1e1e1e] select-none font-sans">
+    <section className="flex h-full min-h-0 flex-col border-t border-[#1e1e24] bg-[#0a0a0a] select-none font-sans">
       {/* Top Bar */}
-      <div className="flex h-9 shrink-0 items-center justify-between pl-4 pr-2">
+      <div className="flex h-[35px] shrink-0 items-center justify-between pl-4 pr-3">
         {/* Tabs */}
-        <div className="flex h-full items-center gap-5">
+        <div className="flex h-full items-center gap-[24px]">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`relative flex h-full items-center gap-1.5 text-[11px] font-medium transition-colors ${
+              className={`relative flex h-full items-center gap-1.5 text-[11px] font-medium tracking-[0.02em] transition-colors ${
                 activeTab === tab.key
                   ? "text-[#e7e7e7]"
-                  : "text-[#858585] hover:text-[#e7e7e7]"
+                  : "text-[#8b8b9e] hover:text-[#cccccc]"
               }`}
             >
               {tab.key}
@@ -143,68 +143,60 @@ export default function Terminal() {
                 </span>
               )}
               {activeTab === tab.key && (
-                <div className="absolute bottom-0 left-0 h-[1.5px] w-full bg-[#e7e7e7]" />
+                <div className="absolute bottom-0 left-0 h-[1.5px] w-full bg-[#007fd4]" />
               )}
             </button>
           ))}
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-1.5 opacity-80">
           {/* Terminal Profile */}
-          <div className="flex cursor-pointer items-center gap-1 rounded px-1.5 py-1 text-[#cccccc] hover:bg-[#2a2d2e] transition-colors">
-            <span className="text-[12px] font-sans">powershell</span>
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-              <path fillRule="evenodd" clipRule="evenodd" d="M7.976 10.072l4.357-4.357.62.618L8.284 11h-.618L3 6.333l.619-.618 4.357 4.357z" />
-            </svg>
+          <div className="flex cursor-pointer items-center gap-[4px] rounded-[4px] px-1 py-0.5 text-[#cccccc] hover:bg-[#2a2d31] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>
+            <span className="text-[12px]">pwsh</span>
           </div>
           
-          <div className="mx-1 h-[14px] w-[1px] bg-[#454545]" />
-
-          {/* New Terminal */}
-          <button
-            type="button"
-            title="New Terminal"
-            onClick={resetTerminal}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#cccccc] transition-colors hover:bg-[#2a2d2e]"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path fillRule="evenodd" clipRule="evenodd" d="M8 2h1v5h5v1H9v5H8V8H3V7h5V2z" />
-            </svg>
+          <button className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-[4px] text-[#e5c07b] hover:bg-[#2a2d31] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           </button>
-
-          {/* Split Terminal */}
-          <button
-            type="button"
-            title="Split Terminal"
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#cccccc] transition-colors hover:bg-[#2a2d2e]"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path fillRule="evenodd" clipRule="evenodd" d="M2.5 3h11A1.5 1.5 0 0 1 15 4.5v7a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 11.5v-7A1.5 1.5 0 0 1 2.5 3zm.5 1h4v8H3a.5.5 0 0 1-.5-.5v-7A.5.5 0 0 1 3 4zm5 0h5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5H8V4z" />
-            </svg>
-          </button>
+          
+          <div className="flex border border-[#2a2d31] rounded-[4px] ml-1 overflow-hidden">
+             {/* New Terminal */}
+             <button
+               type="button"
+               title="New Terminal"
+               onClick={resetTerminal}
+               className="flex h-5 w-6 cursor-pointer items-center justify-center text-[#cccccc] hover:bg-[#2a2d31] transition-colors"
+             >
+               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+             </button>
+             {/* Dropdown handle */}
+             <button
+               type="button"
+               className="flex h-5 w-4 cursor-pointer items-center justify-center text-[#cccccc] hover:bg-[#2a2d31] border-l border-[#2a2d31] transition-colors"
+             >
+               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+             </button>
+          </div>
 
           {/* Kill Terminal */}
           <button
             type="button"
             title="Kill Terminal"
             onClick={() => setEntries([])}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#cccccc] transition-colors hover:bg-[#2a2d2e]"
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-[4px] text-[#cccccc] transition-colors hover:bg-[#2a2d31] ml-1"
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path fillRule="evenodd" clipRule="evenodd" d="M10 3h3v1h-1v9l-1 1H4l-1-1V4H2V3h3V2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1zM9 2H6v1h3V2zM4 13h7V4H4v9zm2-8H5v7h1V5zm1 0h1v7H7V5zm2 0h1v7H9V5z" />
-            </svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
           </button>
           
           {/* Maximize Panel */}
           <button
             type="button"
             title="Maximize Panel"
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#cccccc] transition-colors hover:bg-[#2a2d2e]"
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-[4px] text-[#cccccc] transition-colors hover:bg-[#2a2d31]"
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path fillRule="evenodd" clipRule="evenodd" d="M3.207 10.5l4.353-4.354.354-.353.354.353 4.353 4.354-.707.707L8 7.207l-4.086 4.086-.707-.707z" />
-            </svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="18 15 12 9 6 15"/></svg>
           </button>
 
           {/* Close Panel */}
@@ -212,11 +204,9 @@ export default function Terminal() {
             type="button"
             title="Close Panel"
             onClick={toggleTerminal}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#cccccc] transition-colors hover:bg-[#2a2d2e]"
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-[4px] text-[#cccccc] transition-colors hover:bg-[#2a2d31]"
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path fillRule="evenodd" clipRule="evenodd" d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z" />
-            </svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
       </div>

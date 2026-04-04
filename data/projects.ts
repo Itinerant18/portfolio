@@ -30,6 +30,7 @@ export interface Project {
   features: string[];
   architecture: string;
   highLevel?: string;
+  visualFlow?: Array<{ label: string; icon: string }>;
   flows?: string[];
   dataModels?: string[];
   backend?: string;
@@ -39,6 +40,7 @@ export interface Project {
   topics?: string[];
   updatedAt?: string;
   isFork?: boolean;
+  previewImage?: string | null;
 }
 
 const DEFAULT_CHANGELOG = [
@@ -91,7 +93,13 @@ export const fallbackProjects: Project[] = [
       "Context-aware AI sidebar"
     ],
     architecture: "High-level SPA architecture built on Next.js App Router, using global state management (Zustand) to simulate an OS/IDE environment. The system employs a recursive file explorer and a dynamic grid layout for panel management.",
-    highLevel: "User -> Keyboard/Mouse Input -> Zustand Store -> CSS Grid Recalculation -> Panel Render",
+    highLevel: "Web UI -> Zustand Store -> Layout Engine -> View Renderer",
+    visualFlow: [
+      { label: "Web UI", icon: "monitor" },
+      { label: "Zustand", icon: "activity" },
+      { label: "Layout", icon: "layers" },
+      { label: "View", icon: "eye" }
+    ],
     flows: [
       "User triggers a file open command via Command Palette.",
       "Zustand store validates file existence and updates activeFile state.",
@@ -146,7 +154,13 @@ export const fallbackProjects: Project[] = [
       "Connection health monitoring"
     ],
     architecture: "Capacitor-based bridge architecture connecting native camera features (MLKit) to local network IoT devices via a stateful React controller.",
-    highLevel: "Camera -> MLKit Discovery -> IP Resolution -> HTTP Fetch -> ESP32 Handler",
+    highLevel: "Native App -> MLKit Scan -> IP Resolution -> ESP32 Control",
+    visualFlow: [
+      { label: "Native App", icon: "smartphone" },
+      { label: "MLKit", icon: "zap" },
+      { label: "Network", icon: "wifi" },
+      { label: "ESP32", icon: "cpu" }
+    ],
     flows: [
       "User opens the scan interface on the mobile device.",
       "Native MLKit processor identifies ESP32 device credentials.",

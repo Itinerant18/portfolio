@@ -3,6 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  FaDesktop, FaMobileScreen, FaServer, FaDatabase, FaMicrochip,
+  FaBolt, FaChartLine, FaLayerGroup, FaEye, FaWifi, FaUser,
+  FaTerminal, FaPlay, FaCheck, FaPowerOff, FaBox, FaGear, FaShareNodes,
+  FaChevronRight, FaRegCircleQuestion
+} from "react-icons/fa6";
+import {
   fallbackProjects,
   isForkedProject,
   projectCategories,
@@ -34,6 +40,7 @@ type ProjectShape = Omit<Project, "changelog"> & {
   backend?: string;
   dataStorage?: string;
   changelog?: Array<string | ReleaseEntry>;
+  previewImage?: string | null;
 };
 
 const C = {
@@ -282,10 +289,10 @@ function dataModelsOf(project: ProjectShape): string[] {
   const raw = project.dataModels?.length
     ? project.dataModels.map((entry, index) => modelOf(project, entry, index))
     : [
-        'type ProjectSummary = { id: string; name: string; status: "active" | "archived"; updatedAt: string; };',
-        'type ProjectTopic = { slug: string; label: string; weight: number; };',
-        'type ReleaseNote = { version: string; publishedAt: string; summary: string; };',
-      ];
+      'type ProjectSummary = { id: string; name: string; status: "active" | "archived"; updatedAt: string; };',
+      'type ProjectTopic = { slug: string; label: string; weight: number; };',
+      'type ReleaseNote = { version: string; publishedAt: string; summary: string; };',
+    ];
 
   return uniq(raw).slice(0, 4);
 }
@@ -293,15 +300,15 @@ function dataModelsOf(project: ProjectShape): string[] {
 function backendOf(project: ProjectShape): string {
   return sentence(
     project.backend ||
-      "The server layer stays focused on request handling, domain rules, and shaping data for the user-facing surface.",
+    "The server layer stays focused on request handling, domain rules, and shaping data for the user-facing surface.",
   );
 }
 
 function storageOf(project: ProjectShape): string {
   return sentence(
     project.storage ||
-      project.dataStorage ||
-      "Persistence is handled through a lightweight storage layer that keeps project state, content, and release context available for later reads.",
+    project.dataStorage ||
+    "Persistence is handled through a lightweight storage layer that keeps project state, content, and release context available for later reads.",
   );
 }
 
@@ -389,9 +396,8 @@ function LoadingState() {
 function ProjectRowSkeleton({ index }: { index: number }) {
   return (
     <div
-      className={`grid grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-3 border-b border-[#1e1e24] px-3 py-3 ${
-        index === 0 ? "border-t border-[#1e1e24]" : ""
-      }`}
+      className={`grid grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-3 border-b border-[#1e1e24] px-3 py-3 ${index === 0 ? "border-t border-[#1e1e24]" : ""
+        }`}
     >
       <div className="h-[38px] w-[38px] animate-pulse bg-[#16161a]" />
       <div className="min-w-0 space-y-2">
@@ -405,24 +411,203 @@ function ProjectRowSkeleton({ index }: { index: number }) {
 }
 
 function SectionLabel({ label }: { label: string }) {
-  return <div className={LABEL_CLASS}>{label}</div>;
+  return <div className={`${LABEL_CLASS} mb-3`}>{label}</div>;
 }
 
 function TechPill({ item }: { item: TechGroupItem }) {
   return (
-    <div className="flex items-center gap-2 border border-[#2a2a32] bg-[#16161a] px-2 py-[6px] text-[11px] text-[#e8e8f0]">
-      <span className="h-[5px] w-[5px]" style={{ backgroundColor: item.c }} />
-      <span>{item.n}</span>
-      <span className="text-[#3a3a45]">{item.v}</span>
+    <div className="group flex items-center gap-2 border border-[#2a2a32] bg-[#16161a] px-2.5 py-1.5 text-[11px] text-[#e8e8f0] transition-all hover:border-[#7c6af7]/30 hover:bg-[#1c1c22]">
+      <span className="h-1 w-1 rounded-full transition-all group-hover:scale-150" style={{ backgroundColor: item.c }} />
+      <span className="font-medium">{item.n}</span>
+      <span className="text-[10px] text-[#4a4a5a]">{item.v}</span>
     </div>
   );
 }
 
-function StatCell({ label, value }: { label: string; value: number | string }) {
+function StatCell({ label, value, icon }: { label: string; value: number | string; icon?: React.ReactNode }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1 px-4 py-3">
-      <span className="text-[13px] font-medium text-[#e8e8f0]">{value}</span>
-      <span className="text-[10px] uppercase tracking-[0.14em] text-[#6a6a7a]">{label}</span>
+    <div className="group flex min-w-0 flex-1 flex-col gap-1.5 border-r border-[#1e1e24] px-4 py-4 transition-all hover:bg-[#111114] last:border-r-0">
+      <div className="flex items-center gap-2">
+        {icon && <div className="text-[#6a6a7a] group-hover:text-[#7c6af7] transition-colors">{icon}</div>}
+        <span className="text-[14px] font-bold tracking-tight text-[#e8e8f0]">{value}</span>
+      </div>
+      <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#4a4a5a] group-hover:text-[#6a6a7a] transition-colors">
+        {label}
+      </span>
+    </div>
+  );
+}
+function VisualBadge({ label, icon }: { label: string; icon: React.ReactNode }) {
+  return (
+    <div className="group flex items-center gap-3 border border-[#1e1e24] bg-[#16161a] px-4 py-3 text-[11px] font-medium text-[#e8e8f0] transition-all hover:border-[#7c6af7]/40 hover:bg-[#1c1c22]">
+      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#111114] text-[#6a6a7a] group-hover:text-[#7c6af7]">
+        {icon}
+      </div>
+      <span className="truncate">{label}</span>
+    </div>
+  );
+}
+
+function IconMapper({ name, size = 20 }: { name: string; size?: number }) {
+  switch (name.toLowerCase()) {
+    case "monitor": return <FaDesktop size={size} />;
+    case "smartphone": return <FaMobileScreen size={size} />;
+    case "server": return <FaServer size={size} />;
+    case "database": return <FaDatabase size={size} />;
+    case "cpu": return <FaMicrochip size={size} />;
+    case "zap": return <FaBolt size={size} />;
+    case "activity": return <FaChartLine size={size} />;
+    case "layers": return <FaLayerGroup size={size} />;
+    case "eye": return <FaEye size={size} />;
+    case "wifi": return <FaWifi size={size} />;
+    case "user": return <FaUser size={size} />;
+    case "terminal": return <FaTerminal size={size} />;
+    case "play": return <FaPlay size={size} />;
+    case "check": return <FaCheck size={size} />;
+    case "power": return <FaPowerOff size={size} />;
+    case "box": return <FaBox size={size} />;
+    case "settings": return <FaGear size={size} />;
+    case "share": return <FaShareNodes size={size} />;
+    default: return <FaRegCircleQuestion size={size} />;
+  }
+}
+
+function FlowNode({ label, icon, isLast, protocol }: { label: string; icon: string; isLast?: boolean; protocol?: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex h-10 w-10 items-center justify-center border border-[#1e1e24] bg-[#111114] text-[#7c6af7] transition-all hover:border-[#7c6af7]/50">
+          <IconMapper name={icon} />
+        </div>
+        <span className="text-[9px] font-semibold uppercase tracking-[0.1em] text-[#6a6a7a]">{label}</span>
+      </div>
+      {!isLast && (
+        <div className="mb-4 flex flex-col items-center gap-1 opacity-40">
+          {protocol && <span className="text-[7px] font-bold uppercase tracking-widest text-[#7c6af7]">{protocol}</span>}
+          <div className="flex items-center gap-1">
+            <div className="h-[1px] w-8 bg-gradient-to-r from-[#7c6af7] to-[#1e1e24]" />
+            <svg width="6" height="6" viewBox="0 0 6 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <FaChevronRight className="text-[#7c6af7] -ml-1 text-[8px]" />
+            </svg>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FlowDiagram({ project }: { project: ProjectShape }) {
+  const flow = project.visualFlow || [
+    { label: "Input", icon: "box" },
+    { label: "Process", icon: "settings" },
+    { label: "Output", icon: "share" }
+  ];
+
+  // Try to extract protocol labels from highLevel string if it contains "->"
+  const protocols = project.highLevel?.includes("->")
+    ? project.highLevel.split("->").map(p => p.trim())
+    : [];
+
+  return (
+    <div className="mt-3 flex flex-wrap items-center justify-center gap-4 border border-[#1e1e24] bg-[#0d0d0f] py-8 px-4">
+      {flow.map((node, index) => (
+        <FlowNode
+          key={`${project.id}-flow-${index}`}
+          label={node.label}
+          icon={node.icon}
+          isLast={index === flow.length - 1}
+          protocol={protocols[index + 1]?.split(" ")[0]} // Very basic extraction
+        />
+      ))}
+    </div>
+  );
+}
+
+const TECH_STACK_MAP: Record<string, string> = {
+  "next.js": "nextjs/nextjs-original",
+  "nextjs": "nextjs/nextjs-original",
+  "react": "react/react-original",
+  "typescript": "typescript/typescript-original",
+  "javascript": "javascript/javascript-original",
+  "python": "python/python-original",
+  "supabase": "supabase/supabase-original", // supabase not always in devicon
+  "tailwindcss": "tailwindcss/tailwindcss-original",
+  "tailwind": "tailwindcss/tailwindcss-original",
+  "mongodb": "mongodb/mongodb-original",
+  "postgresql": "postgresql/postgresql-original",
+  "postgres": "postgresql/postgresql-original",
+  "firebase": "firebase/firebase-plain",
+  "docker": "docker/docker-original",
+  "zustand": "redux/redux-original", // fallback
+  "framer motion": "framer/framer-original",
+  "framer-motion": "framer/framer-original",
+  "prisma": "prisma/prisma-original",
+  "openai": "apache/apache-original", // fallback
+  "flutter": "flutter/flutter-original",
+  "fastapi": "fastapi/fastapi-original",
+  "nodejs": "nodejs/nodejs-original",
+  "node.js": "nodejs/nodejs-original",
+  "express": "express/express-original",
+  "django": "django/django-plain",
+  "flask": "flask/flask-original",
+  "sqlite": "sqlite/sqlite-original",
+  "redis": "redis/redis-original",
+  "mysql": "mysql/mysql-original",
+  "aws": "amazonwebservices/amazonwebservices-original-wordmark",
+  "git": "git/git-original",
+  "github": "github/github-original",
+  "vercel": "vercel/vercel-original",
+  "netlify": "netlify/netlify-original",
+  "capacitor": "capacitor/capacitor-original",
+  "arduino": "arduino/arduino-original",
+  "google cloud": "googlecloud/googlecloud-original",
+  "azure": "azure/azure-original",
+  "kubernetes": "kubernetes/kubernetes-plain",
+  "linux": "linux/linux-original",
+  "java": "java/java-original",
+  "c++": "cplusplus/cplusplus-original",
+  "c": "c/c-original",
+  "go": "go/go-original",
+  "rust": "rust/rust-plain",
+  "php": "php/php-original",
+  "swift": "swift/swift-original",
+  "kotlin": "kotlin/kotlin-original",
+  "dart": "dart/dart-original",
+  "three.js": "threejs/threejs-original",
+  "socket.io": "socketio/socketio-original",
+  "graphql": "graphql/graphql-plain",
+  "apollo": "graphql/graphql-plain",
+};
+
+function TechIcon({ name, size = 20 }: { name: string; size?: number }) {
+  let slug = TECH_STACK_MAP[name.toLowerCase()];
+  
+  if (!slug) {
+    slug = `${name.toLowerCase()}/${name.toLowerCase()}-original`;
+  }
+
+  const url = `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${slug}.svg`;
+
+  return (
+    <img
+      src={url}
+      alt={name}
+      style={{ width: size, height: size, objectFit: "contain" }}
+      onError={(e) => {
+        // Render fallback node on image error
+        (e.target as any).outerHTML = `<div style="width: ${size}px; height: ${size}px;" class="flex items-center justify-center rounded-sm bg-[#1e1e24] text-[10px] font-bold text-[#6a6a7a]">${name.slice(0, 1).toUpperCase()}</div>`;
+      }}
+    />
+  );
+}
+
+function TechBadge({ name }: { name: string }) {
+  return (
+    <div className="group relative flex h-10 w-10 items-center justify-center border border-[#1e1e24] bg-[#111114]/50 backdrop-blur-sm transition-all hover:border-[#7c6af7]/50 hover:bg-[#16161a] hover:shadow-[0_0_15px_rgba(124,106,247,0.15)]">
+      <TechIcon name={name} size={22} />
+      <div className="absolute -top-8 left-1/2 -translate-x-1/2 pointer-events-none z-50 whitespace-nowrap border border-[#1e1e24] bg-[#0d0d0f] px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-[#e8e8f0] opacity-0 transition-opacity group-hover:opacity-100">
+        {name}
+      </div>
     </div>
   );
 }
@@ -554,6 +739,7 @@ export default function ProjectsTab() {
       topics,
       why: whyOf(selectedProject),
       year: yearOf(selectedProject),
+      previewImage: selectedProject.previewImage,
     };
   }, [selectedProject]);
 
@@ -627,13 +813,11 @@ export default function ProjectsTab() {
                   setSelectedProjectId(project.id);
                   setActiveTab("overview");
                 }}
-                className={`grid w-full grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-3 border-b border-[#1e1e24] px-3 py-3 text-left ${
-                  index === 0 ? "border-t border-[#1e1e24]" : ""
-                } ${
-                  active
+                className={`grid w-full grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-3 border-b border-[#1e1e24] px-3 py-3 text-left ${index === 0 ? "border-t border-[#1e1e24]" : ""
+                  } ${active
                     ? "border-l-[2px] border-l-[#7c6af7] bg-[rgba(124,106,247,0.06)]"
                     : "border-l-[2px] border-l-transparent hover:bg-[#111114]"
-                }`}
+                  }`}
               >
                 <div
                   className="flex h-[38px] w-[38px] items-center justify-center text-[12px] font-medium text-[#e8e8f0]"
@@ -760,11 +944,10 @@ export default function ProjectsTab() {
                 key={tabKey}
                 type="button"
                 onClick={() => setActiveTab(tabKey)}
-                className={`border-b-[1.5px] px-0 py-3 text-[10px] font-medium uppercase tracking-[0.06em] ${
-                  activeTab === tabKey
-                    ? "border-b-[#7c6af7] text-[#e8e8f0]"
-                    : "border-b-transparent text-[#3a3a45] hover:text-[#a8a8b8]"
-                }`}
+                className={`border-b-[1.5px] px-0 py-3 text-[10px] font-medium uppercase tracking-[0.06em] ${activeTab === tabKey
+                  ? "border-b-[#7c6af7] text-[#e8e8f0]"
+                  : "border-b-transparent text-[#3a3a45] hover:text-[#a8a8b8]"
+                  }`}
               >
                 {label}
               </button>
@@ -782,177 +965,136 @@ export default function ProjectsTab() {
               transition={{ duration: 0.15 }}
             >
               {activeTab === "overview" ? (
-                <div className="grid grid-cols-[minmax(0,1fr)_196px] gap-5">
-                  <div className="space-y-5">
+                <div className="flex flex-col gap-6">
+                  {detail.previewImage && (
                     <section>
-                      <SectionLabel label="Visual Preview" />
-                      <div className="mt-3 aspect-[21/9] w-full overflow-hidden border border-[#1e1e24] bg-[#0d0d0f] transition hover:border-[#38383f]">
-                        <iframe 
-                          src="https://lottie.host/embed/3d21ca83-cabf-4bae-b788-33b451a472dc/C8FDqgcpEh.lottie"
-                          title="Workspace workflow animation"
-                          className="pointer-events-none h-full w-full"
-                          style={{ border: "none" }}
-                        />
-                      </div>
-                    </section>
-
-                    <section>
-                      <SectionLabel label="Problem Statement" />
-                      <div className="mt-3 border border-[#1e1e24] bg-[#16161a] px-4 py-3 text-[11px] leading-6 text-[#a8a8b8]">
-                        {detail.problem}
-                      </div>
-                    </section>
-
-                    <section>
-                      <SectionLabel label="Key Features" />
-                      <div className="mt-3 grid grid-cols-2 gap-3">
-                        {detail.features.map((feature, index) => (
-                          <div
-                            key={`${selectedProject.id}-feature-${index}`}
-                            className="flex items-start gap-3 border border-[#1e1e24] bg-[#16161a] px-3 py-3 text-[11px] leading-5 text-[#e8e8f0]"
-                          >
-                            <span className="mt-[4px] h-[4px] w-[4px] shrink-0 bg-[#7c6af7]" />
-                            <span>{feature}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-
-                    <section>
-                      <SectionLabel label="Technology Stack" />
-                      <div className="mt-3 space-y-4">
-                        {detail.techGroups.map((group, gIndex) => (
-                          <div key={`${selectedProject.id}-group-${gIndex}`}>
-                            <div className="text-[10px] uppercase tracking-[0.14em] text-[#6a6a7a]">
-                              {group.label}
-                            </div>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {group.items.map((item, iIndex) => (
-                                <TechPill key={`${selectedProject.id}-group-${gIndex}-item-${iIndex}`} item={item} />
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  </div>
-
-                  <div className="space-y-4">
-                    <aside className="border border-[#1e1e24] bg-[#111114] px-3 py-3">
-                      <SectionLabel label="Classification" />
-                      <div className="mt-2">
-                        <SidebarKeyValue label="Category" value={detail.category} />
-                        <SidebarKeyValue label="Language" value={detail.language} />
-                        <SidebarKeyValue label="Year" value={detail.year} />
-                        <SidebarKeyValue label="Backend" value={detail.backend} />
-                        <SidebarKeyValue label="Storage" value={detail.storage} />
-                      </div>
-                    </aside>
-
-                    <aside className="border border-[#1e1e24] bg-[#111114] px-3 py-3">
-                      <SectionLabel label="Topics" />
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {detail.topics.map((topic, index) => (
-                          <span
-                            key={`${selectedProject.id}-topic-${index}`}
-                            className="cursor-default text-[11px] text-[#a8a8b8] hover:text-[#7c6af7]"
-                          >
-                            #{topic}
-                          </span>
-                        ))}
-                      </div>
-                    </aside>
-
-                    <aside className="border border-[#1e1e24] bg-[#111114] px-3 py-3">
-                      <SectionLabel label="Author" />
-                      <div className="mt-2 space-y-2 text-[11px]">
-                        <div className="text-[#7c6af7]">Itinerant18</div>
-                        <div className="flex items-center gap-2 text-[#3dba7c]">
-                          <span className="h-[5px] w-[5px] bg-[#3dba7c]" />
-                          <span>synced</span>
+                      <SectionLabel label="Primary Artboard" />
+                      <div className="group relative mt-3 aspect-video w-full overflow-hidden border border-[#1e1e24] bg-[#0d0d0f] transition-all hover:border-[#7c6af7]/30">
+                        <div className="absolute inset-0 flex items-center justify-center p-4">
+                          <img
+                            src={detail.previewImage}
+                            alt={`${selectedProject.name} preview`}
+                            className="h-full w-full object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]"
+                          />
                         </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#070709] via-transparent to-transparent opacity-40" />
                       </div>
-                    </aside>
+                    </section>
+                  )}
+
+                  <div className="grid grid-cols-[1fr_240px] gap-6">
+                    <div className="space-y-6">
+                      <section>
+                        <SectionLabel label="Core Capabilities" />
+                        <div className="mt-3 grid grid-cols-2 gap-3">
+                          {detail.features.slice(0, 4).map((feature, index) => (
+                            <VisualBadge
+                              key={`${selectedProject.id}-feature-${index}`}
+                              label={feature.split(".")[0]}
+                              icon={
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              }
+                            />
+                          ))}
+                        </div>
+                      </section>
+
+                      <section>
+                        <SectionLabel label="System Flow" />
+                        <FlowDiagram project={selectedProject} />
+                      </section>
+
+                      <section>
+                        <SectionLabel label="Engine & Stack" />
+                        <div className="mt-3 flex flex-wrap gap-3">
+                          {detail.techGroups.flatMap(g => g.items).map((item, iIndex) => (
+                            <TechBadge key={`${selectedProject.id}-tech-${iIndex}`} name={item.n} />
+                          ))}
+                        </div>
+                      </section>
+                    </div>
+
+                    <div className="space-y-6">
+                      <aside className="border border-[#1e1e24] bg-[#111114] p-4">
+                        <SectionLabel label="Specifications" />
+                        <div className="mt-4 space-y-3">
+                          <SidebarKeyValue label="Category" value={detail.category} />
+                          <SidebarKeyValue label="Engine" value={detail.language} />
+                          <SidebarKeyValue label="Release" value={detail.year} />
+                          <SidebarKeyValue label="Backend" value={detail.backend.split(".")[0]} />
+                          <SidebarKeyValue label="Storage" value={detail.storage.split(".")[0]} />
+                        </div>
+                      </aside>
+
+                      <aside className="border border-[#1e1e24] bg-[#111114] p-4">
+                        <SectionLabel label="Topic Graph" />
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {detail.topics.slice(0, 8).map((topic, index) => (
+                            <span
+                              key={`${selectedProject.id}-topic-${index}`}
+                              className="text-[10px] text-[#6a6a7a] hover:text-[#7c6af7] transition-colors cursor-default"
+                            >
+                              #{topic}
+                            </span>
+                          ))}
+                        </div>
+                      </aside>
+                    </div>
                   </div>
                 </div>
               ) : null}
 
               {activeTab === "architecture" ? (
-                <div className="space-y-5">
+                <div className="flex flex-col gap-6">
                   <section>
-                    <SectionLabel label="System Architecture" />
-                    <div className="mt-3 border border-[#1e1e24] border-l-[2px] border-l-[#5bc4e0] bg-[#070709] px-4 py-4">
-                      <div className="text-[11px] text-[#5bc4e0]">
-                        $ arch --describe {selectedProject.id} --verbose
+                    <SectionLabel label="Operational Architecture" />
+                    <div className="mt-3 border border-[#1e1e24] bg-[#0d0d0f] p-6">
+                      <div className="flex items-center gap-4 text-[11px] text-[#5bc4e0]">
+                        <span className="font-bold">$ arch --inspect</span>
+                        <div className="h-[1px] flex-1 bg-[#1e1e24]" />
                       </div>
-                      <p className="mt-3 text-[11px] leading-6 text-[#a8a8b8]">
-                        {detail.architecture}
-                      </p>
-                      <div className="mt-3 text-[11px] italic text-[#5bc4e0]">
-                        {detail.highLevel}
-                      </div>
-                    </div>
-                  </section>
-
-                  <section>
-                    <SectionLabel label="Operational Flows" />
-                    <div className="mt-3 grid grid-cols-2 gap-3">
-                      {detail.flows.map((flow, index) => (
-                        <div
-                          key={`${selectedProject.id}-flow-${index}`}
-                          className="border border-[#1e1e24] bg-[#16161a] px-3 py-3 hover:border-[#38383f]"
-                        >
-                          <div className="text-[12px] font-medium text-[#7c6af7]">
-                            {String(index + 1).padStart(2, "0")}
+                      <div className="mt-6 flex flex-col gap-8">
+                        <FlowDiagram project={selectedProject} />
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="border border-[#1e1e24] bg-[#16161a] p-4">
+                            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#6a6a7a]">Logic Layer</div>
+                            <div className="mt-2 text-[11px] text-[#e8e8f0]">{detail.backend.split(".")[0]}</div>
                           </div>
-                          <div className="mt-2 text-[11px] leading-5 text-[#a8a8b8]">{flow}</div>
+                          <div className="border border-[#1e1e24] bg-[#16161a] p-4">
+                            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#6a6a7a]">Persistence</div>
+                            <div className="mt-2 text-[11px] text-[#e8e8f0]">{detail.storage.split(".")[0]}</div>
+                          </div>
+                          <div className="border border-[#1e1e24] bg-[#16161a] p-4">
+                            <div className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#6a6a7a]">Discovery</div>
+                            <div className="mt-2 text-[11px] text-[#e8e8f0]">Optimized for steady iteration and explicit flow.</div>
+                          </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </section>
 
                   <section>
-                    <SectionLabel label="Data Models" />
+                    <SectionLabel label="Data Schema Preview" />
                     <div className="mt-3 space-y-3">
-                      {detail.dataModels.map((model, index) => (
+                      {detail.dataModels.slice(0, 2).map((model, index) => (
                         <div
                           key={`${selectedProject.id}-model-${index}`}
-                          className="grid grid-cols-[60px_minmax(0,1fr)] items-start gap-3 border border-[#1e1e24] bg-[#16161a] px-3 py-3"
+                          className="group relative overflow-hidden border border-[#1e1e24] bg-[#16161a]"
                         >
-                          <div className="border border-[#2a2a32] bg-[#111114] px-2 py-[5px] text-center text-[10px] uppercase tracking-[0.08em] text-[#a8a8b8]">
-                            type
+                          <div className="flex items-center justify-between border-b border-[#1e1e24] bg-[#111114] px-3 py-2">
+                            <span className="text-[10px] font-bold text-[#6a6a7a]">SCHEMA_{index + 1}</span>
+                            <div className="flex gap-1">
+                              <div className="h-1.5 w-1.5 rounded-full bg-[#3a3a45]" />
+                              <div className="h-1.5 w-1.5 rounded-full bg-[#3a3a45]" />
+                            </div>
                           </div>
-                          <pre className="overflow-x-auto whitespace-pre-wrap bg-[#070709] px-3 py-3 text-[11px] italic leading-6 text-[#5bc4e0]">
+                          <pre className="p-4 text-[11px] leading-relaxed text-[#5bc4e0] selection:bg-[#7c6af7]/30">
                             {model}
                           </pre>
                         </div>
                       ))}
-                    </div>
-                  </section>
-
-                  <section>
-                    <SectionLabel label="Infrastructure" />
-                    <div className="mt-3 grid grid-cols-3 gap-3">
-                      <div className="border border-[#1e1e24] bg-[#16161a] px-3 py-3">
-                        <div className="text-[10px] uppercase tracking-[0.14em] text-[#6a6a7a]">
-                          Backend
-                        </div>
-                        <div className="mt-2 text-[11px] leading-5 text-[#e8e8f0]">{detail.backend}</div>
-                      </div>
-                      <div className="border border-[#1e1e24] bg-[#16161a] px-3 py-3">
-                        <div className="text-[10px] uppercase tracking-[0.14em] text-[#6a6a7a]">
-                          Storage
-                        </div>
-                        <div className="mt-2 text-[11px] leading-5 text-[#e8e8f0]">{detail.storage}</div>
-                      </div>
-                      <div className="border border-[#1e1e24] bg-[#16161a] px-3 py-3">
-                        <div className="text-[10px] uppercase tracking-[0.14em] text-[#6a6a7a]">
-                          Scale
-                        </div>
-                        <div className="mt-2 text-[11px] leading-5 text-[#e8e8f0]">
-                          Optimized for readable interfaces, explicit state flow, and steady iteration.
-                        </div>
-                      </div>
                     </div>
                   </section>
                 </div>

@@ -72,23 +72,29 @@ export default function SidebarAI() {
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col bg-[var(--sidebar)] text-[12px] text-[var(--text-primary)]">
-      <div className="flex h-9 items-center justify-between border-b border-[var(--border)] px-2">
-        <span className="leading-none text-[var(--text)]">New Chat</span>
-        <button
-          type="button"
-          onClick={handleNewChat}
-          className="h-6 px-2 leading-none text-[var(--text-muted)] transition hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
-        >
-          Reset
-        </button>
+    <div className="flex h-full min-h-0 w-full flex-col bg-[#18181A] text-[13px] font-sans border-r border-[#1e1e24] text-[#cccccc] select-none">
+      {/* Header */}
+      <div className="flex h-[35px] shrink-0 items-center justify-between px-3">
+        <div className="flex items-center gap-[6px]">
+          <span className="font-semibold text-[#cccccc] text-[12px]">New Agent</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={handleNewChat} className="flex h-5 w-5 items-center justify-center rounded-[4px] hover:bg-[#2a2d31] text-[#8b8b9e] hover:text-[#cccccc] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <button className="flex h-5 w-5 items-center justify-center rounded-[4px] hover:bg-[#2a2d31] text-[#8b8b9e] hover:text-[#cccccc] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </button>
+        </div>
       </div>
 
-      <div className="border-b border-[var(--border)] bg-[var(--sidebar)] p-2">
-        <label className="block border border-[var(--border)] bg-[var(--panel)]">
+      {/* Agent Chat Container */}
+      <div className="flex-1 overflow-y-auto ide-scrollbar px-3 py-2">
+        {/* Input Box */}
+        <div className="flex flex-col rounded-[6px] border border-[#2a2d31] bg-[#1c1c1f] transition-colors focus-within:border-[#38383f] relative pb-2 pt-2 shadow-sm mb-4">
           <textarea
             ref={inputRef}
-            rows={2}
+            rows={1}
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => {
@@ -97,66 +103,63 @@ export default function SidebarAI() {
                 handleSend();
               }
             }}
-            placeholder="Ask the assistant"
-            className="h-14 w-full resize-none bg-transparent px-2 py-1.5 text-[12px] leading-[18px] text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
+            placeholder="Plan, Build, / for commands, @ for context"
+            className="w-full resize-none bg-transparent px-3 pb-6 text-[13px] leading-[20px] text-[#cccccc] outline-none placeholder:text-[#5e5e66] placeholder:font-normal"
           />
-        </label>
-
-        <button
-          type="button"
-          onClick={handleSend}
-          disabled={!input.trim() || pending}
-          className="mt-2 h-7 border border-[var(--border)] px-2 text-[12px] leading-none text-[var(--text-muted)] transition hover:bg-[var(--bg-hover)] hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {pending ? "Running..." : "Send"}
-        </button>
-      </div>
-
-      <div className="border-b border-[var(--border)] bg-[rgba(255,255,255,0.02)] p-2">
-        <div className="mb-1.5 text-[11px] leading-none text-[var(--text)]">Agents</div>
-        <div className="space-y-1">
-          {agents.map((agent) => (
-            <button
-              key={agent.id}
-              type="button"
-              onClick={() => setSelectedAgent(agent.id)}
-              className={`flex h-6 w-full items-center justify-between px-2 text-left transition ${
-                selectedAgent === agent.id
-                  ? "bg-[var(--bg-hover)] text-[var(--text)]"
-                  : "text-[var(--text-muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
-              }`}
+          
+          {/* Input Toolbar */}
+          <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+            <div className="flex items-center gap-[4px]">
+              <button className="flex h-[20px] items-center gap-[4px] rounded-[4px] border border-[#2a2d31] bg-[#222226] px-[6px] text-[11px] font-medium text-[#8b8b9e] hover:bg-[#2a2d31] hover:text-[#cccccc] transition-colors">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+                Agent
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <button className="flex h-[20px] items-center gap-[4px] rounded-[4px] bg-transparent px-[4px] text-[11px] font-medium text-[#8b8b9e] hover:text-[#cccccc] transition-colors">
+                Auto
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
+            
+            <button 
+              onClick={handleSend}
+              disabled={!input.trim() || pending}
+              className="flex h-[24px] w-[24px] items-center justify-center rounded-[5px] text-[#8b8b9e] hover:text-[#cccccc] hover:bg-[#2a2d31] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="truncate leading-none">{agent.label}</span>
-              <span className="ml-2 truncate text-[11px] leading-none opacity-70">
-                {agent.detail}
-              </span>
+               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
             </button>
-          ))}
+          </div>
         </div>
-      </div>
+        
+        {/* Context Picker */}
+        <button className="flex items-center gap-1.5 text-[11px] text-[#8b8b9e] hover:text-[#cccccc] mb-4 group transition-colors">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          <span>Local</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
 
-      <div ref={scrollRef} className="ide-scrollbar min-h-0 flex-1 overflow-y-auto p-2">
-        <div className="mb-1.5 text-[11px] leading-none text-[var(--text)]">Session</div>
-        <div className="space-y-1">
+        {/* Chat History */}
+        <div className="flex flex-col gap-4 pb-4">
           {chatMessages.map((message) => (
-            <div
-              key={message.id}
-              className="border-b border-[var(--border)] px-2 py-1.5 last:border-b-0"
-            >
-              <div className="mb-1 text-[11px] leading-none text-[var(--text-muted)]">
-                {message.role === "assistant" ? "Assistant" : "You"}
-              </div>
-              <div className="text-[12px] leading-[18px] text-[var(--text)]">
+            <div key={message.id} className="flex flex-col gap-1.5">
+              <span className="text-[12px] font-semibold text-[#8b8b9e]">{message.role === "assistant" ? "Assistant" : "You"}</span>
+              <div className="text-[13px] leading-[20px] text-[#cccccc] whitespace-pre-wrap">
                 {message.content}
               </div>
             </div>
           ))}
-          {pending ? (
-            <div className="border-b border-[var(--border)] px-2 py-1.5 text-[12px] leading-[18px] text-[var(--text-muted)]">
-              Assistant is responding...
+          {pending && (
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[12px] font-semibold text-[#8b8b9e]">Assistant</span>
+              <div className="flex items-center gap-1">
+                 <span className="h-1.5 w-1.5 bg-[#8b8b9e] rounded-full animate-pulse" />
+                 <span className="h-1.5 w-1.5 bg-[#8b8b9e] rounded-full animate-pulse delay-75" />
+                 <span className="h-1.5 w-1.5 bg-[#8b8b9e] rounded-full animate-pulse delay-150" />
+              </div>
             </div>
-          ) : null}
+          )}
         </div>
+        <div ref={scrollRef} />
       </div>
     </div>
   );

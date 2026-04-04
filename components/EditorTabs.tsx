@@ -32,11 +32,10 @@ export default function EditorTabs() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className={`relative flex h-full min-w-0 items-center border-r border-[var(--border)] text-[12px] leading-none transition ${
-                    isActive
+                  className={`relative flex h-full min-w-0 items-center border-r border-[var(--border)] text-[12px] leading-none transition ${isActive
                       ? "bg-[var(--panel)] text-[var(--text-primary)]"
                       : "bg-[var(--bg)] text-[var(--text-muted)] hover:bg-[var(--hover)] hover:text-[var(--text-primary)]"
-                  }`}
+                    }`}
                 >
                   <button
                     type="button"

@@ -12,13 +12,13 @@ import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 
 type PaletteEntry =
   | {
-      kind: "command";
-      value: CommandDescriptor;
-    }
+    kind: "command";
+    value: CommandDescriptor;
+  }
   | {
-      kind: "file";
-      value: IDEFile;
-    };
+    kind: "file";
+    value: IDEFile;
+  };
 
 export default function CommandPalette() {
   const isOpen = useIDEStore((state) => state.commandPaletteOpen);
@@ -173,11 +173,10 @@ export default function CommandPalette() {
                         type="button"
                         onMouseEnter={() => setActiveIndex(index)}
                         onClick={() => handleSelect(entry)}
-                        className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-[12px] transition ${
-                          isActive
+                        className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-[12px] transition ${isActive
                             ? "bg-[var(--bg-hover)] text-[var(--text)]"
                             : "text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
-                        }`}
+                          }`}
                       >
                         <span className="truncate">{entry.value.path}</span>
                         <span className="ml-3 text-[11px] text-[var(--text-muted)]">
@@ -193,11 +192,10 @@ export default function CommandPalette() {
                       type="button"
                       onMouseEnter={() => setActiveIndex(index)}
                       onClick={() => handleSelect(entry)}
-                      className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-[12px] transition ${
-                        isActive
+                      className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-[12px] transition ${isActive
                           ? "bg-[var(--bg-hover)] text-[var(--text)]"
                           : "text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
-                      }`}
+                        }`}
                     >
                       <span>{entry.value.title}</span>
                       <span className="ml-3 text-[11px] text-[var(--text-muted)]">
