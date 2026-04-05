@@ -5,9 +5,10 @@ import { getPortfolioFile } from "@/data/files";
 import { type ChatMessage, useIDEStore } from "@/store/useIDEStore";
 import { useEffect, useRef, useState } from "react";
 import { 
-  VscAdd, VscEllipsis, VscArrowRight, VscCheck, 
+  VscAdd, VscEllipsis, VscArrowRight, 
   VscCircuitBoard, VscLibrary, VscSparkle 
 } from "react-icons/vsc";
+import { IDEButton } from "@/components/ui/Primitives";
 
 const agents = [
   { id: "default", label: "Default Agent", detail: "General workspace help" },
@@ -30,6 +31,11 @@ export default function SidebarAI() {
   const clearChat = useIDEStore((state) => state.clearChat);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
+  const suggestions = [
+    "Summarize the strongest projects",
+    "What stack does Aniket use most?",
+    "Which experience is most relevant for UI roles?",
+  ];
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -96,11 +102,32 @@ export default function SidebarAI() {
         
         {/* Chat History */}
         <div className="flex flex-col gap-6">
+          {chatMessages.length === 1 && !pending ? (
+            <div className="flex flex-col gap-3">
+              <div className="text-[12px] text-[var(--text-muted)]">
+                Start with a prompt or use one of these suggestions.
+              </div>
+              <div className="flex flex-col gap-2">
+                {suggestions.map((suggestion) => (
+                  <IDEButton
+                    key={suggestion}
+                    variant="secondary"
+                    size="sm"
+                    className="justify-start"
+                    onClick={() => setInput(suggestion)}
+                  >
+                    {suggestion}
+                  </IDEButton>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           {chatMessages.map((message) => (
             <div key={message.id} className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <div className={`h-1.5 w-1.5 rounded-full ${message.role === 'assistant' ? 'bg-[var(--accent)]' : 'bg-[var(--info)]'}`} />
-                <span className="text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)]">
+                <span className="text-[11px] font-medium uppercase tracking-widest text-[var(--text-muted)]">
                   {message.role === "assistant" ? "Assistant" : "You"}
                 </span>
               </div>
@@ -114,7 +141,7 @@ export default function SidebarAI() {
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
-                <span className="text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)]">Assistant</span>
+                <span className="text-[11px] font-medium uppercase tracking-widest text-[var(--text-muted)]">Assistant</span>
               </div>
               <div className="flex items-center gap-1.5 pl-3.5">
                  <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -147,11 +174,11 @@ export default function SidebarAI() {
           {/* Input Toolbar */}
           <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <button className="flex h-6 items-center gap-1.5 rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-all">
-                <VscCircuitBoard size={12} className="text-[var(--accent)]" />
+              <button className="flex h-6 items-center gap-1.5 rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 text-[10px] font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]">
+                <VscCircuitBoard size={12} className="text-[var(--text-muted)]" />
                 <span>Agent</span>
               </button>
-              <button className="flex h-6 items-center gap-1.5 rounded-md border border-transparent bg-transparent px-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all">
+              <button className="flex h-6 items-center gap-1.5 rounded-md border border-transparent bg-transparent px-2 text-[10px] font-medium text-[var(--text-muted)] transition-all hover:text-[var(--text-primary)]">
                 <VscLibrary size={12} />
                 <span>Context</span>
               </button>

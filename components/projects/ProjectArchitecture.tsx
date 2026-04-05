@@ -23,7 +23,7 @@ export function ProjectArchitecture({ project, detail }: { project: ProjectShape
                 { label: "Discovery", value: "Optimized for steady iteration and explicit flow." }
               ].map((item, i) => (
                 <div key={i} className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 transition-all hover:border-[var(--accent)]/30 shadow-sm">
-                  <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[var(--text-muted)] mb-3">{item.label}</div>
+                  <div className="mb-3 text-[9px] font-medium uppercase tracking-[0.15em] text-[var(--text-muted)]">{item.label}</div>
                   <div className="text-[12px] leading-relaxed text-[var(--text-secondary)]">{item.value}</div>
                 </div>
               ))}
@@ -43,7 +43,7 @@ export function ProjectArchitecture({ project, detail }: { project: ProjectShape
               <div className="flex items-center justify-between border-b border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-2.5">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-[var(--accent)] opacity-60" />
-                  <span className="text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">Schema Definition {index + 1}</span>
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-[var(--text-muted)]">Schema Definition {index + 1}</span>
                 </div>
                 <div className="flex gap-1.5">
                   <div className="h-1.5 w-1.5 rounded-full bg-[var(--border-default)]" />

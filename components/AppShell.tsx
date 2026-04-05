@@ -10,6 +10,7 @@ import { useIDEStore } from "@/store/useIDEStore";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import { VscFiles, VscSearch, VscSparkle, VscTerminal } from "react-icons/vsc";
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const theme = useIDEStore((state) => state.theme);
@@ -29,6 +30,42 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const toggleMobileAIPanel = useIDEStore((state) => state.toggleMobileAIPanel);
   const closeMobilePanels = useIDEStore((state) => state.closeMobilePanels);
   const [isDesktop, setIsDesktop] = useState(false);
+  const mobileNavItems = [
+    {
+      key: "ai",
+      label: "AI",
+      active: mobileAIPanelOpen,
+      onClick: () => {
+        closeMobilePanels();
+        toggleMobileAIPanel();
+      },
+      icon: VscSparkle,
+    },
+    {
+      key: "search",
+      label: "Search",
+      active: false,
+      onClick: () => openCommandPalette("files"),
+      icon: VscSearch,
+    },
+    {
+      key: "terminal",
+      label: "Terminal",
+      active: terminalOpen,
+      onClick: toggleTerminal,
+      icon: VscTerminal,
+    },
+    {
+      key: "files",
+      label: "Files",
+      active: mobileSidebarOpen,
+      onClick: () => {
+        closeMobilePanels();
+        toggleMobileSidebar();
+      },
+      icon: VscFiles,
+    },
+  ] as const;
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -224,7 +261,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -12, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-y-0 left-0 w-[260px] border-r border-[var(--border)] bg-[var(--sidebar)]"
+              className="absolute inset-y-0 left-0 w-[260px] border-r border-[var(--border-default)] bg-[var(--bg-elevated)]"
               onClick={(event) => event.stopPropagation()}
             >
               <SidebarAI />
@@ -249,7 +286,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 12, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-y-0 right-0 w-[300px] border-l border-[var(--border)] bg-[var(--sidebar)]"
+              className="absolute inset-y-0 right-0 w-[300px] border-l border-[var(--border-default)] bg-[var(--bg-elevated)]"
               onClick={(event) => event.stopPropagation()}
             >
               <FileExplorer />
@@ -257,6 +294,28 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex h-12 items-center border-t border-[var(--border-default)] bg-[var(--bg-elevated)] lg:hidden">
+        {mobileNavItems.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <button
+              key={item.key}
+              type="button"
+              onClick={item.onClick}
+              className={`flex h-full flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors ${
+                item.active
+                  ? "text-[var(--accent)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              }`}
+            >
+              <Icon size={16} />
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
 
       <CommandPalette />
     </>

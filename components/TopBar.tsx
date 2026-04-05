@@ -1,6 +1,7 @@
 "use client";
 
 import { contactDetails } from "@/data/content";
+import { defaultFilePath } from "@/data/files";
 import { useIDEStore } from "@/store/useIDEStore";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -80,14 +81,7 @@ export default function TopBar() {
   const resetTerminal = useIDEStore((state) => state.resetTerminal);
   const menuRef = useRef<HTMLDivElement>(null);
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
-  const [topBarMessage, setTopBarMessage] = useState("portfolio");
-
-  const handleCloseClick = () => {
-    setTopBarMessage("You cannot close a portfolio... nice try! 😉");
-    setTimeout(() => {
-      setTopBarMessage("portfolio");
-    }, 3000);
-  };
+  const [topBarMessage] = useState("portfolio");
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -136,7 +130,7 @@ export default function TopBar() {
 
   const menuActions: Record<MenuKey, MenuAction[]> = {
     File: [
-      { label: "New Tab", shortcut: "Ctrl+T", run: () => { } },
+      { label: "New Tab", shortcut: "Ctrl+T", run: () => openFile(defaultFilePath) },
       { label: "Open File...", shortcut: "Ctrl+P", run: () => openCommandPalette("files") },
       { type: "divider" },
       {
@@ -155,11 +149,10 @@ export default function TopBar() {
       },
       { type: "divider" },
       { type: "header", label: "OPEN RECENT" },
-      { label: "home.tsx", run: () => openFile("app/page.tsx") },
-      { label: "projects.ts", run: () => openFile("data/projects.ts") },
-      { label: "skills.tsx", run: () => openFile("components/SkillsTab.tsx") },
+      { label: "home.tsx", run: () => openFile("src/home.tsx") },
+      { label: "projects.ts", run: () => openFile("src/projects.ts") },
+      { label: "skills.json", run: () => openFile("src/skills.json") },
       { type: "divider" },
-      { label: "Download Resume", run: () => window.open("#", "_blank") },
     ],
     Edit: [
       { label: "Find...", shortcut: "Ctrl+P", run: () => openCommandPalette("files") },
@@ -169,8 +162,6 @@ export default function TopBar() {
     ],
     Selection: [
       { label: "Select All", shortcut: "Ctrl+A", run: selectEditorContent },
-      { label: "Expand Selection", shortcut: "Shift+Alt+Right", run: () => {} },
-      { label: "Shrink Selection", shortcut: "Shift+Alt+Left", run: () => {} },
     ],
     View: [
       { label: "Command Palette", shortcut: "Ctrl+P", run: () => openCommandPalette("commands") },
@@ -189,9 +180,9 @@ export default function TopBar() {
         shortcut: "F11",
         run: () => {
           if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(() => { });
+            document.documentElement.requestFullscreen().catch(() => undefined);
           } else {
-            document.exitFullscreen().catch(() => { });
+            document.exitFullscreen().catch(() => undefined);
           }
         },
       },
@@ -201,17 +192,17 @@ export default function TopBar() {
     ],
     Go: [
       { label: "Go to File", shortcut: "Ctrl+P", run: () => openCommandPalette("files") },
-      { label: "Go to Projects", run: () => openFile("data/projects.ts") },
+      { label: "Go to Projects", run: () => openFile("src/projects.ts") },
     ],
     Run: [
       {
         label: "Run Portfolio Demo",
         run: () => {
-          openFile("data/projects.ts");
+          openFile("src/projects.ts");
           resetTerminal();
         },
       },
-      { label: "Open Live Preview", run: () => openFile("app/page.tsx") },
+      { label: "Open Live Preview", run: () => openFile("src/home.tsx") },
     ],
     Terminal: [
       { label: "New Terminal", run: resetTerminal },
@@ -298,11 +289,11 @@ export default function TopBar() {
         </nav>
       </div>
 
-      <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none lg:pointer-events-auto">
+      <div className="pointer-events-auto absolute left-1/2 -translate-x-1/2">
         <button
           type="button"
           onClick={() => openCommandPalette("files")}
-          className="flex h-[28px] w-[320px] md:w-[400px] items-center justify-center gap-2 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-4 text-[var(--text-secondary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] transition hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)]"
+          className="flex h-[28px] w-[200px] sm:w-[280px] md:w-[400px] items-center justify-center gap-2 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-4 text-[var(--text-secondary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] transition hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)]"
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" />
@@ -350,17 +341,12 @@ export default function TopBar() {
         </div>
 
         <div className="flex h-full items-center">
-          <WindowButton onClick={() => { }}>
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-              <rect width="10" height="1" x="3" y="8" />
-            </svg>
-          </WindowButton>
           <WindowButton
             onClick={() => {
               if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => { });
+                document.documentElement.requestFullscreen().catch(() => undefined);
               } else {
-                document.exitFullscreen().catch(() => { });
+                document.exitFullscreen().catch(() => undefined);
               }
             }}
           >
@@ -369,7 +355,7 @@ export default function TopBar() {
               <polyline points="4 6 4 2 12 2 12 10 8 10" />
             </svg>
           </WindowButton>
-          <WindowButton close onClick={handleCloseClick}>
+          <WindowButton close onClick={() => setOpenMenu(null)}>
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <line x1="3" y1="3" x2="13" y2="13" />
               <line x1="13" y1="3" x2="3" y2="13" />

@@ -4,8 +4,8 @@ import { useIDEStore } from "@/store/useIDEStore";
 import { executeTerminalCommand } from "@/utils/commands";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { 
-  VscClose, VscChevronUp, VscChevronDown, VscAdd, 
-  VscTerminal, VscWarning, VscCheck, VscCircleFilled 
+  VscClose, VscChevronDown, VscAdd, 
+  VscTerminal, VscWarning, VscCircleFilled 
 } from "react-icons/vsc";
 
 interface TerminalEntry {
@@ -27,6 +27,13 @@ function createId() {
 }
 
 type TabKey = "Problems" | "Output" | "Debug Console" | "Terminal" | "Ports";
+
+const tabMessages: Record<Exclude<TabKey, "Terminal">, string> = {
+  Problems: "No problems detected in workspace.",
+  Output: "Next.js 15 development server running on localhost:3000",
+  "Debug Console": "Debug console is available when running in debug mode.",
+  Ports: "Port 3000 - Next.js Dev Server",
+};
 
 export default function Terminal() {
   const openFile = useIDEStore((state) => state.openFile);
@@ -133,7 +140,7 @@ export default function Terminal() {
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`relative flex h-full items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider transition-all ${
+              className={`relative flex h-full items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider transition-all ${
                 activeTab === tab.key
                   ? "text-[var(--text-primary)]"
                   : "text-[var(--text-disabled)] hover:text-[var(--text-muted)]"
@@ -141,7 +148,7 @@ export default function Terminal() {
             >
               {tab.key}
               {tab.badge !== undefined && (
-                <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[var(--bg-muted)] text-[9px] font-bold text-[var(--text-secondary)] border border-[var(--border-default)]">
+                <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--bg-muted)] text-[9px] font-medium text-[var(--text-secondary)]">
                   {tab.badge}
                 </span>
               )}
@@ -155,9 +162,11 @@ export default function Terminal() {
         {/* Actions */}
         <div className="flex items-center gap-1">
           {/* Terminal Profile */}
-          <div className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] transition-colors cursor-pointer">
-            <VscTerminal size={14} className="text-[var(--accent)]" />
+          <div className="cursor-pointer rounded-md px-2 py-1 text-[11px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-muted)]">
+            <div className="flex items-center gap-1.5">
+              <VscTerminal size={14} className="text-[var(--text-secondary)]" />
             <span>pwsh</span>
+            </div>
           </div>
           
           <button title="Show Warnings" className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--warning)] hover:bg-[var(--bg-muted)] transition-colors">
@@ -192,14 +201,6 @@ export default function Terminal() {
           
           <button
             type="button"
-            title="Maximize Panel"
-            className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
-          >
-            <VscChevronUp size={16} />
-          </button>
-
-          <button
-            type="button"
             title="Close Panel"
             onClick={toggleTerminal}
             className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
@@ -223,16 +224,17 @@ export default function Terminal() {
                   <div className="flex items-center gap-2 leading-relaxed text-[var(--text-secondary)]">
                     <div className="flex items-center gap-2">
                       <VscCircleFilled size={10} className="text-[var(--text-disabled)]" />
-                      <span className="font-bold">{prompt}</span>
-                    </div>
-                    <span className="text-[var(--text-primary)]">{entry.command}</span>
+                    <span className="font-medium">{prompt}</span>
                   </div>
+                  <span className="text-[var(--text-primary)]">{entry.command}</span>
+                </div>
                 ) : null}
 
                 {entry.lines.map((line, index) => (
                   <div
                     key={`${entry.id}-${index}`}
-                    className="leading-relaxed text-[var(--text-muted)] pl-4.5"
+                    className="pl-4.5 leading-relaxed text-[var(--text-muted)]"
+                    style={{ transitionDelay: `${index * 30}ms` }}
                   >
                     {line}
                   </div>
@@ -244,7 +246,7 @@ export default function Terminal() {
               <label className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
                   <VscCircleFilled size={10} className="text-[var(--accent)]" />
-                  <span className="font-bold text-[var(--text-secondary)]">{prompt}</span>
+                  <span className="font-medium text-[var(--text-secondary)]">{prompt}</span>
                 </div>
                 <input
                   ref={inputRef}
@@ -270,8 +272,8 @@ export default function Terminal() {
             </form>
           </div>
         ) : (
-          <div className="flex h-full items-center justify-center text-[var(--text-disabled)] italic font-medium">
-            No data available for {activeTab}.
+          <div className="flex h-full items-center justify-center px-6 text-center text-[var(--text-disabled)]">
+            {tabMessages[activeTab]}
           </div>
         )}
       </div>

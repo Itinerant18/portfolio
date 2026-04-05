@@ -1,6 +1,6 @@
 export default function StatusBar() {
   return (
-    <div className="flex h-[22px] w-full items-center justify-between bg-[var(--bg-elevated)] border-t border-[var(--border-default)] px-3 text-[11px] text-[var(--text-secondary)] font-sans select-none">
+    <div className="hidden h-[22px] w-full items-center justify-between border-t border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 font-sans text-[11px] text-[var(--text-secondary)] select-none lg:flex">
       <div className="flex items-center gap-4">
         <span className="cursor-pointer hover:bg-[var(--bg-muted)] px-1.5 py-0.5 rounded transition-colors flex items-center gap-1.5">
           <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">

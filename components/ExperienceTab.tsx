@@ -64,21 +64,18 @@ export default function ExperienceTab() {
   ];
 
   return (
-    <div className="flex flex-col overflow-auto bg-[var(--bg-surface)] text-[var(--text-primary)] font-sans text-[13px] ide-scrollbar h-full w-full p-6 md:p-12 pb-32">
+    <div className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 font-sans text-[13px] text-[var(--text-primary)] md:p-12">
       <div className="w-full max-w-4xl mx-auto flex flex-col gap-10">
-        <div className="font-mono text-[var(--text-muted)]">
-          // experience.ts - professional journey timeline
+        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          Professional journey timeline
         </div>
 
         <div className="flex flex-col gap-4">
-          <h1 className="text-[32px] md:text-[48px] font-black tracking-tight text-[var(--text-primary)]">
+          <h1 className="text-[24px] font-semibold tracking-tight text-[var(--text-primary)] md:text-[28px]">
             Experience
           </h1>
-          <div className="font-mono text-[14px] text-[var(--text-muted)]">
-            <span className="text-[var(--accent)]">interface</span>{" "}
-            <span className="text-[var(--info)]">Career</span>{" "}
-            <span className="text-[var(--accent)]">extends</span>{" "}
-            <span className="text-[var(--info)]">Timeline</span> {"{}"}
+          <div className="text-[14px] text-[var(--text-muted)]">
+            Professional roles across software engineering, testing, and cloud systems.
           </div>
         </div>
 
@@ -96,7 +93,7 @@ export default function ExperienceTab() {
               
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="px-2 py-0.5 rounded-md bg-[var(--bg-muted)] text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] border border-[var(--border-default)]">
+                  <span className="rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-widest text-[var(--text-muted)]">
                     {exp.period}
                   </span>
                   {exp.type && (
@@ -105,23 +102,23 @@ export default function ExperienceTab() {
                     </span>
                   )}
                   {exp.current && (
-                    <span className="flex items-center gap-1.5 text-[10px] font-black text-[var(--success)] uppercase tracking-tighter">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-pulse" />
+                    <span className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-tighter text-[var(--success)]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
                       Active
                     </span>
                   )}
                 </div>
 
                 <div className="mt-1">
-                  <h2 className="text-[24px] md:text-[28px] font-black text-[var(--text-primary)] leading-tight">
+                  <h2 className="text-[20px] font-semibold leading-tight text-[var(--text-primary)]">
                     {exp.role}
                   </h2>
-                  <div className="text-[16px] md:text-[18px] font-bold text-[var(--accent)] mt-1">
-                    @ {exp.company}
+                  <div className="mt-1 text-[16px] font-medium text-[var(--text-secondary)] md:text-[18px]">
+                    {exp.company}
                   </div>
                   {exp.location && (
-                    <div className="text-[12px] text-[var(--text-muted)] mt-1 font-medium">
-                      📍 {exp.location}
+                    <div className="mt-1 text-[12px] font-medium text-[var(--text-muted)]">
+                      {exp.location}
                     </div>
                   )}
                 </div>
@@ -134,7 +131,7 @@ export default function ExperienceTab() {
                   {exp.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[11px] font-bold text-[var(--info)] hover:border-[var(--info)]/30 hover:bg-[var(--bg-muted)] transition-all"
+                    className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-muted)]"
                     >
                       {tag}
                     </span>

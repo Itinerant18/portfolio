@@ -8,6 +8,7 @@ import {
   sortProjectsByUpdatedAt,
 } from "@/data/projects";
 import { useIDEStore } from "@/store/useIDEStore";
+import { IDEButton, IDEInput } from "@/components/ui/Primitives";
 import { 
   ProjectShape, TabKey, LoadState, 
   isProjectLike, asProjectShape, getInitials, techColor, 
@@ -187,12 +188,11 @@ export default function ProjectsTab() {
               Ready
             </div>
           </div>
-          <input
+          <IDEInput
             type="text"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search projects..."
-            className="h-8 w-full rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 text-[12px] font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-disabled)] focus:border-[var(--accent)] transition-colors"
           />
         </div>
 
@@ -273,29 +273,29 @@ export default function ProjectsTab() {
                 <p className="mt-3 max-w-[70ch] text-[14px] font-medium leading-relaxed text-[var(--text-secondary)]">{detail.tagline}</p>
                 
                 <div className="mt-5 flex flex-wrap items-center gap-3">
-                  <button
+                  <IDEButton
                     type="button"
                     onClick={() => openExternal(selectedProject.links.github)}
-                    className="rounded-md bg-[var(--accent)] px-4 py-2 text-[12px] font-semibold text-white transition-all hover:bg-[var(--accent-hover)] hover:shadow-sm"
+                    variant="primary"
                   >
                     Repository
-                  </button>
+                  </IDEButton>
                   {selectedProject.links.demo && (
-                    <button
+                    <IDEButton
                       type="button"
                       onClick={() => openExternal(selectedProject.links.demo!)}
-                      className="rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-2 text-[12px] font-medium text-[var(--text-primary)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-overlay)]"
+                      variant="secondary"
                     >
                       Live Demo
-                    </button>
+                    </IDEButton>
                   )}
-                  <button
+                  <IDEButton
                     type="button"
                     onClick={() => openFile("data/projects.ts")}
-                    className="rounded-md border border-[var(--border-default)] bg-transparent px-4 py-2 text-[12px] font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+                    variant="ghost"
                   >
                     Open Source
-                  </button>
+                  </IDEButton>
                 </div>
               </div>
             </div>

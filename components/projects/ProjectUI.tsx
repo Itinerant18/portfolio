@@ -127,7 +127,7 @@ export function FlowNode({ label, icon, isLast, protocol }: { label: string; ico
       </div>
       {!isLast && (
         <div className="mb-4 flex flex-col items-center gap-1 opacity-40">
-          {protocol && <span className="text-[7px] font-black uppercase tracking-widest text-[var(--accent)]">{protocol}</span>}
+          {protocol && <span className="text-[7px] font-medium uppercase tracking-widest text-[var(--accent)]">{protocol}</span>}
           <div className="flex items-center gap-1">
             <div className="h-[1px] w-8 bg-gradient-to-r from-[var(--accent)] to-[var(--border-default)]" />
             <FaChevronRight className="text-[var(--accent)] -ml-1 text-[8px]" />
@@ -241,7 +241,7 @@ export function TechBadge({ name }: { name: string }) {
   return (
     <div className="group relative flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] backdrop-blur-sm transition-all hover:border-[var(--accent)]/50 hover:bg-[var(--bg-muted)] hover:shadow-[0_0_15px_var(--accent-subtle)]">
       <TechIcon name={name} size={22} />
-      <div className="absolute -top-8 left-1/2 -translate-x-1/2 pointer-events-none z-50 whitespace-nowrap rounded border border-[var(--border-default)] bg-[var(--bg-overlay)] px-2 py-1 text-[9px] font-black uppercase tracking-wider text-[var(--text-primary)] opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute -top-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded border border-[var(--border-default)] bg-[var(--bg-overlay)] px-2 py-1 text-[9px] font-medium uppercase tracking-wider text-[var(--text-primary)] opacity-0 transition-opacity pointer-events-none group-hover:opacity-100">
         {name}
       </div>
     </div>

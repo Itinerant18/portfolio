@@ -1,14 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
+import { contactDetails } from "@/data/content";
+import { IDEButton, IDEInput, IDETextArea, SectionLabel } from "@/components/ui/Primitives";
 import { 
   FaGithub, FaLinkedin, FaEnvelope, FaPaperPlane, FaPhone
 } from "react-icons/fa";
-import { VscCheck, VscLoading } from "react-icons/vsc";
+import { VscCheck } from "react-icons/vsc";
 
 export default function ContactTab() {
   const [formData, setInput] = useState({ name: "", email: "", subject: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "sending" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "success">("idle");
+  const [emailTouched, setEmailTouched] = useState(false);
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
 
   const links = [
     {
@@ -41,33 +45,35 @@ export default function ContactTab() {
     }
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) return;
-    
-    setStatus("sending");
-    // Simulate API call
-    await new Promise(r => setTimeout(r, 1500));
+    if (!formData.name || !formData.email || !formData.message || !emailValid) return;
+
+    const params = new URLSearchParams({
+      subject: formData.subject || `Portfolio inquiry from ${formData.name}`,
+      body: `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`,
+    });
+
+    window.location.href = `mailto:${contactDetails.email}?${params.toString()}`;
     setStatus("success");
     setTimeout(() => {
       setStatus("idle");
       setInput({ name: "", email: "", subject: "", message: "" });
+      setEmailTouched(false);
     }, 3000);
   };
 
   return (
     <div className="flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 text-[13px] font-sans text-[var(--text-primary)] ide-scrollbar md:p-12">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-9">
-        <div className="font-mono text-[var(--text-muted)]">
-          /* contact.css - let's build something together */
-        </div>
+        <SectionLabel>Open to collaboration and strategic opportunities</SectionLabel>
 
         <div className="flex flex-col gap-4">
-          <h1 className="text-[30px] font-semibold tracking-[-0.04em] text-[var(--text-primary)] md:text-[42px]">
+          <h1 className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
             Get In Touch
           </h1>
-          <div className="font-mono text-[14px] text-[var(--text-muted)]">
-            // open to collaboration and strategic opportunities
+          <div className="text-[14px] text-[var(--text-muted)]">
+            Reach out for product work, front-end engineering, or collaboration.
           </div>
         </div>
 
@@ -119,72 +125,82 @@ export default function ContactTab() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
                 <label className="ml-1 text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  // name <span className="text-[var(--error)]">*</span>
+                  Name <span className="text-[var(--error)]">*</span>
                 </label>
-                <input
+                <IDEInput
                   required
                   type="text"
                   value={formData.name}
                   onChange={e => setInput({...formData, name: e.target.value})}
-                  placeholder="string"
-                  className="w-full rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] p-3 text-[var(--text-primary)] outline-none transition-all focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/20"
+                  placeholder="Your name"
+                  className="h-10 px-3 text-[13px]"
                 />
               </div>
               <div className="flex flex-col gap-2">
                 <label className="ml-1 text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  // email <span className="text-[var(--error)]">*</span>
+                  Email <span className="text-[var(--error)]">*</span>
                 </label>
-                <input
+                <IDEInput
                   required
                   type="email"
                   value={formData.email}
+                  onBlur={() => setEmailTouched(true)}
                   onChange={e => setInput({...formData, email: e.target.value})}
-                  placeholder="string"
-                  className="w-full rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] p-3 text-[var(--text-primary)] outline-none transition-all focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/20"
+                  placeholder="name@example.com"
+                  className="h-10 px-3 text-[13px]"
+                />
+                {emailTouched && formData.email && !emailValid ? (
+                  <div className="text-[11px] text-[var(--error)]">
+                    Enter a valid email address.
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="ml-1 text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                  Subject
+                </label>
+                <IDEInput
+                  type="text"
+                  value={formData.subject}
+                  onChange={e => setInput({...formData, subject: e.target.value})}
+                  placeholder="How can I help?"
+                  className="h-10 px-3 text-[13px]"
                 />
               </div>
               <div className="flex flex-col gap-2">
                 <label className="ml-1 text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  // message <span className="text-[var(--error)]">*</span>
+                  Message <span className="text-[var(--error)]">*</span>
                 </label>
-                <textarea
+                <IDETextArea
                   required
                   value={formData.message}
                   onChange={e => setInput({...formData, message: e.target.value})}
-                  placeholder="'''your message'''"
-                  className="h-32 w-full resize-none rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] p-3 font-mono text-[var(--info)] outline-none transition-all focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/20"
+                  placeholder="Tell me a bit about the project or role."
+                  className="h-32"
                 />
               </div>
-              
-              <button
+
+              <IDEButton
                 type="submit"
-                disabled={status !== "idle"}
-                className={`flex w-full items-center justify-center gap-2 rounded-md p-3 text-[12px] font-semibold transition-all ${
-                  status === "success" 
-                    ? "bg-[var(--success)] text-white" 
-                    : "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] hover:shadow-sm"
-                } disabled:opacity-50`}
+                disabled={status !== "idle" || !formData.name || !formData.email || !formData.message || !emailValid}
+                variant={status === "success" ? "secondary" : "primary"}
+                className="h-11 w-full"
               >
-                {status === "sending" ? (
-                  <>
-                    <VscLoading className="animate-spin" size={18} />
-                    <span>Transmitting...</span>
-                  </>
-                ) : status === "success" ? (
+                {status === "success" ? (
                   <>
                     <VscCheck size={18} />
-                    <span>Message Sent!</span>
+                    <span>Message Ready</span>
                   </>
                 ) : (
                   <>
                     <FaPaperPlane size={14} />
-                    <span>send_message()</span>
+                    <span>Send Message</span>
                   </>
                 )}
-              </button>
-              
-              <div className="text-[var(--text-disabled)] text-[10px] font-medium text-center italic">
-                // Direct transmission to aniketkarmakar018@gmail.com
+              </IDEButton>
+
+              <div className="text-center text-[10px] font-medium text-[var(--text-disabled)]">
+                Messages open in your mail client and send to {contactDetails.email}
               </div>
             </form>
           </div>

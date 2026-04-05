@@ -6,16 +6,16 @@ export default function AboutTab() {
   return (
     <div className="flex flex-col overflow-auto bg-[var(--bg-surface)] text-[var(--text-primary)] font-sans text-[13px] ide-scrollbar h-full w-full p-6 md:p-12 pb-32">
       <div className="w-full max-w-4xl mx-auto flex flex-col gap-10">
-        <div className="font-mono text-[var(--text-muted)]">
-          {"<!-- about.html - Aniket Karmakar (He/Him) -->"}
+        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          About Aniket Karmakar
         </div>
 
         <div className="flex flex-col gap-4">
-          <h1 className="text-[32px] md:text-[48px] font-black tracking-tight text-[var(--text-primary)]">
+          <h1 className="text-[24px] font-semibold tracking-tight text-[var(--text-primary)] md:text-[28px]">
             About Me
           </h1>
-          <div className="font-mono text-[14px] text-[var(--text-muted)]">
-            // front-end UI developer · react.js · full-stack · AI/ML · IoT · cloud
+          <div className="text-[14px] text-[var(--text-muted)]">
+            Front-end UI developer · React.js · full-stack · AI/ML · IoT · cloud
           </div>
         </div>
 
@@ -25,7 +25,7 @@ export default function AboutTab() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--accent)] flex items-center gap-3">
+            <h2 className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
               <span className="h-px w-8 bg-[var(--accent)]" />
               Services
             </h2>
@@ -46,7 +46,7 @@ export default function AboutTab() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--accent)] flex items-center gap-3">
+            <h2 className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
               <span className="h-px w-8 bg-[var(--accent)]" />
               Strategic Focus
             </h2>
@@ -68,7 +68,7 @@ export default function AboutTab() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--accent)] flex items-center gap-3">
+            <h2 className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
               <span className="h-px w-8 bg-[var(--accent)]" />
               Academic Foundation
             </h2>
@@ -113,7 +113,7 @@ export default function AboutTab() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--accent)] flex items-center gap-3">
+            <h2 className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
               <span className="h-px w-8 bg-[var(--accent)]" />
               Certifications
             </h2>
@@ -142,7 +142,7 @@ export default function AboutTab() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--accent)] flex items-center gap-3">
+            <h2 className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
               <span className="h-px w-8 bg-[var(--accent)]" />
               Languages
             </h2>

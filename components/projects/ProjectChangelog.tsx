@@ -25,7 +25,7 @@ export function ProjectChangelog({ releases }: { releases: ReleaseEntry[] }) {
             </div>
             <div className="mb-8 rounded-xl border border-[var(--border-default)] border-l-[3px] border-l-[var(--accent)] bg-[var(--bg-elevated)] px-5 py-4 transition-all hover:bg-[var(--bg-muted)] shadow-sm group">
               <div className="flex items-center justify-between gap-4 mb-2">
-                <div className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] transition-colors">
+                <div className="text-[10px] font-medium uppercase tracking-widest text-[var(--text-muted)] transition-colors group-hover:text-[var(--text-secondary)]">
                   {release.meta}
                 </div>
                 <div className="h-1.5 w-1.5 rounded-full bg-[var(--success)] opacity-40 group-hover:opacity-100 animate-pulse" />

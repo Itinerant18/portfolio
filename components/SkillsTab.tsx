@@ -83,7 +83,7 @@ export default function SkillsTab() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <h1 className="text-[32px] md:text-[48px] font-black tracking-tight text-[var(--text-primary)]">
+          <h1 className="text-[24px] font-semibold tracking-tight text-[var(--text-primary)] md:text-[28px]">
             Technical Skills
           </h1>
           <div className="font-mono text-[14px]">
@@ -97,7 +97,7 @@ export default function SkillsTab() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 mt-4">
           {skillCategories.map((category) => (
             <div key={category.title} className="flex flex-col gap-6">
-              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--accent)] flex items-center gap-3">
+              <h2 className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
                 <span className="h-px flex-1 bg-[var(--border-default)]" />
                 {category.title}
               </h2>
@@ -105,16 +105,16 @@ export default function SkillsTab() {
                 {category.skills.map((skill) => (
                   <div key={skill.name} className="flex flex-col gap-2">
                     <div className="flex justify-between items-end px-0.5">
-                      <span className="text-[13px] font-bold text-[var(--text-secondary)]">
+                      <span className="text-[13px] font-medium text-[var(--text-secondary)]">
                         {skill.name}
                       </span>
-                      <span className="text-[11px] font-black text-[var(--text-muted)] font-mono">
+                      <span className="font-mono text-[11px] font-medium text-[var(--text-muted)]">
                         {skill.percentage}%
                       </span>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-[var(--bg-muted)] overflow-hidden relative border border-[var(--border-default)]/50">
                       <div
-                        className="absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(0,0,0,0.2)]"
+                        className="absolute left-0 top-0 h-full rounded-full transition-all duration-400 ease-out shadow-[0_0_8px_rgba(0,0,0,0.2)]"
                         style={{
                           width: `${skill.percentage}%`,
                           backgroundColor: skill.color,
@@ -129,14 +129,14 @@ export default function SkillsTab() {
         </div>
 
         <div className="mt-12 border-t border-[var(--border-default)] pt-10">
-          <h2 className="mb-6 text-[11px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)]">
+          <h2 className="mb-6 text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)]">
             ECOSYSTEM & LIBRARIES
           </h2>
           <div className="flex flex-wrap gap-2">
             {familiarTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-1.5 text-[12px] font-bold text-[var(--text-secondary)] hover:border-[var(--accent)]/50 hover:bg-[var(--bg-overlay)] hover:text-[var(--text-primary)] transition-all cursor-default shadow-sm"
+                className="cursor-default rounded-lg border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] shadow-sm transition-all hover:border-[var(--accent)]/50 hover:bg-[var(--bg-overlay)] hover:text-[var(--text-primary)]"
               >
                 {tag}
               </span>

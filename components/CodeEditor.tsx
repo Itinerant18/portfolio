@@ -15,6 +15,7 @@ import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-tsx";
 import "prismjs/components/prism-json";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 
 export default function CodeEditor() {
@@ -87,6 +88,14 @@ export default function CodeEditor() {
     "README.md",
     "about.html",
   ].includes(file.name);
+  const shortcuts = [
+    ["Open file palette", "Ctrl+P"],
+    ["Open command palette", "Ctrl+K"],
+    ["Toggle terminal", "Ctrl+`"],
+    ["Toggle AI panel", "Ctrl+Shift+A"],
+    ["Toggle sidebar", "Ctrl+B"],
+    ["Zoom", "Ctrl +/-"],
+  ];
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[var(--bg-surface)] text-[var(--text-primary)]">
@@ -94,53 +103,87 @@ export default function CodeEditor() {
 
       <div className="min-h-0 flex-1 overflow-hidden">
         {!file || !activeFile ? (
-          <div className="flex h-full items-center justify-center px-6 text-center text-[13px] text-[var(--text-disabled)] italic font-medium">
-            Select a file from the explorer to view its contents.
+          <div className="flex h-full items-center justify-center px-6 pb-16 text-[var(--text-primary)]">
+            <div className="w-full max-w-3xl rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 md:p-8">
+              <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                Welcome
+              </div>
+              <h2 className="mt-3 text-[24px] font-semibold tracking-[-0.04em] md:text-[28px]">
+                Keyboard shortcuts
+              </h2>
+              <div className="mt-6 grid gap-3 md:grid-cols-2">
+                {shortcuts.map(([label, combo]) => (
+                  <div
+                    key={label}
+                    className="flex items-center justify-between rounded-lg border border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-3"
+                  >
+                    <span className="text-[13px] text-[var(--text-secondary)]">{label}</span>
+                    <kbd className="rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-1 text-[11px] text-[var(--text-primary)]">
+                      {combo}
+                    </kbd>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="h-full">
-            {isCustomTab ? (
-              renderCustomTab()
-            ) : (
-              <div className="ide-scrollbar h-full overflow-auto bg-[var(--bg-surface)]">
-                <div
-                  data-ide-editor-content="true"
-                  className="min-w-max py-4 text-[13px]"
-                >
-                  {highlightedLines.map((line, index) => {
-                    const isActive = activeLine === index + 1;
+            <div className="border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-2 text-[11px] text-[var(--text-muted)]">
+              {file.path}
+            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={file.path}
+                className="h-[calc(100%-33px)]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.16 }}
+              >
+                {isCustomTab ? (
+                  renderCustomTab()
+                ) : (
+                  <div className="ide-scrollbar h-full overflow-auto bg-[var(--bg-surface)]">
+                    <div
+                      data-ide-editor-content="true"
+                      className="min-w-max py-4 text-[13px]"
+                    >
+                      {highlightedLines.map((line, index) => {
+                        const isActive = activeLine === index + 1;
 
-                    return (
-                      <div
-                        key={`${file.path}-${index + 1}`}
-                        onClick={() => setActiveLine(index + 1)}
-                        className={`grid min-h-6 grid-cols-[48px_minmax(0,1fr)] items-start transition-colors ${
-                          isActive ? "bg-[var(--accent-subtle)] border-l-[2px] border-l-[var(--accent)]" : "border-l-[2px] border-l-transparent hover:bg-[var(--bg-muted)]/30"
-                        }`}
-                      >
-                        <div
-                          className={`select-none px-3 text-right text-[12px] leading-6 font-mono font-medium ${
-                            isActive
-                              ? "text-[var(--text-primary)]"
-                              : "text-[var(--text-disabled)]"
-                          }`}
-                        >
-                          {index + 1}
-                        </div>
-                        <pre className="m-0 overflow-visible px-4">
-                          <code
-                            className="block whitespace-pre text-[13px] leading-6 text-[var(--text-secondary)] font-mono"
-                            dangerouslySetInnerHTML={{
-                              __html: line.length ? line : "&nbsp;",
-                            }}
-                          />
-                        </pre>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+                        return (
+                          <div
+                            key={`${file.path}-${index + 1}`}
+                            onClick={() => setActiveLine(index + 1)}
+                            className={`grid min-h-6 grid-cols-[48px_minmax(0,1fr)] items-start transition-colors ${
+                              isActive ? "border-l-[2px] border-l-[var(--accent)] bg-[var(--accent-subtle)]" : "border-l-[2px] border-l-transparent hover:bg-[var(--bg-muted)]/30"
+                            }`}
+                          >
+                            <div
+                              className={`select-none px-3 text-right text-[12px] font-mono font-medium leading-6 ${
+                                isActive
+                                  ? "text-[var(--text-primary)]"
+                                  : "text-[var(--text-disabled)]"
+                              }`}
+                            >
+                              {index + 1}
+                            </div>
+                            <pre className="m-0 overflow-visible px-4">
+                              <code
+                                className="block whitespace-pre font-mono text-[13px] leading-6 text-[var(--text-secondary)]"
+                                dangerouslySetInnerHTML={{
+                                  __html: line.length ? line : "&nbsp;",
+                                }}
+                              />
+                            </pre>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
         )}
       </div>

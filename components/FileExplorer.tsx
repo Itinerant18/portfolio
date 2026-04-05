@@ -1,12 +1,14 @@
 "use client";
 
 import { portfolioFiles, IDEFile } from "@/data/files";
+import { contactDetails } from "@/data/content";
 import { useIDEStore } from "@/store/useIDEStore";
 import { useState, useMemo } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { 
   VscChevronRight, VscChevronDown, VscFiles, VscSearch, 
   VscSourceControl, VscExtensions, VscEllipsis,
-  VscNewFile, VscNewFolder, VscRefresh, VscCollapseAll,
+  VscCollapseAll,
   VscJson, VscFile
 } from "react-icons/vsc";
 import { 
@@ -142,6 +144,11 @@ export default function FileExplorer() {
   const openFile = useIDEStore((state) => state.openFile);
   const toggleMobileSidebar = useIDEStore((state) => state.toggleMobileSidebar);
   const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
+  const openSkillsTab = () => openFile("src/skills.json");
+  const openExternal = (value: string) => {
+    const href = value.startsWith("http") ? value : `https://${value}`;
+    window.open(href, "_blank", "noopener,noreferrer");
+  };
 
   const tree = useMemo(() => buildTree(portfolioFiles), []);
 
@@ -177,8 +184,15 @@ export default function FileExplorer() {
                 {node.name}
               </span>
             </button>
-            {isExpanded && (
-              <div className="w-full relative">
+            <AnimatePresence initial={false}>
+              {isExpanded ? (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="relative w-full overflow-hidden"
+              >
                 <div 
                   className="absolute left-[13px] top-0 bottom-0 border-l border-[var(--border-default)] z-0" 
                   style={{ left: `${depth * 12 + 13}px` }}
@@ -186,8 +200,9 @@ export default function FileExplorer() {
                 <div className="relative z-10 w-full">
                   {recursiveRender(node.children, nodePath, depth + 1)}
                 </div>
-              </div>
-            )}
+              </motion.div>
+            ) : null}
+            </AnimatePresence>
           </div>
         );
       }
@@ -224,8 +239,8 @@ export default function FileExplorer() {
       <div className="flex w-11 flex-col items-center border-r border-[var(--border-default)] bg-[var(--bg-elevated)] py-2">
         <ActivityIcon icon={VscFiles} title="Explorer" active={true} />
         <ActivityIcon icon={VscSearch} title="Search" onClick={() => openCommandPalette("files")} />
-        <ActivityIcon icon={VscSourceControl} title="Source Control" />
-        <ActivityIcon icon={VscExtensions} title="Extensions" />
+        <ActivityIcon icon={VscSourceControl} title="Source Control" onClick={() => openExternal(contactDetails.github)} />
+        <ActivityIcon icon={VscExtensions} title="Extensions" onClick={openSkillsTab} />
         <div className="mt-auto">
           <ActivityIcon icon={VscEllipsis} title="More" />
         </div>
@@ -247,15 +262,6 @@ export default function FileExplorer() {
             </div>
             
             <div className="flex items-center gap-0.5 px-1 opacity-0 transition-opacity group-hover:opacity-100">
-              <ActionIcon title="New File">
-                <VscNewFile size={15} />
-              </ActionIcon>
-              <ActionIcon title="New Folder">
-                <VscNewFolder size={15} />
-              </ActionIcon>
-              <ActionIcon title="Refresh Explorer">
-                <VscRefresh size={15} />
-              </ActionIcon>
               <ActionIcon title="Collapse Folders" onClick={(e) => { e.stopPropagation(); collapseAll(); }}>
                 <VscCollapseAll size={15} />
               </ActionIcon>

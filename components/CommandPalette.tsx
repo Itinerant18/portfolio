@@ -33,6 +33,7 @@ export default function CommandPalette() {
   const closeAllTabs = useIDEStore((state) => state.closeAllTabs);
   const focusAIPanel = useIDEStore((state) => state.focusAIPanel);
   const setSearchQuery = useIDEStore((state) => state.setSearchQuery);
+  const toggleTheme = useIDEStore((state) => state.toggleTheme);
   const deferredQuery = useDeferredValue(searchQuery);
   const inputRef = useRef<HTMLInputElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -40,7 +41,7 @@ export default function CommandPalette() {
   const commands = useMemo(
     () =>
       createCommandDescriptors({
-        toggleTheme: () => {}, // Handled by AppShell/Store
+        toggleTheme,
         toggleTerminal,
         focusAIPanel: () => {
           focusAIPanel();
@@ -51,7 +52,7 @@ export default function CommandPalette() {
         openFileSearch: () => openCommandPalette("files"),
         closeAllTabs,
       }),
-    [closeAllTabs, focusAIPanel, openCommandPalette, toggleTerminal],
+    [closeAllTabs, focusAIPanel, openCommandPalette, toggleTerminal, toggleTheme],
   );
 
   const items = useMemo<PaletteEntry[]>(() => {
@@ -188,7 +189,7 @@ export default function CommandPalette() {
                           <span className="font-bold truncate">{entry.value.name}</span>
                           <span className={`text-[11px] truncate opacity-70 ${isActive ? 'text-white' : 'text-[var(--text-muted)]'}`}>{entry.value.path}</span>
                         </div>
-                        <span className={`ml-auto text-[10px] font-black uppercase tracking-widest opacity-60`}>
+                        <span className={`ml-auto text-[10px] font-medium uppercase tracking-widest opacity-60`}>
                           {entry.value.language}
                         </span>
                       </button>
@@ -241,7 +242,7 @@ export default function CommandPalette() {
                    <span>Select</span>
                  </div>
                </div>
-               <div className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest opacity-80">Workspace Registry</div>
+               <div className="text-[10px] font-medium uppercase tracking-widest text-[var(--accent)] opacity-80">Workspace Registry</div>
             </div>
           </motion.div>
         </motion.div>

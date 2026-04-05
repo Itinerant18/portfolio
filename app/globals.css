@@ -3,20 +3,20 @@
 
 :root {
   /* Core palette */
-  --neutral-0: #09090b;
-  --neutral-25: #0c0c0e;
-  --neutral-50: #111113;
-  --neutral-75: #161618;
-  --neutral-100: #1c1c1f;
-  --neutral-200: #1e1e24;
-  --neutral-300: #2a2a32;
-  --neutral-400: #38383f;
-  --neutral-500: #63636e;
-  --neutral-600: #a0a0ab;
-  --neutral-700: #ededf0;
+  --neutral-0: #0a0a0c;
+  --neutral-25: #111114;
+  --neutral-50: #18181c;
+  --neutral-75: #1f1f24;
+  --neutral-100: #26262c;
+  --neutral-200: rgba(255, 255, 255, 0.07);
+  --neutral-300: rgba(255, 255, 255, 0.11);
+  --neutral-400: rgba(255, 255, 255, 0.16);
+  --neutral-500: #585862;
+  --neutral-600: #8c8c96;
+  --neutral-700: #e2e2e8;
 
-  --violet-400: #6f7cff;
-  --violet-300: #8692ff;
+  --violet-400: #7c80ff;
+  --violet-300: #9498ff;
   --cyan-400: #5bc4e0;
   --green-400: #3dba7c;
   --amber-400: #e8a945;
@@ -37,7 +37,7 @@
   --text-primary: var(--neutral-700);
   --text-secondary: var(--neutral-600);
   --text-muted: var(--neutral-500);
-  --text-disabled: color-mix(in srgb, var(--neutral-400) 72%, var(--neutral-0));
+  --text-disabled: #3c3c44;
 
   --accent: var(--violet-400);
   --accent-hover: var(--violet-300);
@@ -272,7 +272,7 @@ kbd {
 
 .ide-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: var(--border-hover) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.10) transparent;
 }
 
 .ide-scrollbar::-webkit-scrollbar {
@@ -282,7 +282,7 @@ kbd {
 
 .ide-scrollbar::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  background: var(--border-hover);
+  background: rgba(255, 255, 255, 0.10);
 }
 
 .ide-scrollbar::-webkit-scrollbar-track {

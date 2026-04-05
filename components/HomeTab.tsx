@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useIDEStore } from "@/store/useIDEStore";
+import { IDEButton, SectionLabel } from "@/components/ui/Primitives";
 import { 
   FaGithub, FaLinkedin, 
   FaEnvelope, FaPhone
@@ -21,16 +22,13 @@ export default function HomeTab() {
   return (
     <div className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] px-6 pb-28 pt-8 text-[13px] font-sans text-[var(--text-primary)] md:px-10 md:pt-10">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 md:gap-10">
-        
-        <div className="font-mono text-[12px] text-[var(--text-muted)]">
-          // front-end UI development · react.js · full-stack · AI/ML · cloud
-        </div>
+        <SectionLabel>Front-end UI development · React.js · full-stack · AI/ML · cloud</SectionLabel>
 
         <div className="flex flex-col">
-          <h1 className="text-[42px] leading-[1.02] font-semibold tracking-[-0.04em] text-[var(--text-primary)] md:text-[56px] lg:text-[64px]">
+          <h1 className="text-[42px] leading-[1.02] font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
             Aniket
           </h1>
-          <h1 className="text-[42px] leading-[1.02] font-semibold tracking-[-0.04em] text-[var(--accent)] md:text-[56px] lg:text-[64px]">
+          <h1 className="text-[42px] leading-[1.02] font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
             Karmakar
           </h1>
         </div>
@@ -38,9 +36,9 @@ export default function HomeTab() {
         <div className="flex flex-wrap gap-2.5">
           {[
             { label: "Front-end UI Developer", color: "var(--info)" },
-            { label: "React.js", color: "var(--accent)" },
-            { label: "Web Designer", color: "var(--success)" },
-            { label: "SEPLE, Noida", color: "var(--error)" }
+            { label: "React.js", color: "var(--text-muted)" },
+            { label: "Web Designer", color: "var(--text-muted)" },
+            { label: "SEPLE, Noida", color: "var(--text-muted)" }
           ].map((tag, i) => (
             <div key={i} className="flex items-center gap-2 rounded-full border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-secondary)]">
               <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: tag.color }} />
@@ -61,24 +59,27 @@ export default function HomeTab() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <button 
+          <IDEButton
             onClick={() => openFile("data/projects.ts")}
-            className="flex items-center gap-2 rounded-md bg-[var(--accent)] px-5 py-2.5 text-[12px] font-semibold text-white shadow-sm transition-all hover:bg-[var(--accent-hover)] hover:shadow-md"
+            variant="primary"
+            className="px-5"
           >
             <VscFiles size={16} /> View Projects
-          </button>
-          <button 
+          </IDEButton>
+          <IDEButton
             onClick={() => openFile("components/AboutTab.tsx")}
-            className="flex items-center gap-2 rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] px-5 py-2.5 text-[12px] font-medium text-[var(--text-primary)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-overlay)]"
+            variant="secondary"
+            className="px-5"
           >
             <VscAccount size={16} /> About Me
-          </button>
-          <button 
+          </IDEButton>
+          <IDEButton
             onClick={() => openFile("components/ContactTab.tsx")}
-            className="flex items-center gap-2 rounded-md border border-[var(--border-default)] bg-transparent px-5 py-2.5 text-[12px] font-medium text-[var(--text-primary)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)]"
+            variant="ghost"
+            className="px-5"
           >
             <VscMail size={16} /> Contact
-          </button>
+          </IDEButton>
         </div>
 
         <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] md:grid-cols-4">
@@ -100,7 +101,7 @@ export default function HomeTab() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">Social</div>
+          <SectionLabel>Social</SectionLabel>
           <div className="flex flex-wrap gap-2 md:gap-3">
             {socialLinks.map(social => (
               <button 

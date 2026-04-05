@@ -29,7 +29,7 @@ export default function ReadmeTab() {
         <motion.div variants={item} className="flex flex-col items-center text-center gap-6">
           <div className="relative flex h-44 w-full flex-col items-center justify-center overflow-hidden rounded-xl border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-elevated),var(--bg-muted))] shadow-sm">
             <div className="absolute inset-x-0 top-0 h-px bg-[var(--border-hover)]" />
-            <h1 className="text-[36px] font-semibold leading-none tracking-[-0.04em] text-[var(--text-primary)] md:text-[48px]">
+            <h1 className="text-[24px] font-semibold leading-none tracking-[-0.04em] text-[var(--text-primary)] md:text-[28px]">
               Aniket Karmakar
             </h1>
             <p className="mt-3 text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--text-secondary)] md:text-[13px]">
