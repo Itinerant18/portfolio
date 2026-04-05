@@ -1,22 +1,34 @@
 export const portfolioProfile = {
   name: "Aniket Karmakar",
-  role: "Software Engineer | Full-Stack | AI/ML | Cloud",
+  pronouns: "He/Him",
+  role: "Front-end UI Developer | React.js | Web Designer",
+  headline: "Front-end UI Developer | React.js | Web Designer",
   location: "Kolkata, West Bengal, India",
-  headline:
-    "Building full-stack applications, AI/ML systems, IoT automation, and cloud infrastructure.",
-  availability: "Open to Generative AI, full-stack, and software development roles.",
+  currentStatus: "Junior Software Engineer in R&D @ Security Engineers Pvt. Ltd. (SEPLE)",
+  availability: "Open to software engineering internship & full-time opportunities.",
   summary:
-    "Software Engineer with experience in full-stack development, AI/ML systems, IoT, and cloud infrastructure. Proficient in Java, TypeScript, and Python, with a record of shipping real products across startup and enterprise settings.",
+    "Software Engineer with experience in full-stack development, AI/ML systems, IoT, and cloud infrastructure. Proficient in Java, TypeScript, and Python, with a record of shipping real products across startup and enterprise settings. Targeting Generative AI and software development roles.",
+  about:
+    "Pursuing a Bachelor of Technology in Electronics and Communication Engineering at NSHM Knowledge Campus, with a strong passion for Front-end UI Development and Full-stack Web Development. Actively working on building technical skills in Python and Java as core software, and a solid grip of HTML and CSS for web frontend. A passionate Web Developer with a strong foundation in Front-End Web Dev with competitive programming. Committed to leveraging technology to build scalable, unique software solutions. With a proven track record of rapidly understanding new technologies.",
   focusAreas: [
     "Full-stack development and API architecture",
     "AI/ML integrations and Generative AI",
     "IoT automation and embedded systems",
     "Cloud infrastructure and deployment",
+    "Front-end UI/UX development with React.js",
+  ],
+  services: [
+    "Web Design",
+    "Software Testing",
+    "Web Development",
+    "Application Development",
+    "Cloud Application Development",
   ],
   links: {
     github: "github.com/Itinerant18",
     linkedin: "linkedin.com/in/aniket-karmakar",
     email: "aniketkarmakar018@gmail.com",
+    phone: "7602676448",
     website: "cursorfolio.dev",
   },
 } as const;
@@ -28,20 +40,68 @@ export const portfolioProjects = [
     role: "Developer",
     stack: ["TypeScript", "React", "Capacitor", "MLKit"],
     summary: "IoT control app: QR-scan to manage ESP32 web servers over local network.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
     impact: [
       "View on GitHub: " + "https://github.com/Itinerant18/FAS-Control",
+      "Published on Google Play Store",
       "Forks: " + "1"
     ],
   },
   {
-    name: "Dexter Bot",
+    name: "Dexter Bot (RAG System)",
     year: "2026",
     role: "Developer",
-    stack: ["TypeScript"],
-    summary: "Intelligent automation bot; actively developed and maintained.",
+    stack: ["Node.js", "React.js", "Tailwind CSS", "LangChain", "pgvector", "RAG", "GitHub Actions"],
+    summary: "Professional-grade, cloud-native AI assistant for SEPLE HMS/Dexter Industrial Control Panels using Retrieval-Augmented Generation.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Dexter-Bot",
+      "View on GitHub: " + "https://github.com/Itinerant18/Swacth360_bot",
       "Stars: " + "0"
+    ],
+  },
+  {
+    name: "Pookies AI Zone",
+    year: "2024",
+    role: "Developer",
+    stack: ["Node.js", "Java JDK 21", "Android SDK", "Convex", "Git"],
+    summary: "Personal AI tools directory — a mobile app with 3,500+ AI tools across 45 categories with side-by-side comparison.",
+    impact: [
+      "View on GitHub: " + "https://github.com/itineranti18/pookies-ai-zone",
+      "Stars: " + "0"
+    ],
+  },
+  {
+    name: "Real-Time Chat Application",
+    year: "2024",
+    role: "Developer",
+    stack: ["JSP", "Java", "CSS", "React.js", "SQL", "JDBC", "Core Java", "HTML5"],
+    summary: "End-to-end real-time chatting application built with Java full-stack technologies.",
+    association: "Jspider",
+    impact: [
+      "Delivered end-to-end using Java and JSP",
+    ],
+  },
+  {
+    name: "SWatch360",
+    year: "2026",
+    role: "Developer",
+    stack: ["Flutter", "Dart"],
+    summary: "Cross-platform companion mobile app for SWatch360, built on the ThingsBoard PE platform.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
+    impact: [
+      "Published on Google Play Store",
+      "View on GitHub: " + "https://github.com/Itinerant18/SWatch360",
+      "Stars: " + "1"
+    ],
+  },
+  {
+    name: "Resume Builder — Claude Skill",
+    year: "2025",
+    role: "Developer",
+    stack: ["Claude AI", "PDF Generation", "API Integration"],
+    summary: "A Claude skill that builds ATS-optimized, recruiter-ready resumes by pulling data from GitHub, LinkedIn, LeetCode, Figma, and personal portfolio.",
+    impact: [
+      "Generates polished PDF in seconds",
     ],
   },
   {
@@ -78,41 +138,39 @@ export const portfolioProjects = [
     ],
   },
   {
-    name: "SWatch360",
-    year: "2026",
-    role: "Developer",
-    stack: ["Dart", "Flutter"],
-    summary: "Cross-platform companion app targeting Android and iOS.",
-    impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/SWatch360",
-      "Stars: " + "1"
-    ],
-  },
-  {
-    name: "Pookies AI Zone",
-    year: "2025",
-    role: "Developer",
-    stack: ["React Native", "Expo"],
-    summary: "Cross-platform AI zone app targeting Android and iOS.",
-    impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Pookies-AI-Zone",
-      "Stars: " + "0"
-    ],
-  },
-  {
     name: "SEPL Website",
     year: "2025",
     role: "Developer",
     stack: ["HTML", "CSS", "Zoho"],
     summary: "Official company website for Security Engineers Pvt. Ltd.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
     impact: [
       "View on GitHub: " + "https://github.com/Itinerant18/SEPL-Website",
+      "Stars: " + "0"
+    ],
+  },
+  {
+    name: "Dexter Webserver",
+    year: "2025",
+    role: "Developer",
+    stack: ["Python"],
+    summary: "Python-based local web server for IoT device communication and automation.",
+    impact: [
+      "View on GitHub: " + "https://github.com/Itinerant18/Dexter-Webserver",
       "Stars: " + "0"
     ],
   },
 ] as const;
 
 export const skillMatrix = {
+  languages: [
+    "Java",
+    "TypeScript",
+    "Python",
+    "JavaScript",
+    "Dart",
+    "SQL",
+  ],
   frontend: [
     "React",
     "JSP",
@@ -125,14 +183,14 @@ export const skillMatrix = {
     "REST APIs",
     "Firebase",
     "WebSockets",
-    "Java",
-    "Python",
   ],
   aiAndData: [
     "Computer Vision",
     "Gesture Recognition",
     "Time-Series ML",
     "Vector Embeddings",
+    "RAG",
+    "LangChain",
   ],
   tooling: [
     "AWS (S3, Lambda)",
@@ -142,30 +200,36 @@ export const skillMatrix = {
     "Zoho Creator",
     "MLKit",
     "Agile/Scrum",
+    "Docker",
+    "GitHub Actions",
   ],
 } as const;
 
 export const experienceTimeline = [
   {
-    company: "Security Engineers Pvt. Ltd. (SEPL)",
-    role: "Junior Executive Engineer, R&D",
-    period: "Dec 2024 - Present",
-    location: "Kolkata",
+    company: "Security Engineers Pvt. Ltd. (SEPLE)",
+    role: "Junior Software Engineer in R&D department",
+    period: "Oct 2024 - Present",
+    location: "Noida, Uttar Pradesh, India · On-site",
+    type: "Full-time",
     summary:
-      "Building FAS-Control app, internal R&D tools, company website, and IoT automation workflows.",
+      "Building FAS-Control app, internal R&D tools, company website, SWatch360 mobile app, and IoT automation workflows.",
     wins: [
       "Built FAS-Control: React + TypeScript Capacitor app using MLKit for QR-based ESP32 server management.",
+      "Developed Dexter Tech Support AI — a cloud-native RAG system for industrial control panels.",
+      "Built SWatch360 Flutter mobile app on ThingsBoard PE platform.",
       "Developed internal R&D tools in Java and JavaScript; built the company website using Zoho and custom CSS.",
       "Engineered IoT automation workflows integrating embedded hardware with cloud services.",
     ],
   },
   {
-    company: "Ospider & Jspider Technologies",
-    role: "Full-Stack Development Intern",
-    period: "Mar 2024 - Jul 2024",
-    location: "Kolkata",
+    company: "Jspiders",
+    role: "Internship - Java Full Stack Developer program",
+    period: "May 2024 - Oct 2024",
+    location: "India",
+    type: "Internship",
     summary:
-      "Delivered real-time chat applications, procedural dungeon-generation game, and participated in Agile sprints.",
+      "Full-stack development using Java, JSP, and modern web technologies.",
     wins: [
       "Delivered a real-time chat application end-to-end using Java and JSP.",
       "Built a procedural dungeon-generation game in Java with automated environment testing.",
@@ -173,28 +237,71 @@ export const experienceTimeline = [
     ],
   },
   {
-    company: "Edu Skill",
-    role: "AI & Machine Learning Intern",
-    period: "Jun 2023 - Aug 2023",
-    location: "Remote",
+    company: "Qspiders",
+    role: "Internship - Software Testing",
+    period: "Apr 2024 - Oct 2024",
+    location: "India",
+    type: "Internship",
     summary:
-      "Developed facial recognition algorithm and AI hand-gesture mouse-control system.",
+      "Software testing methodologies and quality assurance practices.",
     wins: [
-      "Developed a facial recognition algorithm achieving 80% accuracy using Python and OpenCV.",
-      "Built an AI hand-gesture mouse-control system enabling touchless computer interaction.",
+      "Gained expertise in software testing methodologies and automation testing.",
+      "Worked on test case design, execution, and defect tracking.",
     ],
   },
   {
-    company: "Amazon AWS",
-    role: "Cloud Computing Intern",
-    period: "Jan 2023 - Jun 2023",
+    company: "Cisco",
+    role: "Internship - Cloud Computing",
+    period: "Jan 2024 - May 2024",
     location: "Remote",
+    type: "Internship",
     summary:
-      "Deployed data pipelines in cloud-native AWS environments and contributed to AI-based projects.",
+      "Cloud computing fundamentals and infrastructure management with Cisco technologies.",
     wins: [
-      "Deployed and maintained data pipelines using S3 and Lambda.",
-      "Contributed to AI-based projects improving algorithm accuracy and cloud-side performance.",
+      "Deployed and maintained cloud infrastructure and services.",
+      "Gained hands-on experience with cloud-native environments and networking.",
     ],
+  },
+] as const;
+
+export const educationTimeline = [
+  {
+    institution: "NSHM College of Management and Technology",
+    degree: "Bachelor of Technology - BTech, Electronics and Communication Engineering",
+    period: "Apr 2020 - Aug 2024",
+    grade: "8.6",
+    location: "Kolkata, West Bengal",
+  },
+  {
+    institution: "NSHM Knowledge Campus",
+    degree: "Bachelor of Technology, Electronics and Communication Engineering",
+    period: "Aug 2021 - Aug 2024",
+    location: "Kolkata, West Bengal",
+  },
+  {
+    institution: "Maulana Abul Kalam Azad University of Technology, West Bengal (WBUT)",
+    degree: "Affiliated University",
+    period: "2021 - 2024",
+    location: "West Bengal",
+  },
+  {
+    institution: "Jemo NN High School",
+    degree: "Higher Secondary",
+    period: "Feb 2018 - Jun 2020",
+    location: "India",
+  },
+] as const;
+
+export const certifications = [
+  {
+    name: "Cloud Computing",
+    issuer: "Amazon AWS",
+    date: "Jun 2023",
+  },
+  {
+    name: "AI & Machine Learning",
+    issuer: "Edu Skill",
+    date: "Aug 2023",
   },
 ] as const;
 
@@ -225,7 +332,7 @@ export function buildAIResponse(
   if (normalized.includes("project")) {
     return `Featured work: ${portfolioProjects
       .map((project) => `${project.name} (${project.year})`)
-      .join(", ")}. I focus on building full-stack applications, AI/ML systems, and IoT solutions.`;
+      .join(", ")}. I focus on building full-stack applications, AI/ML systems, IoT solutions, and front-end UI.`;
   }
 
   if (
@@ -233,11 +340,11 @@ export function buildAIResponse(
     normalized.includes("skill") ||
     normalized.includes("technology")
   ) {
-    const coreStack = [...skillMatrix.frontend, ...skillMatrix.backend];
+    const coreStack = [...skillMatrix.languages, ...skillMatrix.frontend];
 
     return `Core stack: ${coreStack
       .slice(0, 8)
-      .join(", ")}. I specialize in full-stack development, AI/ML, IoT, and cloud infrastructure.`;
+      .join(", ")}. I specialize in front-end UI development, full-stack, AI/ML, IoT, and cloud infrastructure.`;
   }
 
   if (
@@ -245,7 +352,7 @@ export function buildAIResponse(
     normalized.includes("hire") ||
     normalized.includes("reach")
   ) {
-    return `You can reach Aniket at ${contactDetails.email}. His GitHub is ${contactDetails.github} and LinkedIn is ${contactDetails.linkedin}.`;
+    return `You can reach Aniket at ${contactDetails.email}. His GitHub is ${contactDetails.github} and LinkedIn is ${contactDetails.linkedin}. Phone: ${contactDetails.phone}.`;
   }
 
   if (
@@ -253,7 +360,15 @@ export function buildAIResponse(
     normalized.includes("career") ||
     normalized.includes("background")
   ) {
-    return `Currently a ${experienceTimeline[0].role} at ${experienceTimeline[0].company}. Aniket has a strong background in electronics & communication engineering with a focus on full-stack and AI/ML.`;
+    return `Currently a ${experienceTimeline[0].role} at ${experienceTimeline[0].company}. Aniket has worked at Jspiders, Qspiders, and Cisco. He has a B.Tech in Electronics & Communication Engineering from NSHM with a 8.6 CGPA.`;
+  }
+
+  if (
+    normalized.includes("education") ||
+    normalized.includes("college") ||
+    normalized.includes("university")
+  ) {
+    return `Aniket holds a B.Tech in Electronics & Communication Engineering from NSHM Knowledge Campus, Kolkata (2020-2024) with a 8.6 CGPA. He also attended Jemo NN High School for Higher Secondary.`;
   }
 
   if (
@@ -262,6 +377,13 @@ export function buildAIResponse(
     normalized.includes("bio")
   ) {
     return `${portfolioProfile.name} is a ${portfolioProfile.role} based in ${portfolioProfile.location}. ${portfolioProfile.summary}`;
+  }
+
+  if (
+    normalized.includes("service") ||
+    normalized.includes("offer")
+  ) {
+    return `Aniket offers: ${portfolioProfile.services.join(", ")}.`;
   }
 
   return `I can walk through ${activeFileName ?? "the portfolio"} in detail, explain the projects, or summarize Aniket's skills and experience.`;

@@ -14,17 +14,20 @@ export const portfolioFiles: IDEFile[] = [
 
 /**
  * @name AniketKarmakar
- * @role Software Engineer | Full-Stack | AI/ML | Cloud
- * @description Building full-stack apps, AI/ML systems, IoT, and cloud infrastructure.
+ * @pronouns He/Him
+ * @role Front-end UI Developer | React.js | Web Designer
+ * @headline Front-end UI Developer | React.js | Web Designer
+ * @current Junior Software Engineer in R&D @ SEPLE
+ * @education NSHM College of Management and Technology
  */
 
 export const Hero = () => {
   return (
     <div className="portfolio">
-      <h1>Software Engineer | Full-Stack | AI/ML | Cloud</h1>
-      <p>Specializing in Java, TypeScript, Python, and IoT Integrations.</p>
+      <h1>Front-end UI Developer | React.js | Web Designer</h1>
+      <p>Full-Stack | AI/ML | IoT | Cloud Infrastructure</p>
       <div className="status">
-        Currently: Junior Executive Engineer, R&D @ SEPL, Kolkata
+        Currently: Junior Software Engineer, R&D @ SEPLE, Noida
       </div>
     </div>
   );
@@ -41,42 +44,42 @@ export const Hero = () => {
     role: "Developer",
     stack: ["TypeScript", "React", "Capacitor", "MLKit"],
     summary: "IoT control app: QR-scan to manage ESP32 web servers over local network.",
+    association: "SEPLE",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/FAS-Control",
+      "Published on Google Play Store",
       "Forks: " + "1"
     ],
   },
   {
-    name: "Dexter Bot",
+    name: "Dexter Bot (RAG System)",
     year: "2026",
     role: "Developer",
-    stack: ["TypeScript"],
-    summary: "Intelligent automation bot; actively developed and maintained.",
+    stack: ["Node.js", "React.js", "Tailwind CSS", "LangChain", "pgvector", "RAG"],
+    summary: "Cloud-native AI assistant for SEPLE HMS/Dexter Industrial Control Panels.",
+    association: "SEPLE",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Dexter-Bot",
-      "Stars: " + "0"
+      "View on GitHub: " + "https://github.com/Itinerant18/Swacth360_bot",
     ],
   },
   {
-    name: "ML Predicter",
-    year: "2025",
+    name: "Pookies AI Zone",
+    year: "2024",
     role: "Developer",
-    stack: ["Python", "ML", "Vector Embeddings"],
-    summary: "Astrology engine + ML forecasting: time-series prediction, clustering, AI vector embeddings.",
+    stack: ["Node.js", "Java JDK 21", "Android SDK", "Convex", "Git"],
+    summary: "AI tools directory — 3,500+ tools across 45 categories with side-by-side comparison.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/ML-Predicter",
-      "Stars: " + "0"
+      "View on GitHub: " + "https://github.com/itineranti18/pookies-ai-zone",
     ],
   },
   {
-    name: "Financial-Advisor",
-    year: "2025",
+    name: "Real-Time Chat Application",
+    year: "2024",
     role: "Developer",
-    stack: ["TypeScript"],
-    summary: "AI-assisted financial advisory application with data-driven recommendation engine.",
+    stack: ["JSP", "Java", "CSS", "React.js", "SQL", "JDBC", "HTML5"],
+    summary: "End-to-end real-time chatting application with Java full-stack.",
+    association: "Jspider",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Financial-Advisor",
-      "Stars: " + "0"
+      "Delivered end-to-end using Java and JSP",
     ],
   },
   {
@@ -84,21 +87,30 @@ export const Hero = () => {
     year: "2026",
     role: "Developer",
     stack: ["Dart", "Flutter"],
-    summary: "Cross-platform companion app targeting Android and iOS.",
+    summary: "Cross-platform companion app on ThingsBoard PE platform.",
+    association: "SEPLE",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/SWatch360",
-      "Stars: " + "1"
+      "Published on Google Play Store",
     ],
   },
   {
-    name: "Pookies AI Zone",
+    name: "Resume Builder — Claude Skill",
     year: "2025",
     role: "Developer",
-    stack: ["React Native", "Expo"],
-    summary: "Cross-platform AI zone app targeting Android and iOS.",
+    stack: ["Claude AI", "PDF Generation", "API Integration"],
+    summary: "ATS-optimized resume builder pulling from GitHub, LinkedIn, LeetCode, Figma.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Pookies-AI-Zone",
-      "Stars: " + "0"
+      "Generates polished PDF in seconds",
+    ],
+  },
+  {
+    name: "ML Predicter",
+    year: "2025",
+    role: "Developer",
+    stack: ["Python", "ML", "Vector Embeddings"],
+    summary: "Astrology engine + ML forecasting: time-series prediction, clustering.",
+    impact: [
+      "View on GitHub: " + "https://github.com/Itinerant18/ML-Predicter",
     ],
   },
   {
@@ -109,7 +121,6 @@ export const Hero = () => {
     summary: "Official company website for Security Engineers Pvt. Ltd.",
     impact: [
       "View on GitHub: " + "https://github.com/Itinerant18/SEPL-Website",
-      "Stars: " + "0"
     ],
   },
   {
@@ -120,7 +131,6 @@ export const Hero = () => {
     summary: "Python-based local web server for IoT device communication and automation.",
     impact: [
       "View on GitHub: " + "https://github.com/Itinerant18/Dexter-Webserver",
-      "Stars: " + "0"
     ],
   }
 ] as const;`,
@@ -134,7 +144,7 @@ export const Hero = () => {
   "source": "github",
   "owner": "Itinerant18",
   "last_sync": "2026-04-05",
-  "projects_count": 8
+  "projects_count": 11
 }`,
   },
   {
@@ -167,7 +177,9 @@ export const Hero = () => {
     "Computer Vision",
     "Gesture Recognition",
     "Time-Series ML",
-    "Vector Embeddings"
+    "Vector Embeddings",
+    "RAG",
+    "LangChain"
   ],
   "cloud_iot": [
     "AWS (S3, Lambda)",
@@ -180,7 +192,9 @@ export const Hero = () => {
     "GitHub",
     "Zoho Creator",
     "MLKit",
-    "Agile/Scrum"
+    "Agile/Scrum",
+    "Docker",
+    "GitHub Actions"
   ]
 }`,
   },
@@ -190,8 +204,10 @@ export const Hero = () => {
     language: "tsx",
     content: `<!-- about.html -->
 <section>
-  <h1>About Aniket Karmakar</h1>
+  <h1>About Aniket Karmakar (He/Him)</h1>
+  <p>Front-end UI Developer | React.js | Web Designer</p>
   <p>Software Engineer specialized in Full-Stack Development, AI/ML, IoT, and Cloud Infrastructure.</p>
+  <p>B.Tech ECE — NSHM Knowledge Campus, Kolkata — CGPA: 8.6</p>
 </section>`,
   },
   {
@@ -200,24 +216,26 @@ export const Hero = () => {
     language: "ts",
     content: `export const experience = [
   {
-    company: "Security Engineers Pvt. Ltd. (SEPL)",
-    role: "Junior Executive Engineer, R&D",
-    period: "Dec 2024 - Present"
+    company: "Security Engineers Pvt. Ltd. (SEPLE)",
+    role: "Junior Software Engineer in R&D",
+    period: "Oct 2024 - Present",
+    type: "Full-time",
+    location: "Noida, Uttar Pradesh"
   },
   {
-    company: "Ospider & Jspider Technologies",
-    role: "Full-Stack Development Intern",
-    period: "Mar 2024 - Jul 2024"
+    company: "Jspiders",
+    role: "Internship - Java Full Stack Developer",
+    period: "May 2024 - Oct 2024"
   },
   {
-    company: "Edu Skill",
-    role: "AI & Machine Learning Intern",
-    period: "Jun 2023 - Aug 2023"
+    company: "Qspiders",
+    role: "Internship - Software Testing",
+    period: "Apr 2024 - Oct 2024"
   },
   {
-    company: "Amazon AWS",
-    role: "Cloud Computing Intern",
-    period: "Jan 2023 - Jun 2023"
+    company: "Cisco",
+    role: "Internship - Cloud Computing",
+    period: "Jan 2024 - May 2024"
   }
 ];`,
   },

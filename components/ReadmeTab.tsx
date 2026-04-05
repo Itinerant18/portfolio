@@ -33,7 +33,7 @@ export default function ReadmeTab() {
               Aniket Karmakar
             </h1>
             <p className="mt-3 text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--text-secondary)] md:text-[13px]">
-              Software Engineer · Full-Stack · AI/ML · Cloud
+              Front-end UI Developer · React.js · Web Designer · Full-Stack · AI/ML
             </p>
             <div className="absolute -bottom-12 -right-10 h-32 w-32 rounded-full bg-[var(--accent)]/5 blur-3xl" />
           </div>
@@ -67,15 +67,15 @@ export default function ReadmeTab() {
             <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-6">
                 <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 font-mono text-[12px] leading-7 shadow-sm transition-all hover:border-[var(--border-hover)]">
                     <div className="text-[var(--error)] mb-1">status: <span className="text-[var(--text-primary)]">Ready to Build</span></div>
-                    <div className="text-[var(--error)] mb-1">role: <span className="text-[var(--text-primary)]">Junior Executive Engineer, R&D</span></div>
-                    <div className="text-[var(--error)] mb-1">focus: <span className="text-[var(--text-primary)]">Full-Stack, AI/ML, IoT & Cloud</span></div>
-                    <div className="text-[var(--error)] mb-4">base: <span className="text-[var(--text-primary)]">Kolkata, India 🇮🇳</span></div>
+                    <div className="text-[var(--error)] mb-1">role: <span className="text-[var(--text-primary)]">Junior Software Engineer, R&D</span></div>
+                    <div className="text-[var(--error)] mb-1">focus: <span className="text-[var(--text-primary)]">Front-End UI, Full-Stack, AI/ML, IoT & Cloud</span></div>
+                    <div className="text-[var(--error)] mb-4">base: <span className="text-[var(--text-primary)]">Noida / Kolkata, India 🇮🇳</span></div>
                     
                     <div className="text-[var(--info)] mb-1 font-bold tracking-tight">// core_competencies:</div>
-                    <div className="text-[var(--text-secondary)] ml-4">▸ Full-Stack Development (React, Java, TypeScript)</div>
-                    <div className="text-[var(--text-secondary)] ml-4">▸ AI/ML Systems & Computer Vision</div>
-                    <div className="text-[var(--text-secondary)] ml-4">▸ IoT Automation (ESP32, MQTT)</div>
-                    <div className="text-[var(--text-secondary)] ml-4 mb-4">▸ Cloud Infrastructure (AWS S3, Lambda)</div>
+                    <div className="text-[var(--text-secondary)] ml-4">▸ Front-End UI Dev (React.js, TypeScript, HTML/CSS)</div>
+                    <div className="text-[var(--text-secondary)] ml-4">▸ Full-Stack Development (Java, Python, Node.js)</div>
+                    <div className="text-[var(--text-secondary)] ml-4">▸ AI/ML Systems, RAG & LangChain</div>
+                    <div className="text-[var(--text-secondary)] ml-4 mb-4">▸ IoT Automation (ESP32, MQTT) & Cloud (AWS, Cisco)</div>
                     
                     <div className="text-[var(--success)] mb-1 font-bold tracking-tight">/* active_research */</div>
                     <div className="text-[var(--text-secondary)] ml-4">▸ Generative AI & LLM Integration</div>
@@ -99,10 +99,10 @@ export default function ReadmeTab() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { title: "Languages", items: ["Java", "TypeScript", "Python", "Dart"], icon: FaTerminal },
-                { title: "Frontend", items: ["React", "JSP", "Flutter", "Capacitor"], icon: VscSparkle },
+                { title: "Languages", items: ["Java", "TypeScript", "Python", "Dart", "SQL"], icon: FaTerminal },
+                { title: "Frontend", items: ["React.js", "JSP", "Flutter", "Capacitor", "HTML/CSS"], icon: VscSparkle },
                 { title: "Backend", items: ["Node.js", "REST APIs", "Firebase", "WebSockets"], icon: VscServer },
-                { title: "Cloud & IoT", items: ["AWS S3/Lambda", "ESP32", "MQTT", "MLKit"], icon: VscDatabase }
+                { title: "AI & Cloud", items: ["RAG", "LangChain", "AWS", "ESP32", "MLKit"], icon: VscDatabase }
               ].map((group, i) => (
                 <div key={i} className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 shadow-sm transition-all hover:border-[var(--border-hover)]">
                   <div className="flex items-center gap-2 mb-4">

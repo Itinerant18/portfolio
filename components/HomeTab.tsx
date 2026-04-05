@@ -23,7 +23,7 @@ export default function HomeTab() {
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 md:gap-10">
         
         <div className="font-mono text-[12px] text-[var(--text-muted)]">
-          // full-stack development, AI/ML systems, IoT, and cloud infrastructure
+          // front-end UI development · react.js · full-stack · AI/ML · cloud
         </div>
 
         <div className="flex flex-col">
@@ -37,10 +37,10 @@ export default function HomeTab() {
 
         <div className="flex flex-wrap gap-2.5">
           {[
-            { label: "Software Engineer", color: "var(--info)" },
-            { label: "Full-Stack Dev", color: "var(--accent)" },
-            { label: "AI / ML", color: "var(--success)" },
-            { label: "SEPL, Kolkata", color: "var(--error)" }
+            { label: "Front-end UI Developer", color: "var(--info)" },
+            { label: "React.js", color: "var(--accent)" },
+            { label: "Web Designer", color: "var(--success)" },
+            { label: "SEPLE, Noida", color: "var(--error)" }
           ].map((tag, i) => (
             <div key={i} className="flex items-center gap-2 rounded-full border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-secondary)]">
               <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: tag.color }} />
@@ -51,12 +51,12 @@ export default function HomeTab() {
 
         <div className="flex flex-col gap-3">
           <div className="text-[16px] font-medium text-[var(--text-secondary)] md:text-[18px]">
-            Building full-stack applications &amp; AI/ML systems
+            Front-end UI Developer &amp; Full-stack Web Developer
             <span className="ml-2 inline-block h-[14px] w-px translate-y-[2px] bg-[var(--accent)]/70" />
           </div>
 
           <div className="max-w-[64ch] text-[15px] leading-7 text-[var(--text-muted)] md:text-[16px]">
-            I live at the crossroads of <span className="text-[var(--text-primary)] font-semibold">full-stack development</span>, <span className="text-[var(--text-primary)] font-semibold">AI/ML</span>, <span className="text-[var(--text-primary)] font-semibold">IoT</span>, and <span className="text-[var(--text-primary)] font-semibold">cloud infrastructure</span>. I ship real products with a focus on intelligent, scalable systems.
+            Passionate Web Developer with a strong foundation in <span className="text-[var(--text-primary)] font-semibold">Front-End Web Dev</span>, <span className="text-[var(--text-primary)] font-semibold">React.js</span>, <span className="text-[var(--text-primary)] font-semibold">Full-Stack Development</span>, and <span className="text-[var(--text-primary)] font-semibold">AI/ML</span>. Committed to building scalable, unique software solutions with elegantly-designed architecture.
           </div>
         </div>
 
@@ -83,9 +83,9 @@ export default function HomeTab() {
 
         <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] md:grid-cols-4">
           {[
-            { value: "4+", label: "YEARS" },
-            { value: "15+", label: "PROJECTS" },
-            { value: "∞", label: "CURIOSITY" },
+            { value: "8.6", label: "CGPA" },
+            { value: "36+", label: "PROJECTS" },
+            { value: "4+", label: "INTERNSHIPS" },
             { value: "↑", label: "LEARNING" }
           ].map((stat, i) => (
             <div key={i} className={`flex flex-col items-center justify-center border-[var(--border-default)] px-4 py-5 ${i < 3 ? 'md:border-r' : ''} ${i < 2 ? 'border-b md:border-b-0' : ''}`}>

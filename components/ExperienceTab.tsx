@@ -5,11 +5,13 @@ import React from "react";
 export default function ExperienceTab() {
   const experiences = [
     {
-      period: "Dec 2024 - Present",
-      role: "Junior Executive Engineer, R&D",
-      company: "Security Engineers Pvt. Ltd. (SEPL)",
+      period: "Oct 2024 - Present",
+      role: "Junior Software Engineer in R&D department",
+      company: "Security Engineers Pvt. Ltd. (SEPLE)",
+      type: "Full-time",
+      location: "Noida, Uttar Pradesh, India · On-site",
       description:
-        "Built FAS-Control: React + TypeScript Capacitor app using MLKit for QR-based ESP32 server management. Developed internal R&D tools in Java and JavaScript; built the company website using Zoho and custom CSS. Engineered IoT automation workflows integrating embedded hardware with cloud services.",
+        "Built FAS-Control: React + TypeScript Capacitor app using MLKit for QR-based ESP32 server management. Developed Dexter Tech Support AI — a cloud-native RAG system for industrial control panels. Built SWatch360 Flutter mobile app on ThingsBoard PE platform. Developed internal R&D tools in Java and JavaScript; built the company website using Zoho and custom CSS. Engineered IoT automation workflows integrating embedded hardware with cloud services.",
       tags: [
         "React",
         "TypeScript",
@@ -20,34 +22,43 @@ export default function ExperienceTab() {
         "Zoho",
         "ESP32",
         "IoT",
+        "Flutter",
+        "LangChain",
+        "RAG",
       ],
       current: true,
     },
     {
-      period: "Mar 2024 - Jul 2024",
-      role: "Full-Stack Development Intern",
-      company: "Ospider & Jspider Technologies",
+      period: "May 2024 - Oct 2024",
+      role: "Internship - Java Full Stack Developer program",
+      company: "Jspiders",
+      type: "Internship · 6 months",
+      location: "India",
       description:
         "Delivered a real-time chat application end-to-end using Java and JSP. Built a procedural dungeon-generation game in Java with automated environment testing. Participated in Agile sprints; collaborated across design and development cycles.",
-      tags: ["Java", "JSP", "Agile", "Full-Stack", "Testing"],
+      tags: ["Java", "JSP", "SQL", "JDBC", "React.js", "CSS", "HTML5", "Agile"],
       current: false,
     },
     {
-      period: "Jun 2023 - Aug 2023",
-      role: "AI & Machine Learning Intern",
-      company: "Edu Skill",
+      period: "Apr 2024 - Oct 2024",
+      role: "Internship - Software Testing",
+      company: "Qspiders",
+      type: "Internship · 7 months",
+      location: "India",
       description:
-        "Developed a facial recognition algorithm achieving 80% accuracy using Python and OpenCV. Built an AI hand-gesture mouse-control system enabling touchless computer interaction.",
-      tags: ["Python", "OpenCV", "Computer Vision", "ML", "Gesture Recognition"],
+        "Gained expertise in software testing methodologies including manual testing, automation testing, test case design, execution, and defect tracking. Worked on quality assurance best practices.",
+      tags: ["Software Testing", "Manual Testing", "Automation Testing", "QA"],
       current: false,
     },
     {
-      period: "Jan 2023 - Jun 2023",
-      role: "Cloud Computing Intern",
-      company: "Amazon AWS",
+      period: "Jan 2024 - May 2024",
+      role: "Internship - Cloud Computing",
+      company: "Cisco",
+      type: "Internship · 5 months",
+      location: "Remote",
       description:
-        "Deployed and maintained data pipelines in cloud-native AWS environments using S3 and Lambda. Contributed to AI-based projects improving algorithm accuracy and cloud-side performance.",
-      tags: ["AWS", "S3", "Lambda", "Cloud Pipelines", "AI"],
+        "Cloud computing fundamentals and infrastructure management with Cisco technologies. Deployed and maintained cloud infrastructure and services. Gained hands-on experience with cloud-native environments and networking.",
+      tags: ["Cloud Computing", "Cisco", "Networking", "Infrastructure"],
       current: false,
     },
   ];
@@ -84,10 +95,15 @@ export default function ExperienceTab() {
               />
               
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <span className="px-2 py-0.5 rounded-md bg-[var(--bg-muted)] text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] border border-[var(--border-default)]">
                     {exp.period}
                   </span>
+                  {exp.type && (
+                    <span className="px-2 py-0.5 rounded-md bg-[var(--bg-elevated)] text-[10px] font-medium text-[var(--text-secondary)] border border-[var(--border-default)]">
+                      {exp.type}
+                    </span>
+                  )}
                   {exp.current && (
                     <span className="flex items-center gap-1.5 text-[10px] font-black text-[var(--success)] uppercase tracking-tighter">
                       <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-pulse" />
@@ -103,6 +119,11 @@ export default function ExperienceTab() {
                   <div className="text-[16px] md:text-[18px] font-bold text-[var(--accent)] mt-1">
                     @ {exp.company}
                   </div>
+                  {exp.location && (
+                    <div className="text-[12px] text-[var(--text-muted)] mt-1 font-medium">
+                      📍 {exp.location}
+                    </div>
+                  )}
                 </div>
 
                 <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-secondary)] max-w-3xl">

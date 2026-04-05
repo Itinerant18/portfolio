@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Aniket Karmakar | Portfolio",
-  description: "Software Engineer portfolio – Full-Stack, AI/ML, IoT, and Cloud.",
+  description: "Aniket Karmakar – Front-end UI Developer | React.js | Web Designer | Full-Stack | AI/ML | Cloud",
 };
 
 export default function RootLayout({
