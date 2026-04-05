@@ -4,53 +4,53 @@ import React from "react";
 
 const skillCategories = [
   {
-    title: "FRONTEND & UI/UX (8.5/10)",
+    title: "FRONTEND & UI/UX",
     skills: [
-      { name: "React & Next.js", percentage: 88, color: "#61afef" },
-      { name: "Tailwind CSS & Radix UI", percentage: 92, color: "#98c379" },
-      { name: "Zustand & React Query", percentage: 85, color: "#e5c07b" },
-      { name: "Framer Motion", percentage: 80, color: "#c678dd" },
-      { name: "Vite", percentage: 85, color: "#56b6c2" },
+      { name: "React & Next.js", percentage: 88, color: "var(--info)" },
+      { name: "Tailwind CSS & Radix UI", percentage: 92, color: "var(--success)" },
+      { name: "Zustand & React Query", percentage: 85, color: "var(--warning)" },
+      { name: "Framer Motion", percentage: 80, color: "var(--accent)" },
+      { name: "Vite", percentage: 85, color: "var(--info)" },
     ],
   },
   {
-    title: "AI AGENTS & LLMs (8.0/10)",
+    title: "AI AGENTS & LLMs",
     skills: [
-      { name: "LangChain", percentage: 82, color: "#98c379" },
-      { name: "RAG Architecture", percentage: 85, color: "#61afef" },
-      { name: "Pinecone (Vector DB)", percentage: 80, color: "#c678dd" },
-      { name: "OpenAI & Google GenAI", percentage: 82, color: "#d19a66" },
-      { name: "HuggingFace", percentage: 75, color: "#e5c07b" },
+      { name: "LangChain", percentage: 82, color: "var(--success)" },
+      { name: "RAG Architecture", percentage: 85, color: "var(--info)" },
+      { name: "Pinecone (Vector DB)", percentage: 80, color: "var(--accent)" },
+      { name: "OpenAI & Google GenAI", percentage: 82, color: "var(--warning)" },
+      { name: "HuggingFace", percentage: 75, color: "var(--warning)" },
     ],
   },
   {
-    title: "BACKEND & APIs (7.5/10)",
+    title: "BACKEND & APIs",
     skills: [
-      { name: "Node.js & Express", percentage: 80, color: "#98c379" },
-      { name: "Python (Flask)", percentage: 75, color: "#61afef" },
-      { name: "REST APIs & Middleware", percentage: 85, color: "#e5c07b" },
-      { name: "WebSockets / Socket.io", percentage: 72, color: "#c678dd" },
-      { name: "Security & Auth (JWT)", percentage: 78, color: "#56b6c2" },
+      { name: "Node.js & Express", percentage: 80, color: "var(--success)" },
+      { name: "Python (Flask)", percentage: 75, color: "var(--info)" },
+      { name: "REST APIs & Middleware", percentage: 85, color: "var(--warning)" },
+      { name: "WebSockets / Socket.io", percentage: 72, color: "var(--accent)" },
+      { name: "Security & Auth (JWT)", percentage: 78, color: "var(--info)" },
     ],
   },
   {
-    title: "DATABASES & BaaS (7.5/10)",
+    title: "DATABASES & BaaS",
     skills: [
-      { name: "PostgreSQL & Neon", percentage: 82, color: "#56b6c2" },
-      { name: "Supabase & Convex", percentage: 85, color: "#98c379" },
-      { name: "SQLite", percentage: 80, color: "#d19a66" },
-      { name: "Redis", percentage: 75, color: "#e06c75" },
-      { name: "Firebase", percentage: 70, color: "#e5c07b" },
+      { name: "PostgreSQL & Neon", percentage: 82, color: "var(--info)" },
+      { name: "Supabase & Convex", percentage: 85, color: "var(--success)" },
+      { name: "SQLite", percentage: 80, color: "var(--warning)" },
+      { name: "Redis", percentage: 75, color: "var(--error)" },
+      { name: "Firebase", percentage: 70, color: "var(--warning)" },
     ],
   },
   {
-    title: "MOBILE & CROSS-PLATFORM (7.0/10)",
+    title: "MOBILE & CROSS-PLATFORM",
     skills: [
-      { name: "React Native", percentage: 75, color: "#61afef" },
-      { name: "Expo", percentage: 78, color: "#c678dd" },
-      { name: "Capacitor", percentage: 70, color: "#56b6c2" },
-      { name: "Native ML Integrations", percentage: 72, color: "#e5c07b" },
-      { name: "Flutter / Dart", percentage: 65, color: "#61afef" },
+      { name: "React Native", percentage: 75, color: "var(--info)" },
+      { name: "Expo", percentage: 78, color: "var(--accent)" },
+      { name: "Capacitor", percentage: 70, color: "var(--info)" },
+      { name: "Native ML Integrations", percentage: 72, color: "var(--warning)" },
+      { name: "Flutter / Dart", percentage: 65, color: "var(--info)" },
     ],
   },
 ];
@@ -73,61 +73,51 @@ const familiarTags = [
 
 export default function SkillsTab() {
   return (
-    <div className="flex h-[calc(100vh-80px)] w-full flex-col overflow-auto bg-[#1b1e22] text-[#c9d1d9] font-mono text-[13px] ide-scrollbar p-8">
-      <div className="mb-8 w-full max-w-6xl mx-auto">
-        <div className="mb-8 font-mono text-[#6e7681]">
-          // skills.json - tech stack & tools I actually use
+    <div className="flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] text-[var(--text-primary)] font-sans text-[13px] ide-scrollbar p-6 md:p-12 pb-32">
+      <div className="w-full max-w-5xl mx-auto flex flex-col gap-10">
+        <div className="font-mono text-[var(--text-muted)]">
+          // skills.json - core competency matrix
         </div>
 
-        <div className="mb-6">
-          <h1
-            className="text-4xl font-extrabold tracking-widest text-[#f0f6fc] mb-6"
-            style={{
-              fontFamily: "'Inter', sans-serif",
-            }}
-          >
-            Skills
+        <div className="flex flex-col gap-4">
+          <h1 className="text-[32px] md:text-[48px] font-black tracking-tight text-[var(--text-primary)]">
+            Technical Skills
           </h1>
-          <div className="text-[#8b949e]">
-            {"{ "}
-            <span className="text-[#7ee787]">"status"</span>:{" "}
-            <span className="text-[#a5d6ff]">"always_learning"</span>,{" "}
-            <span className="text-[#7ee787]">"passion"</span>:{" "}
-            <span className="text-[#a5d6ff]">"immeasurable"</span>
+          <div className="font-mono text-[14px]">
+            <span className="text-[var(--accent)]">const</span> <span className="text-[var(--info)]">capabilities</span> = {"{ "}
+            <span className="text-[var(--warning)]">status</span>: <span className="text-[var(--success)]">"actively_evolving"</span>,{" "}
+            <span className="text-[var(--warning)]">growth</span>: <span className="text-[var(--success)]">"exponential"</span>
             {" }"}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-x-16 gap-y-12 md:grid-cols-2 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 mt-4">
           {skillCategories.map((category) => (
-            <div key={category.title} className="flex flex-col">
-              <h2 className="mb-6 text-[14px] font-semibold tracking-[0.2em] text-[#d2a8ff]">
+            <div key={category.title} className="flex flex-col gap-6">
+              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--accent)] flex items-center gap-3">
+                <span className="h-px flex-1 bg-[var(--border-default)]" />
                 {category.title}
               </h2>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-5">
                 {category.skills.map((skill) => (
-                  <div
-                    key={skill.name}
-                    className="grid grid-cols-[140px_1fr_40px] items-center gap-4"
-                  >
-                    <span className="text-[#8b949e] truncate pr-2">
-                      {skill.name}
-                    </span>
-                    <div className="h-[2px] w-full rounded-full bg-[#30363d] overflow-hidden relative translate-y-[1px]">
+                  <div key={skill.name} className="flex flex-col gap-2">
+                    <div className="flex justify-between items-end px-0.5">
+                      <span className="text-[13px] font-bold text-[var(--text-secondary)]">
+                        {skill.name}
+                      </span>
+                      <span className="text-[11px] font-black text-[var(--text-muted)] font-mono">
+                        {skill.percentage}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-[var(--bg-muted)] overflow-hidden relative border border-[var(--border-default)]/50">
                       <div
-                        className="absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ease-out"
+                        className="absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(0,0,0,0.2)]"
                         style={{
                           width: `${skill.percentage}%`,
                           backgroundColor: skill.color,
                         }}
                       />
                     </div>
-                    <span
-                      className="text-right text-[12px] font-medium"
-                      style={{ color: skill.color }}
-                    >
-                      {skill.percentage}%
-                    </span>
                   </div>
                 ))}
               </div>
@@ -135,15 +125,15 @@ export default function SkillsTab() {
           ))}
         </div>
 
-        <div className="mt-16 mb-8 border-t border-[#30363d] pt-12">
-          <h2 className="mb-6 text-[14px] font-semibold tracking-[0.2em] text-[#d2a8ff]">
-            ALSO FAMILIAR WITH
+        <div className="mt-12 border-t border-[var(--border-default)] pt-10">
+          <h2 className="mb-6 text-[11px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)]">
+            ECOSYSTEM & LIBRARIES
           </h2>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {familiarTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded border border-[#30363d] bg-[#21262d] px-3 py-1.5 text-[12px] text-[#8b949e] hover:border-[#8b949e] hover:text-[#c9d1d9] transition-colors cursor-default"
+                className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-1.5 text-[12px] font-bold text-[var(--text-secondary)] hover:border-[var(--accent)]/50 hover:bg-[var(--bg-overlay)] hover:text-[var(--text-primary)] transition-all cursor-default shadow-sm"
               >
                 {tag}
               </span>

@@ -121,25 +121,34 @@ export default function AppShell({ children }: { children: ReactNode }) {
     zoomOut,
   ]);
 
+  const gridTemplateColumns = !isDesktop
+    ? "1fr"
+    : [
+        aiPanelOpen ? "260px" : null,
+        "minmax(0, 1fr)",
+        sidebarOpen ? "300px" : null,
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+  const gridTemplateRows = [
+    "36px", // TopBar
+    "minmax(0, 1fr)", // Main content
+    terminalOpen ? "180px" : "0px", // Terminal
+    "22px", // StatusBar
+  ].join(" ");
+
   return (
     <>
       <div
-        className="grid h-screen grid-cols-1 overflow-hidden bg-[var(--bg)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
+        className="grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
         style={{
-          zoom: zoomLevel,
-          gridTemplateColumns:
-            isDesktop
-              ? aiPanelOpen && sidebarOpen
-                ? "260px minmax(0, 1fr) 300px"
-                : aiPanelOpen
-                  ? "260px minmax(0, 1fr)"
-                  : sidebarOpen
-                    ? "minmax(0, 1fr) 300px"
-                    : "minmax(0, 1fr)"
-              : "minmax(0, 1fr)",
-          gridTemplateRows: terminalOpen
-            ? "36px minmax(0, 1fr) 180px 22px"
-            : "36px minmax(0, 1fr) 0px 22px",
+          transform: `scale(${zoomLevel})`,
+          transformOrigin: "0 0",
+          width: `${100 / zoomLevel}%`,
+          height: `${100 / zoomLevel}%`,
+          gridTemplateColumns,
+          gridTemplateRows,
         } as React.CSSProperties}
       >
         <div className="col-start-1 row-start-1 min-w-0" style={{ gridColumn: "1 / -1" }}>
@@ -148,9 +157,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
         {aiPanelOpen ? (
           <aside
-            className="hidden min-h-0 min-w-0 border-r border-[var(--border)] bg-[var(--sidebar)] lg:col-start-1 lg:block"
+            className="hidden min-h-0 min-w-0 border-r border-[var(--border-default)] bg-[var(--bg-elevated)] lg:col-start-1 lg:block"
             style={{
-               gridRow: terminalOpen ? "2 / 4" : "2 / 3"
+               gridRow: "2 / 4"
             }}
           >
             <SidebarAI />
@@ -158,23 +167,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         <main
-          className={`col-start-1 row-start-2 min-h-0 min-w-0 bg-[var(--panel)] ${
-            aiPanelOpen && sidebarOpen
-              ? "lg:col-start-2"
-              : aiPanelOpen
-                ? "lg:col-start-2"
-                : "lg:col-start-1"
-          }`}
+          className="min-h-0 min-w-0 bg-[var(--bg-surface)]"
           style={{
-            gridColumn: isDesktop
-              ? aiPanelOpen && sidebarOpen
-                ? "2 / 3"
-                : aiPanelOpen
-                  ? "2 / 3"
-                  : sidebarOpen
-                    ? "1 / 2"
-                    : "1 / -1"
-              : "1 / -1",
+            gridColumn: isDesktop ? (aiPanelOpen ? "2 / 3" : "1 / 2") : "1 / -1",
+            gridRow: "2 / 3",
           }}
         >
           {children}
@@ -182,10 +178,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
         {sidebarOpen ? (
           <aside
-            className="hidden min-h-0 min-w-0 border-l border-[var(--border)] bg-[var(--sidebar)] lg:block"
+            className="hidden min-h-0 min-w-0 border-l border-[var(--border-default)] bg-[var(--bg-elevated)] lg:block"
             style={{
-              gridColumn: isDesktop ? (aiPanelOpen ? "3 / 4" : "2 / 3") : undefined,
-              gridRow: terminalOpen ? "2 / 4" : "2 / 3"
+              gridColumn: isDesktop 
+                ? (aiPanelOpen ? "3 / 4" : "2 / 3") 
+                : undefined,
+              gridRow: "2 / 4"
             }}
           >
             <FileExplorer />
@@ -193,17 +191,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         <div
-          className="row-start-3 min-h-0 min-w-0 overflow-hidden"
+          className="min-h-0 min-w-0 overflow-hidden border-t border-[var(--border-default)]"
           style={{
-            gridColumn: isDesktop
-              ? aiPanelOpen && sidebarOpen
-                ? "2 / 3"
-                : aiPanelOpen
-                  ? "2 / 3"
-                  : sidebarOpen
-                    ? "1 / 2"
-                    : "1 / -1"
-              : "1 / -1",
+            gridRow: "3 / 4",
+            gridColumn: isDesktop ? (aiPanelOpen ? "2 / 3" : "1 / 2") : "1 / -1",
           }}
         >
           <Terminal />

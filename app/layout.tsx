@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Cursorfolio IDE",
-  description: "A developer portfolio that behaves like a mini IDE.",
+  title: "Aniket Karmakar | Portfolio",
+  description: "Software Engineer portfolio – Full-Stack, AI/ML, IoT, and Cloud.",
 };
 
 export default function RootLayout({

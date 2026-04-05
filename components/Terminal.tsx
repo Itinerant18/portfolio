@@ -3,6 +3,10 @@
 import { useIDEStore } from "@/store/useIDEStore";
 import { executeTerminalCommand } from "@/utils/commands";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { 
+  VscClose, VscChevronUp, VscChevronDown, VscAdd, 
+  VscTerminal, VscWarning, VscCheck, VscCircleFilled 
+} from "react-icons/vsc";
 
 interface TerminalEntry {
   id: string;
@@ -38,13 +42,12 @@ export default function Terminal() {
   
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const prompt = useMemo(() => "PS C:\\workspace\\tech-support-ai>", []);
+  const prompt = useMemo(() => "PS portfolio>", []);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "auto",
-    });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [entries]);
 
   useEffect(() => {
@@ -120,124 +123,116 @@ export default function Terminal() {
   ];
 
   return (
-    <section className="flex h-full min-h-0 flex-col border-t border-[#1e1e24] bg-[#0a0a0a] select-none font-sans">
+    <section className="flex h-full min-h-0 flex-col border-t border-[var(--border-default)] bg-[var(--bg-surface)] select-none font-sans">
       {/* Top Bar */}
-      <div className="flex h-[35px] shrink-0 items-center justify-between pl-4 pr-3">
+      <div className="flex h-9 shrink-0 items-center justify-between px-4 border-b border-[var(--border-default)] bg-[var(--bg-muted)]/30">
         {/* Tabs */}
-        <div className="flex h-full items-center gap-[24px]">
+        <div className="flex h-full items-center gap-6">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`relative flex h-full items-center gap-1.5 text-[11px] font-medium tracking-[0.02em] transition-colors ${
+              className={`relative flex h-full items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider transition-all ${
                 activeTab === tab.key
-                  ? "text-[#e7e7e7]"
-                  : "text-[#8b8b9e] hover:text-[#cccccc]"
+                  ? "text-[var(--text-primary)]"
+                  : "text-[var(--text-disabled)] hover:text-[var(--text-muted)]"
               }`}
             >
               {tab.key}
               {tab.badge !== undefined && (
-                <span className="flex h-[14px] w-[14px] items-center justify-center rounded-full bg-[#8c8c8ccd] text-[9px] text-white">
+                <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[var(--bg-muted)] text-[9px] font-bold text-[var(--text-secondary)] border border-[var(--border-default)]">
                   {tab.badge}
                 </span>
               )}
               {activeTab === tab.key && (
-                <div className="absolute bottom-0 left-0 h-[1.5px] w-full bg-[#007fd4]" />
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--accent)]" />
               )}
             </button>
           ))}
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-1.5 opacity-80">
+        <div className="flex items-center gap-1">
           {/* Terminal Profile */}
-          <div className="flex cursor-pointer items-center gap-[4px] rounded-[4px] px-1 py-0.5 text-[#cccccc] hover:bg-[#2a2d31] transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>
-            <span className="text-[12px]">pwsh</span>
+          <div className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] transition-colors cursor-pointer">
+            <VscTerminal size={14} className="text-[var(--accent)]" />
+            <span>pwsh</span>
           </div>
           
-          <button className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-[4px] text-[#e5c07b] hover:bg-[#2a2d31] transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <button title="Show Warnings" className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--warning)] hover:bg-[var(--bg-muted)] transition-colors">
+            <VscWarning size={14} />
           </button>
           
-          <div className="flex border border-[#2a2d31] rounded-[4px] ml-1 overflow-hidden">
-             {/* New Terminal */}
+          <div className="flex border border-[var(--border-default)] rounded-md ml-1 overflow-hidden bg-[var(--bg-elevated)] shadow-sm">
              <button
                type="button"
                title="New Terminal"
                onClick={resetTerminal}
-               className="flex h-5 w-6 cursor-pointer items-center justify-center text-[#cccccc] hover:bg-[#2a2d31] transition-colors"
+               className="flex h-6 w-7 items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"
              >
-               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+               <VscAdd size={14} />
              </button>
-             {/* Dropdown handle */}
              <button
                type="button"
-               className="flex h-5 w-4 cursor-pointer items-center justify-center text-[#cccccc] hover:bg-[#2a2d31] border-l border-[#2a2d31] transition-colors"
+               className="flex h-6 w-5 items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-muted)] border-l border-[var(--border-default)] transition-colors"
              >
-               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+               <VscChevronDown size={14} />
              </button>
           </div>
 
-          {/* Kill Terminal */}
           <button
             type="button"
             title="Kill Terminal"
             onClick={() => setEntries([])}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-[4px] text-[#cccccc] transition-colors hover:bg-[#2a2d31] ml-1"
+            className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--error)] ml-1"
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            <VscClose size={16} />
           </button>
           
-          {/* Maximize Panel */}
           <button
             type="button"
             title="Maximize Panel"
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-[4px] text-[#cccccc] transition-colors hover:bg-[#2a2d31]"
+            className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="18 15 12 9 6 15"/></svg>
+            <VscChevronUp size={16} />
           </button>
 
-          {/* Close Panel */}
           <button
             type="button"
             title="Close Panel"
             onClick={toggleTerminal}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-[4px] text-[#cccccc] transition-colors hover:bg-[#2a2d31]"
+            className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <VscClose size={16} />
           </button>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-hidden font-mono text-[13px]">
+      <div className="flex-1 overflow-hidden font-mono text-[13px] bg-[var(--bg-surface)]">
         {activeTab === "Terminal" ? (
           <div
             ref={scrollRef}
-            className="ide-scrollbar h-full overflow-y-auto px-4 py-2"
+            className="ide-scrollbar h-full overflow-y-auto px-4 py-3"
             onClick={() => inputRef.current?.focus()}
           >
             {entries.map((entry) => (
-              <div key={entry.id} className="mb-0.5 last:mb-0">
+              <div key={entry.id} className="mb-1 last:mb-0">
                 {entry.command ? (
-                  <div className="flex items-center gap-2 leading-relaxed text-[#cccccc]">
-                    <div className="flex items-center gap-1.5">
-                      {/* Prompt Circle Decorator */}
-                      <svg width="8" height="8" viewBox="0 0 16 16" fill="none" stroke="#858585" strokeWidth="2" className="mt-0.5">
-                        <circle cx="8" cy="8" r="6" />
-                      </svg>
-                      <span className="text-[#cccccc]">{prompt}</span>
+                  <div className="flex items-center gap-2 leading-relaxed text-[var(--text-secondary)]">
+                    <div className="flex items-center gap-2">
+                      <VscCircleFilled size={10} className="text-[var(--text-disabled)]" />
+                      <span className="font-bold">{prompt}</span>
                     </div>
-                    <span className="text-[#e7e7e7]">{entry.command}</span>
+                    <span className="text-[var(--text-primary)]">{entry.command}</span>
                   </div>
                 ) : null}
 
                 {entry.lines.map((line, index) => (
                   <div
                     key={`${entry.id}-${index}`}
-                    className="leading-relaxed text-[#cccccc]"
+                    className="leading-relaxed text-[var(--text-muted)] pl-4.5"
                   >
                     {line}
                   </div>
@@ -245,13 +240,11 @@ export default function Terminal() {
               </div>
             ))}
 
-            <form onSubmit={handleSubmit} className="mt-0.5 pb-2">
+            <form onSubmit={handleSubmit} className="mt-1 pb-4">
               <label className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5">
-                  <svg width="8" height="8" viewBox="0 0 16 16" fill="none" stroke="#858585" strokeWidth="2" className="mt-0.5">
-                    <circle cx="8" cy="8" r="6" />
-                  </svg>
-                  <span className="text-[#cccccc]">{prompt}</span>
+                <div className="flex items-center gap-2">
+                  <VscCircleFilled size={10} className="text-[var(--accent)]" />
+                  <span className="font-bold text-[var(--text-secondary)]">{prompt}</span>
                 </div>
                 <input
                   ref={inputRef}
@@ -268,7 +261,7 @@ export default function Terminal() {
                       moveHistory("down");
                     }
                   }}
-                  className="min-w-0 flex-1 bg-transparent text-[#e7e7e7] outline-none"
+                  className="min-w-0 flex-1 bg-transparent text-[var(--text-primary)] outline-none"
                   spellCheck={false}
                   autoComplete="off"
                   autoFocus
@@ -277,7 +270,7 @@ export default function Terminal() {
             </form>
           </div>
         ) : (
-          <div className="flex h-full items-center justify-center text-[#858585]">
+          <div className="flex h-full items-center justify-center text-[var(--text-disabled)] italic font-medium">
             No data available for {activeTab}.
           </div>
         )}

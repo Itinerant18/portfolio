@@ -4,6 +4,10 @@ import { buildAIResponse } from "@/data/content";
 import { getPortfolioFile } from "@/data/files";
 import { type ChatMessage, useIDEStore } from "@/store/useIDEStore";
 import { useEffect, useRef, useState } from "react";
+import { 
+  VscAdd, VscEllipsis, VscArrowRight, VscCheck, 
+  VscCircuitBoard, VscLibrary, VscSparkle 
+} from "react-icons/vsc";
 
 const agents = [
   { id: "default", label: "Default Agent", detail: "General workspace help" },
@@ -25,16 +29,14 @@ export default function SidebarAI() {
   const addMessage = useIDEStore((state) => state.addMessage);
   const clearChat = useIDEStore((state) => state.clearChat);
   const [input, setInput] = useState("");
-  const [selectedAgent, setSelectedAgent] = useState<(typeof agents)[number]["id"]>("default");
   const [pending, setPending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "auto",
-    });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [chatMessages, pending]);
 
   useEffect(() => {
@@ -72,29 +74,64 @@ export default function SidebarAI() {
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col bg-[#18181A] text-[13px] font-sans border-r border-[#1e1e24] text-[#cccccc] select-none">
+    <div className="flex h-full min-h-0 w-full flex-col bg-[var(--bg-elevated)] text-[13px] font-sans border-r border-[var(--border-default)] text-[var(--text-secondary)] select-none">
       {/* Header */}
-      <div className="flex h-[35px] shrink-0 items-center justify-between px-3">
-        <div className="flex items-center gap-[6px]">
-          <span className="font-semibold text-[#cccccc] text-[12px]">New Agent</span>
-        </div>
+      <div className="flex h-9 shrink-0 items-center justify-between px-3 border-b border-[var(--border-default)] bg-[var(--bg-muted)]/30">
         <div className="flex items-center gap-2">
-          <button onClick={handleNewChat} className="flex h-5 w-5 items-center justify-center rounded-[4px] hover:bg-[#2a2d31] text-[#8b8b9e] hover:text-[#cccccc] transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
+          <VscSparkle className="text-[var(--accent)]" size={14} />
+          <span className="font-bold text-[var(--text-primary)] text-[11px] uppercase tracking-wider">AI Assistant</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <button onClick={handleNewChat} title="New Chat" className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-[var(--bg-muted)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+            <VscAdd size={16} />
           </button>
-          <button className="flex h-5 w-5 items-center justify-center rounded-[4px] hover:bg-[#2a2d31] text-[#8b8b9e] hover:text-[#cccccc] transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          <button className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-[var(--bg-muted)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+            <VscEllipsis size={16} />
           </button>
         </div>
       </div>
 
       {/* Agent Chat Container */}
-      <div className="flex-1 overflow-y-auto ide-scrollbar px-3 py-2">
-        {/* Input Box */}
-        <div className="flex flex-col rounded-[6px] border border-[#2a2d31] bg-[#1c1c1f] transition-colors focus-within:border-[#38383f] relative pb-2 pt-2 shadow-sm mb-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto ide-scrollbar px-3 py-4 flex flex-col gap-6">
+        
+        {/* Chat History */}
+        <div className="flex flex-col gap-6">
+          {chatMessages.map((message) => (
+            <div key={message.id} className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div className={`h-1.5 w-1.5 rounded-full ${message.role === 'assistant' ? 'bg-[var(--accent)]' : 'bg-[var(--info)]'}`} />
+                <span className="text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)]">
+                  {message.role === "assistant" ? "Assistant" : "You"}
+                </span>
+              </div>
+              <div className="text-[13px] leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap pl-3.5 border-l border-[var(--border-default)] ml-0.5">
+                {message.content}
+              </div>
+            </div>
+          ))}
+          
+          {pending && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+                <span className="text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)]">Assistant</span>
+              </div>
+              <div className="flex items-center gap-1.5 pl-3.5">
+                 <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                 <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                 <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Input Section */}
+      <div className="p-3 border-t border-[var(--border-default)] bg-[var(--bg-elevated)]">
+        <div className="flex flex-col rounded-lg border border-[var(--border-default)] bg-[var(--bg-muted)] transition-all focus-within:border-[var(--accent)] focus-within:ring-1 focus-within:ring-[var(--accent)]/30 relative overflow-hidden">
           <textarea
             ref={inputRef}
-            rows={1}
+            rows={3}
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => {
@@ -103,63 +140,35 @@ export default function SidebarAI() {
                 handleSend();
               }
             }}
-            placeholder="Plan, Build, / for commands, @ for context"
-            className="w-full resize-none bg-transparent px-3 pb-6 text-[13px] leading-[20px] text-[#cccccc] outline-none placeholder:text-[#5e5e66] placeholder:font-normal"
+            placeholder="Ask about projects, skills, or experience..."
+            className="w-full resize-none bg-transparent px-3 pt-3 pb-10 text-[13px] leading-relaxed text-[var(--text-primary)] outline-none placeholder:text-[var(--text-disabled)]"
           />
           
           {/* Input Toolbar */}
           <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-            <div className="flex items-center gap-[4px]">
-              <button className="flex h-[20px] items-center gap-[4px] rounded-[4px] border border-[#2a2d31] bg-[#222226] px-[6px] text-[11px] font-medium text-[#8b8b9e] hover:bg-[#2a2d31] hover:text-[#cccccc] transition-colors">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
-                Agent
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <div className="flex items-center gap-1.5">
+              <button className="flex h-6 items-center gap-1.5 rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-all">
+                <VscCircuitBoard size={12} className="text-[var(--accent)]" />
+                <span>Agent</span>
               </button>
-              <button className="flex h-[20px] items-center gap-[4px] rounded-[4px] bg-transparent px-[4px] text-[11px] font-medium text-[#8b8b9e] hover:text-[#cccccc] transition-colors">
-                Auto
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              <button className="flex h-6 items-center gap-1.5 rounded-md border border-transparent bg-transparent px-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all">
+                <VscLibrary size={12} />
+                <span>Context</span>
               </button>
             </div>
             
             <button 
               onClick={handleSend}
               disabled={!input.trim() || pending}
-              className="flex h-[24px] w-[24px] items-center justify-center rounded-[5px] text-[#8b8b9e] hover:text-[#cccccc] hover:bg-[#2a2d31] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-all disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed shadow-sm"
             >
-               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+               <VscArrowRight size={16} strokeWidth={1} />
             </button>
           </div>
         </div>
-        
-        {/* Context Picker */}
-        <button className="flex items-center gap-1.5 text-[11px] text-[#8b8b9e] hover:text-[#cccccc] mb-4 group transition-colors">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-          <span>Local</span>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-
-        {/* Chat History */}
-        <div className="flex flex-col gap-4 pb-4">
-          {chatMessages.map((message) => (
-            <div key={message.id} className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-semibold text-[#8b8b9e]">{message.role === "assistant" ? "Assistant" : "You"}</span>
-              <div className="text-[13px] leading-[20px] text-[#cccccc] whitespace-pre-wrap">
-                {message.content}
-              </div>
-            </div>
-          ))}
-          {pending && (
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-semibold text-[#8b8b9e]">Assistant</span>
-              <div className="flex items-center gap-1">
-                 <span className="h-1.5 w-1.5 bg-[#8b8b9e] rounded-full animate-pulse" />
-                 <span className="h-1.5 w-1.5 bg-[#8b8b9e] rounded-full animate-pulse delay-75" />
-                 <span className="h-1.5 w-1.5 bg-[#8b8b9e] rounded-full animate-pulse delay-150" />
-              </div>
-            </div>
-          )}
+        <div className="mt-2 text-[10px] text-center text-[var(--text-disabled)] font-medium">
+          Press Enter to send, Shift + Enter for new line
         </div>
-        <div ref={scrollRef} />
       </div>
     </div>
   );

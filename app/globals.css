@@ -1,47 +1,211 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", "SF Mono",
-    Consolas, "Liberation Mono", Menlo, monospace;
+  /* Core palette */
+  --neutral-0: #09090b;
+  --neutral-25: #0c0c0e;
+  --neutral-50: #111113;
+  --neutral-75: #161618;
+  --neutral-100: #1c1c1f;
+  --neutral-200: #1e1e24;
+  --neutral-300: #2a2a32;
+  --neutral-400: #38383f;
+  --neutral-500: #63636e;
+  --neutral-600: #a0a0ab;
+  --neutral-700: #ededf0;
 
-  --bg: #0d1117;
-  --panel: #161b22;
-  --sidebar: #0f141a;
-  --hover: #21262d;
-  --border: #30363d;
-  --text-primary: #c9d1d9;
-  --text-muted: #8b949e;
-  --accent: #7c3aed;
+  --violet-400: #6f7cff;
+  --violet-300: #8692ff;
+  --cyan-400: #5bc4e0;
+  --green-400: #3dba7c;
+  --amber-400: #e8a945;
+  --red-400: #e05252;
+  --red-500: #e81123;
 
-  --bg-main: var(--bg);
-  --bg-panel: var(--panel);
-  --bg-hover: var(--hover);
-  --text: var(--text-primary);
-  --border-color: var(--border);
-  --surface-glass: var(--panel);
-  --surface-elevated: var(--panel);
-  --accent-soft: rgba(124, 58, 237, 0.15);
+  /* Semantic surfaces */
+  --bg-base: var(--neutral-0);
+  --bg-surface: var(--neutral-25);
+  --bg-elevated: var(--neutral-50);
+  --bg-overlay: var(--neutral-75);
+  --bg-muted: var(--neutral-100);
+
+  --border-default: var(--neutral-200);
+  --border-hover: var(--neutral-300);
+  --border-active: var(--neutral-400);
+
+  --text-primary: var(--neutral-700);
+  --text-secondary: var(--neutral-600);
+  --text-muted: var(--neutral-500);
+  --text-disabled: color-mix(in srgb, var(--neutral-400) 72%, var(--neutral-0));
+
+  --accent: var(--violet-400);
+  --accent-hover: var(--violet-300);
+  --accent-muted: color-mix(in srgb, var(--accent) 15%, transparent);
+  --accent-subtle: color-mix(in srgb, var(--accent) 8%, transparent);
+
+  --success: var(--green-400);
+  --warning: var(--amber-400);
+  --error: var(--red-400);
+  --info: var(--cyan-400);
+  --danger: var(--red-500);
+
+  /* Brand + product tokens */
+  --brand-github: var(--text-primary);
+  --brand-linkedin: #0077b5;
+  --brand-medium: #ffffff;
+  --brand-tableau: #e97627;
+  --brand-leetcode: #ffa116;
+  --brand-instagram: #e4405f;
+  --brand-email: #56b6c2;
+  --brand-youtube: #ff0000;
+
+  --file-html: #e34f26;
+  --file-json: #cbcb41;
+  --file-typescript: #3178c6;
+  --file-javascript: #f7df1e;
+  --file-python: #3572a5;
+  --file-react: #61dafb;
+  --file-css: #1572b6;
+  --file-markdown: #519aba;
+
+  --syntax-punctuation: #8b949e;
+  --syntax-property: #79c0ff;
+  --syntax-number: #d29922;
+  --syntax-string: #7ee787;
+  --syntax-keyword: #c678dd;
+  --syntax-class: #d2a8ff;
+  --syntax-variable: #ffa657;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.14);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.26);
+  --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.34);
+
+  /* Radius */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  /* Typography */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+
+  /* Type scale */
+  --text-2xs: 10px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 28px;
+  --text-3xl: 40px;
+  --text-4xl: 64px;
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --tracking-tight: -0.03em;
+  --tracking-wide: 0.08em;
+
+  /* Spacing scale */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
 }
 
-[data-theme="light"] {
-  --bg: #f6f8fa;
-  --panel: #eef2f6;
-  --sidebar: #edf2f8;
-  --hover: #e1e7ef;
-  --border: #d0d7de;
-  --text-primary: #1f2328;
-  --text-muted: #57606a;
-  --accent: #7c3aed;
+@theme {
+  --color-bg-base: var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-overlay: var(--bg-overlay);
+  --color-bg-muted: var(--bg-muted);
 
-  --bg-main: var(--bg);
-  --bg-panel: var(--panel);
-  --bg-hover: var(--hover);
-  --text: var(--text-primary);
-  --border-color: var(--border);
-  --surface-glass: var(--panel);
-  --surface-elevated: var(--panel);
-  --accent-soft: rgba(124, 58, 237, 0.12);
+  --color-border-default: var(--border-default);
+  --color-border-hover: var(--border-hover);
+  --color-border-active: var(--border-active);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-disabled: var(--text-disabled);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-muted: var(--accent-muted);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  --color-danger: var(--danger);
+
+  --color-brand-github: var(--brand-github);
+  --color-brand-linkedin: var(--brand-linkedin);
+  --color-brand-medium: var(--brand-medium);
+  --color-brand-tableau: var(--brand-tableau);
+  --color-brand-leetcode: var(--brand-leetcode);
+  --color-brand-instagram: var(--brand-instagram);
+  --color-brand-email: var(--brand-email);
+  --color-brand-youtube: var(--brand-youtube);
+
+  --color-file-html: var(--file-html);
+  --color-file-json: var(--file-json);
+  --color-file-typescript: var(--file-typescript);
+  --color-file-javascript: var(--file-javascript);
+  --color-file-python: var(--file-python);
+  --color-file-react: var(--file-react);
+  --color-file-css: var(--file-css);
+  --color-file-markdown: var(--file-markdown);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --text-2xs: var(--text-2xs);
+  --text-xs: var(--text-xs);
+  --text-sm: var(--text-sm);
+  --text-base: var(--text-base);
+  --text-md: var(--text-md);
+  --text-lg: var(--text-lg);
+  --text-xl: var(--text-xl);
+  --text-2xl: var(--text-2xl);
+  --text-3xl: var(--text-3xl);
+  --text-4xl: var(--text-4xl);
+
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
 }
 
 * {
@@ -56,20 +220,16 @@ body {
 
 html {
   color-scheme: dark;
-  background: var(--bg);
-}
-
-[data-theme="light"] {
-  color-scheme: light;
+  background: var(--bg-base);
 }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--bg-base);
   color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.4;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   overflow: hidden;
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
@@ -80,15 +240,27 @@ button,
 input,
 textarea {
   font: inherit;
-  border-radius: 0;
+  border-radius: var(--radius-md);
 }
 
 button {
   color: inherit;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 180ms ease,
+    transform 140ms ease,
+    opacity 140ms ease;
+}
+
+button:active {
+  transform: translateY(1px);
 }
 
 ::selection {
-  background: rgba(124, 58, 237, 0.22);
+  background: var(--accent-muted);
   color: var(--text-primary);
 }
 
@@ -98,23 +270,9 @@ kbd {
   font-family: var(--font-mono);
 }
 
-.glass-panel {
-  background: var(--panel);
-  box-shadow: none;
-  backdrop-filter: none;
-}
-
-.panel-border {
-  border: 1px solid var(--border);
-}
-
-.surface-elevated {
-  background: var(--panel);
-}
-
 .ide-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(124, 58, 237, 0.4) transparent;
+  scrollbar-color: var(--border-hover) transparent;
 }
 
 .ide-scrollbar::-webkit-scrollbar {
@@ -124,53 +282,23 @@ kbd {
 
 .ide-scrollbar::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  background: rgba(124, 58, 237, 0.4);
+  background: var(--border-hover);
 }
 
 .ide-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 
-html[data-theme="dark"] .bg-black\/45 {
-  background-color: rgba(1, 4, 9, 0.72) !important;
-}
-
-html[data-theme="dark"] .bg-black\/40 {
-  background-color: rgba(1, 4, 9, 0.65) !important;
-}
-
-html[data-theme="dark"] .bg-black\/25 {
-  background-color: #010409 !important;
-}
-
-html[data-theme="dark"] .bg-black\/10 {
-  background-color: var(--panel) !important;
-}
-
-html[data-theme="dark"] .bg-white\/5 {
-  background-color: var(--panel) !important;
-}
-
-html[data-theme="dark"] .bg-white\/10,
-html[data-theme="dark"] .bg-white\/15 {
-  background-color: var(--bg-hover) !important;
-}
-
-html[data-theme="dark"] .hover\:bg-white\/5:hover,
-html[data-theme="dark"] .hover\:bg-white\/10:hover,
-html[data-theme="dark"] .hover\:bg-white\/15:hover {
-  background-color: var(--bg-hover) !important;
-}
-
+/* PrismJS Syntax Highlighting (Cursor-like) */
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: #6e7681;
+  color: var(--text-muted);
 }
 
 .token.punctuation {
-  color: #adbac7;
+  color: var(--syntax-punctuation);
 }
 
 .token.property,
@@ -178,12 +306,12 @@ html[data-theme="dark"] .hover\:bg-white\/15:hover {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  color: #79c0ff;
+  color: var(--syntax-property);
 }
 
 .token.boolean,
 .token.number {
-  color: #d29922;
+  color: var(--syntax-number);
 }
 
 .token.selector,
@@ -192,7 +320,7 @@ html[data-theme="dark"] .hover\:bg-white\/15:hover {
 .token.char,
 .token.builtin,
 .token.inserted {
-  color: #7ee787;
+  color: var(--syntax-string);
 }
 
 .token.operator,
@@ -200,77 +328,22 @@ html[data-theme="dark"] .hover\:bg-white\/15:hover {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  color: #c678dd;
+  color: var(--syntax-keyword);
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-  color: #c678dd;
+  color: var(--syntax-keyword);
 }
 
 .token.function,
 .token.class-name {
-  color: #79c0ff;
+  color: var(--syntax-class);
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-  color: #ffa657;
-}
-
-[data-theme="light"] .token.comment,
-[data-theme="light"] .token.prolog,
-[data-theme="light"] .token.doctype,
-[data-theme="light"] .token.cdata {
-  color: #6e7781;
-}
-
-[data-theme="light"] .token.punctuation {
-  color: #24292f;
-}
-
-[data-theme="light"] .token.property,
-[data-theme="light"] .token.tag,
-[data-theme="light"] .token.constant,
-[data-theme="light"] .token.symbol,
-[data-theme="light"] .token.deleted {
-  color: #0550ae;
-}
-
-[data-theme="light"] .token.boolean,
-[data-theme="light"] .token.number {
-  color: #9a6700;
-}
-
-[data-theme="light"] .token.selector,
-[data-theme="light"] .token.attr-name,
-[data-theme="light"] .token.string,
-[data-theme="light"] .token.char,
-[data-theme="light"] .token.builtin,
-[data-theme="light"] .token.inserted {
-  color: #116329;
-}
-
-[data-theme="light"] .token.operator,
-[data-theme="light"] .token.entity,
-[data-theme="light"] .token.url,
-[data-theme="light"] .language-css .token.string,
-[data-theme="light"] .style .token.string,
-[data-theme="light"] .token.atrule,
-[data-theme="light"] .token.attr-value,
-[data-theme="light"] .token.keyword {
-  color: #8250df;
-}
-
-[data-theme="light"] .token.function,
-[data-theme="light"] .token.class-name {
-  color: #0550ae;
-}
-
-[data-theme="light"] .token.regex,
-[data-theme="light"] .token.important,
-[data-theme="light"] .token.variable {
-  color: #bc4c00;
+  color: var(--syntax-variable);
 }

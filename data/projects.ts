@@ -69,16 +69,16 @@ export const fallbackProjects: Project[] = [
       {
         label: "Frontend Core",
         items: [
-          { n: "Next.js", v: "15.5", c: "#e8e8f0" },
-          { n: "React", v: "19.1", c: "#5bc4e0" },
-          { n: "TypeScript", v: "5.9", c: "#3178c6" }
+          { n: "Next.js", v: "15.5", c: "var(--text-primary)" },
+          { n: "React", v: "19.1", c: "var(--file-react)" },
+          { n: "TypeScript", v: "5.9", c: "var(--file-typescript)" }
         ]
       },
       {
         label: "State & Motion",
         items: [
-          { n: "Zustand", v: "5.0", c: "#e8a945" },
-          { n: "Framer Motion", v: "12.2", c: "#7c6af7" }
+          { n: "Zustand", v: "5.0", c: "var(--warning)" },
+          { n: "Framer Motion", v: "12.2", c: "var(--accent)" }
         ]
       }
     ],
@@ -131,15 +131,15 @@ export const fallbackProjects: Project[] = [
       {
         label: "Mobile Runtime",
         items: [
-          { n: "Capacitor", v: "6.0", c: "#5bc4e0" },
-          { n: "React", v: "18.2", c: "#61dafb" }
+          { n: "Capacitor", v: "6.0", c: "var(--info)" },
+          { n: "React", v: "18.2", c: "var(--file-react)" }
         ]
       },
       {
         label: "Native Bridge",
         items: [
-          { n: "MLKit", v: "Native", c: "#7c6af7" },
-          { n: "ESP32", v: "C++", c: "#e05252" }
+          { n: "MLKit", v: "Native", c: "var(--accent)" },
+          { n: "ESP32", v: "C++", c: "var(--error)" }
         ]
       }
     ],

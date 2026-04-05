@@ -9,6 +9,7 @@ import {
 } from "@/utils/commands";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { VscSearch, VscFile, VscSymbolMethod } from "react-icons/vsc";
 
 type PaletteEntry =
   | {
@@ -27,7 +28,7 @@ export default function CommandPalette() {
   const closeCommandPalette = useIDEStore((state) => state.closeCommandPalette);
   const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
   const openFile = useIDEStore((state) => state.openFile);
-  const toggleTheme = useIDEStore((state) => state.toggleTheme);
+  const theme = useIDEStore((state) => state.theme);
   const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
   const closeAllTabs = useIDEStore((state) => state.closeAllTabs);
   const focusAIPanel = useIDEStore((state) => state.focusAIPanel);
@@ -39,7 +40,7 @@ export default function CommandPalette() {
   const commands = useMemo(
     () =>
       createCommandDescriptors({
-        toggleTheme,
+        toggleTheme: () => {}, // Handled by AppShell/Store
         toggleTerminal,
         focusAIPanel: () => {
           focusAIPanel();
@@ -50,7 +51,7 @@ export default function CommandPalette() {
         openFileSearch: () => openCommandPalette("files"),
         closeAllTabs,
       }),
-    [closeAllTabs, focusAIPanel, openCommandPalette, toggleTerminal, toggleTheme],
+    [closeAllTabs, focusAIPanel, openCommandPalette, toggleTerminal],
   );
 
   const items = useMemo<PaletteEntry[]>(() => {
@@ -107,21 +108,22 @@ export default function CommandPalette() {
     <AnimatePresence>
       {isOpen ? (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-start justify-center bg-black/45 px-2 pt-10"
+          className="fixed inset-0 z-[100] flex items-start justify-center bg-black/60 backdrop-blur-[2px] px-4 pt-[15vh]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={closeCommandPalette}
         >
           <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 6 }}
-            transition={{ duration: 0.15 }}
+            initial={{ opacity: 0, scale: 0.98, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: -10 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
             onClick={(event) => event.stopPropagation()}
-            className="w-full max-w-[560px] border border-[var(--border)] bg-[var(--bg-panel)]"
+            className="w-full max-w-[600px] border border-[var(--border-default)] bg-[var(--bg-overlay)] rounded-xl shadow-2xl overflow-hidden"
           >
-            <div className="border-b border-[var(--border)] p-2">
+            <div className="flex items-center gap-3 px-4 py-3 bg-[var(--bg-muted)]/50 border-b border-[var(--border-default)]">
+              <VscSearch className="text-[var(--text-muted)]" size={18} />
               <input
                 ref={inputRef}
                 value={searchQuery}
@@ -155,13 +157,16 @@ export default function CommandPalette() {
                   }
                 }}
                 placeholder={
-                  paletteMode === "files" ? "Search files" : "Type a command"
+                  paletteMode === "files" ? "Search portfolio files..." : "Execute a workspace command..."
                 }
-                className="h-8 w-full border border-[var(--border)] bg-[var(--bg-main)] px-2 text-[12px] text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
+                className="h-8 w-full bg-transparent text-[14px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-disabled)] font-medium"
               />
+              <div className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[10px] font-bold text-[var(--text-muted)] shadow-sm">ESC</kbd>
+              </div>
             </div>
 
-            <div className="ide-scrollbar max-h-[320px] overflow-y-auto py-1">
+            <div className="ide-scrollbar max-h-[400px] overflow-y-auto py-2 px-2 bg-[var(--bg-overlay)]">
               {items.length ? (
                 items.map((entry, index) => {
                   const isActive = activeIndex === index;
@@ -173,13 +178,17 @@ export default function CommandPalette() {
                         type="button"
                         onMouseEnter={() => setActiveIndex(index)}
                         onClick={() => handleSelect(entry)}
-                        className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-[12px] transition ${isActive
-                            ? "bg-[var(--bg-hover)] text-[var(--text)]"
-                            : "text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
+                        className={`group flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-left text-[13px] transition-all ${isActive
+                            ? "bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent-subtle)]"
+                            : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                           }`}
                       >
-                        <span className="truncate">{entry.value.path}</span>
-                        <span className="ml-3 text-[11px] text-[var(--text-muted)]">
+                        <VscFile className={isActive ? "text-white" : "text-[var(--accent)]"} size={16} />
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-bold truncate">{entry.value.name}</span>
+                          <span className={`text-[11px] truncate opacity-70 ${isActive ? 'text-white' : 'text-[var(--text-muted)]'}`}>{entry.value.path}</span>
+                        </div>
+                        <span className={`ml-auto text-[10px] font-black uppercase tracking-widest opacity-60`}>
                           {entry.value.language}
                         </span>
                       </button>
@@ -192,23 +201,47 @@ export default function CommandPalette() {
                       type="button"
                       onMouseEnter={() => setActiveIndex(index)}
                       onClick={() => handleSelect(entry)}
-                      className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-[12px] transition ${isActive
-                          ? "bg-[var(--bg-hover)] text-[var(--text)]"
-                          : "text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
+                      className={`group flex w-full items-center gap-3 px-3 py-3 rounded-lg text-left text-[13px] transition-all ${isActive
+                          ? "bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent-subtle)]"
+                          : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                         }`}
                     >
-                      <span>{entry.value.title}</span>
-                      <span className="ml-3 text-[11px] text-[var(--text-muted)]">
-                        {entry.value.shortcut}
-                      </span>
+                      <VscSymbolMethod className={isActive ? "text-white" : "text-[var(--info)]"} size={16} />
+                      <div className="flex flex-col">
+                        <span className="font-bold">{entry.value.title}</span>
+                        <span className={`text-[11px] opacity-70 ${isActive ? 'text-white' : 'text-[var(--text-muted)]'}`}>{entry.value.description}</span>
+                      </div>
+                      {entry.value.shortcut && (
+                        <span className={`ml-auto text-[11px] font-mono font-bold opacity-80`}>
+                          {entry.value.shortcut}
+                        </span>
+                      )}
                     </button>
                   );
                 })
               ) : (
-                <div className="px-3 py-3 text-[12px] text-[var(--text-muted)]">
-                  No matching items
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                  <div className="w-12 h-12 rounded-full bg-[var(--bg-muted)] flex items-center justify-center mb-3">
+                    <VscSearch size={20} className="text-[var(--text-disabled)]" />
+                  </div>
+                  <div className="text-[13px] font-bold text-[var(--text-primary)]">No matching results found</div>
+                  <div className="text-[11px] text-[var(--text-disabled)] mt-1 font-medium italic">Try adjusting your search query</div>
                 </div>
               )}
+            </div>
+            
+            <div className="px-4 py-2 bg-[var(--bg-muted)]/30 border-t border-[var(--border-default)] flex items-center justify-between">
+               <div className="flex items-center gap-4">
+                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
+                   <kbd className="px-1 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-default)]">↑↓</kbd>
+                   <span>Navigate</span>
+                 </div>
+                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
+                   <kbd className="px-1 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-default)]">↵</kbd>
+                   <span>Select</span>
+                 </div>
+               </div>
+               <div className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest opacity-80">Workspace Registry</div>
             </div>
           </motion.div>
         </motion.div>
