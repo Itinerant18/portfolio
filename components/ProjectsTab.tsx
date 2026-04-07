@@ -53,7 +53,7 @@ export default function ProjectsTab() {
         const payload = (await response.json()) as unknown;
         if (!Array.isArray(payload)) throw new Error("Projects payload was not an array.");
         const nextProjects = sortProjectsByUpdatedAt(
-          payload.filter(isProjectLike).filter((project) => !isForkedProject(project)),
+          payload.filter(isProjectLike).filter((project) => !isForkedProject(project)).filter((project) => project.id !== "Itinerant18"),
         ).map(asProjectShape);
         if (cancelled) return;
         if (nextProjects.length > 0) {
@@ -143,6 +143,8 @@ export default function ProjectsTab() {
       why: whyOf(selectedProject),
       year: yearOf(selectedProject),
       previewImage: selectedProject.previewImage,
+      previewImages: (selectedProject as any).previewImages ?? (selectedProject.previewImage ? [selectedProject.previewImage] : []),
+      liveUrl: (selectedProject as any).liveUrl ?? null,
     };
   }, [selectedProject]);
 

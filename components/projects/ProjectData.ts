@@ -28,6 +28,8 @@ export type ProjectShape = Omit<Project, "changelog"> & {
   dataStorage?: string;
   changelog?: Array<string | ReleaseEntry>;
   previewImage?: string | null;
+  previewImages?: string[];
+  liveUrl?: string | null;
   visualFlow?: Array<{ label: string; icon: string }>;
 };
 

@@ -151,9 +151,17 @@ export async function GET() {
 
     const repos = await res.json();
 
+    // Filter out forked, private, and profile README repos
+    const filteredRepos = repos.filter((repo: any) => {
+      if (repo.fork) return false;
+      if (repo.private) return false;
+      if (repo.name === username) return false; // profile README repo
+      return true;
+    });
+
     const projectsWithImages = await Promise.all(
-      repos.map(async (repo: any) => {
-        let previewImage: string | null = null;
+      filteredRepos.map(async (repo: any) => {
+        const previewImages: string[] = [];
         let archInfo = {
           highLevel: "Standard repository architecture.",
           visualFlow: [
@@ -174,16 +182,75 @@ export async function GET() {
           if (readmeRes.ok) {
             const readmeText = await readmeRes.text();
             
-            // Extract preview image
-            const imgMatch = readmeText.match(/!\[.*?\]\((.*?)\)|<img[^>]+src=["'](.*?)["']/i);
-            if (imgMatch) {
-              let imgUrl = (imgMatch[1] || imgMatch[2]).trim();
-              if (imgUrl.includes(" ")) imgUrl = imgUrl.split(" ")[0];
-              if (!imgUrl.startsWith("http")) {
-                imgUrl = imgUrl.replace(/^\.\//, "").replace(/^\//, "");
-                imgUrl = `https://raw.githubusercontent.com/${username}/${repo.name}/${defaultBranch}/${imgUrl}`;
+            // Extract ALL image URLs preserving README order
+            // We process the README linearly to maintain order across both syntaxes
+            const orderedImages: string[] = [];
+            const seenUrls = new Set<string>();
+
+            // Split into lines and process sequentially for correct ordering
+            const lines = readmeText.split("\n");
+            for (const line of lines) {
+              // HTML <img> tags
+              const htmlImgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+              let htmlMatch;
+              while ((htmlMatch = htmlImgRegex.exec(line)) !== null) {
+                const url = htmlMatch[1].trim();
+                if (!seenUrls.has(url)) {
+                  seenUrls.add(url);
+                  orderedImages.push(url);
+                }
               }
-              previewImage = imgUrl;
+
+              // Markdown image syntax ![alt](url) — skip when url contains HTML
+              const mdImgRegex = /!\[[^\]]*\]\(([^)<>\s]+(?:\s[^)]*)?)\)/g;
+              let mdMatch;
+              while ((mdMatch = mdImgRegex.exec(line)) !== null) {
+                let url = mdMatch[1].trim();
+                if (url.includes(" ")) url = url.split(" ")[0];
+                if (url.startsWith("<") || url.includes("<img")) continue;
+                if (!seenUrls.has(url)) {
+                  seenUrls.add(url);
+                  orderedImages.push(url);
+                }
+              }
+            }
+
+            // Filter out non-demo images (badges, banners, decorative elements)
+            const excludePatterns = [
+              /img\.shields\.io/i,
+              /badge/i,
+              /api\.netlify\.com/i,
+              /capsule-render\.vercel\.app/i,
+              /github-readme-stats/i,
+              /github-profile-trophy/i,
+              /streak-stats/i,
+              /media\.giphy\.com/i,
+              /giphy\.gif/i,
+              /octodex\.github\.com/i,
+              /skillicons\.dev/i,
+              /techstack-generator/i,
+              /contrib\.rocks/i,
+              /komarev\.com/i,
+              /depfu\./i,
+              /\.svg(\?|$)/i,
+              /separator.*\.gif/i,
+              /115834477/i,
+            ];
+
+            const isExcluded = (url: string) =>
+              excludePatterns.some((pattern) => pattern.test(url));
+
+            // Resolve relative URLs and collect ALL valid images
+            for (const rawUrl of orderedImages) {
+              if (isExcluded(rawUrl)) continue;
+
+              let resolvedUrl = rawUrl;
+              if (!resolvedUrl.startsWith("http")) {
+                resolvedUrl = resolvedUrl.replace(/^\.\//, "").replace(/^\//, "");
+                resolvedUrl = `https://raw.githubusercontent.com/${username}/${repo.name}/${defaultBranch}/${resolvedUrl}`;
+              }
+
+              previewImages.push(resolvedUrl);
             }
 
             // Extract dynamic architecture
@@ -209,12 +276,27 @@ export async function GET() {
           ...extraTechs
         ])).filter(Boolean);
 
+        // Determine embeddable live URL from repo homepage
+        let liveUrl: string | null = null;
+        if (repo.homepage && repo.homepage.trim()) {
+          const hp = repo.homepage.trim();
+          // Only keep URLs that can actually be embedded in an iframe
+          const nonEmbeddable = [
+            /play\.google\.com/i,
+            /apps\.apple\.com/i,
+            /marketplace\./i,
+            /chrome\.google\.com/i,
+          ];
+          const isEmbeddable = hp.startsWith("http") && !nonEmbeddable.some(p => p.test(hp));
+          if (isEmbeddable) liveUrl = hp;
+        }
+
         return {
           id: repo.name,
           name: repo.name,
           shortDescription: repo.description || "No description provided.",
           problem: repo.description || "No specific problem documented.",
-          type: repo.fork ? "Fork" : "Repository",
+          type: "Repository",
           primaryTech: repo.language || "Unknown",
           techStack: fullTechStack,
           features: [],
@@ -226,8 +308,10 @@ export async function GET() {
           },
           topics: repo.topics || [],
           updatedAt: repo.updated_at,
-          isFork: repo.fork,
-          previewImage,
+          isFork: false,
+          previewImage: previewImages[0] || null,
+          previewImages,
+          liveUrl,
         };
       })
     );

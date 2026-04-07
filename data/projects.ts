@@ -41,6 +41,8 @@ export interface Project {
   updatedAt?: string;
   isFork?: boolean;
   previewImage?: string | null;
+  previewImages?: string[];
+  liveUrl?: string | null;
 }
 
 const DEFAULT_CHANGELOG = [
