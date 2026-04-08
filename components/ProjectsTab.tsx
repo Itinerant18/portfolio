@@ -204,8 +204,9 @@ export default function ProjectsTab() {
             const lang = languageOf(project);
 
             return (
-              <button
+              <motion.button
                 key={project.id}
+                whileHover={{ x: 2 }}
                 type="button"
                 onClick={() => {
                   setSelectedProjectId(project.id);
@@ -236,7 +237,7 @@ export default function ProjectsTab() {
                 {active && (
                   <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]/80" />
                 )}
-              </button>
+              </motion.button>
             );
           })}
 

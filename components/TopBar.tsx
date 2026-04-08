@@ -4,6 +4,15 @@ import { contactDetails } from "@/data/content";
 import { defaultFilePath } from "@/data/files";
 import { useIDEStore } from "@/store/useIDEStore";
 import { FaGear } from "react-icons/fa6";
+import {
+  VscChromeClose,
+  VscChromeMaximize,
+  VscChromeMinimize,
+  VscCode,
+  VscLayoutSidebarLeft,
+  VscSearch,
+  VscTerminal,
+} from "react-icons/vsc";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 type MenuKey =
@@ -318,10 +327,7 @@ export default function TopBar() {
             onClick={() => openCommandPalette("files")}
             className="flex h-[22px] w-[220px] sm:w-[260px] md:w-[320px] lg:w-[380px] items-center gap-2 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 text-[var(--text-secondary)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] group"
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-50 group-hover:opacity-100 shrink-0 transition-opacity">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+            <VscSearch size={13} className="shrink-0 opacity-60 transition-opacity group-hover:opacity-100" />
             <span className="text-[11px] font-medium tracking-tight opacity-60 group-hover:opacity-100 transition-opacity truncate">
               portfolio
             </span>
@@ -357,10 +363,7 @@ export default function TopBar() {
                   : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
                   }`}
               >
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
-                  <rect x="2" y="2" width="12" height="12" rx="1.5" />
-                  <line x1="6" y1="2" x2="6" y2="14" />
-                </svg>
+                <VscCode size={14} />
               </button>
               <button
                 onClick={toggleTerminal}
@@ -370,10 +373,7 @@ export default function TopBar() {
                   : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
                   }`}
               >
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
-                  <rect x="2" y="2" width="12" height="12" rx="1.5" />
-                  <line x1="2" y1="10" x2="14" y2="10" />
-                </svg>
+                <VscTerminal size={14} />
               </button>
               <button
                 onClick={toggleAIPanel}
@@ -383,10 +383,7 @@ export default function TopBar() {
                   : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
                   }`}
               >
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
-                  <rect x="2" y="2" width="12" height="12" rx="1.5" />
-                  <line x1="10" y1="2" x2="10" y2="14" />
-                </svg>
+                <VscLayoutSidebarLeft size={14} />
               </button>
             </div>
           </>
@@ -417,9 +414,7 @@ export default function TopBar() {
             onClick={() => {}}
             title="Minimize"
           >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <line x1="3" y1="8" x2="13" y2="8" />
-            </svg>
+            <VscChromeMinimize size={12} />
           </WindowButton>
           <WindowButton
             onClick={() => {
@@ -430,16 +425,10 @@ export default function TopBar() {
               }
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <rect width="8" height="8" x="2" y="6" />
-              <polyline points="4 6 4 2 12 2 12 10 8 10" />
-            </svg>
+            <VscChromeMaximize size={12} />
           </WindowButton>
           <WindowButton close onClick={() => setOpenMenu(null)}>
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <line x1="3" y1="3" x2="13" y2="13" />
-              <line x1="13" y1="3" x2="3" y2="13" />
-            </svg>
+            <VscChromeClose size={12} />
           </WindowButton>
         </div>
       </div>

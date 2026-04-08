@@ -1,145 +1,158 @@
 "use client";
 
+import { motion, type Variants } from "framer-motion";
+import {
+  VscCalendar,
+  VscCircleFilled,
+  VscLocation,
+  VscOrganization,
+} from "react-icons/vsc";
+import { FaBriefcase, FaCloud, FaCode, FaFlask } from "react-icons/fa";
+
+const container: Variants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+const item: Variants = { hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
+
+const experiences = [
+  {
+    period: "Oct 2024 - Present",
+    role: "Junior Software Engineer in R&D department",
+    company: "Security Engineers Pvt. Ltd. (SEPLE)",
+    type: "Full-time",
+    location: "Noida, Uttar Pradesh, India · On-site",
+    description: "Built FAS-Control: React + TypeScript Capacitor app using MLKit for QR-based ESP32 server management. Developed Dexter Tech Support AI — a cloud-native RAG system. Built SWatch360 Flutter mobile app on ThingsBoard PE. Developed internal R&D tools in Java and JavaScript; built the company website using Zoho.",
+    tags: ["React", "TypeScript", "Capacitor", "MLKit", "Java", "JavaScript", "ESP32", "IoT", "Flutter", "LangChain", "RAG"],
+    current: true,
+    Icon: FaBriefcase,
+    accentColor: "var(--accent)",
+  },
+  {
+    period: "May 2024 - Oct 2024",
+    role: "Internship - Java Full Stack Developer",
+    company: "Jspiders",
+    type: "Internship · 6 months",
+    location: "India",
+    description: "Delivered a real-time chat application end-to-end using Java and JSP. Built a procedural dungeon-generation game. Participated in Agile sprints.",
+    tags: ["Java", "JSP", "SQL", "JDBC", "React.js", "CSS", "HTML5", "Agile"],
+    current: false,
+    Icon: FaCode,
+    accentColor: "var(--info)",
+  },
+  {
+    period: "Apr 2024 - Oct 2024",
+    role: "Internship - Software Testing",
+    company: "Qspiders",
+    type: "Internship · 7 months",
+    location: "India",
+    description: "Gained expertise in manual and automation testing, test case design, execution, and defect tracking.",
+    tags: ["Software Testing", "Manual Testing", "Automation Testing", "QA"],
+    current: false,
+    Icon: FaFlask,
+    accentColor: "var(--warning)",
+  },
+  {
+    period: "Jan 2024 - May 2024",
+    role: "Internship - Cloud Computing",
+    company: "Cisco",
+    type: "Internship · 5 months",
+    location: "Remote",
+    description: "Cloud computing fundamentals and infrastructure management. Deployed and maintained cloud infrastructure and services.",
+    tags: ["Cloud Computing", "Cisco", "Networking", "Infrastructure"],
+    current: false,
+    Icon: FaCloud,
+    accentColor: "var(--success)",
+  },
+];
+
 export default function ExperienceTab() {
-  const experiences = [
-    {
-      period: "Oct 2024 - Present",
-      role: "Junior Software Engineer in R&D department",
-      company: "Security Engineers Pvt. Ltd. (SEPLE)",
-      type: "Full-time",
-      location: "Noida, Uttar Pradesh, India · On-site",
-      description:
-        "Built FAS-Control: React + TypeScript Capacitor app using MLKit for QR-based ESP32 server management. Developed Dexter Tech Support AI — a cloud-native RAG system for industrial control panels. Built SWatch360 Flutter mobile app on ThingsBoard PE platform. Developed internal R&D tools in Java and JavaScript; built the company website using Zoho and custom CSS. Engineered IoT automation workflows integrating embedded hardware with cloud services.",
-      tags: [
-        "React",
-        "TypeScript",
-        "Capacitor",
-        "MLKit",
-        "Java",
-        "JavaScript",
-        "Zoho",
-        "ESP32",
-        "IoT",
-        "Flutter",
-        "LangChain",
-        "RAG",
-      ],
-      current: true,
-    },
-    {
-      period: "May 2024 - Oct 2024",
-      role: "Internship - Java Full Stack Developer program",
-      company: "Jspiders",
-      type: "Internship · 6 months",
-      location: "India",
-      description:
-        "Delivered a real-time chat application end-to-end using Java and JSP. Built a procedural dungeon-generation game in Java with automated environment testing. Participated in Agile sprints; collaborated across design and development cycles.",
-      tags: ["Java", "JSP", "SQL", "JDBC", "React.js", "CSS", "HTML5", "Agile"],
-      current: false,
-    },
-    {
-      period: "Apr 2024 - Oct 2024",
-      role: "Internship - Software Testing",
-      company: "Qspiders",
-      type: "Internship · 7 months",
-      location: "India",
-      description:
-        "Gained expertise in software testing methodologies including manual testing, automation testing, test case design, execution, and defect tracking. Worked on quality assurance best practices.",
-      tags: ["Software Testing", "Manual Testing", "Automation Testing", "QA"],
-      current: false,
-    },
-    {
-      period: "Jan 2024 - May 2024",
-      role: "Internship - Cloud Computing",
-      company: "Cisco",
-      type: "Internship · 5 months",
-      location: "Remote",
-      description:
-        "Cloud computing fundamentals and infrastructure management with Cisco technologies. Deployed and maintained cloud infrastructure and services. Gained hands-on experience with cloud-native environments and networking.",
-      tags: ["Cloud Computing", "Cisco", "Networking", "Infrastructure"],
-      current: false,
-    },
-  ];
-
   return (
-    <div className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 font-sans text-[13px] text-[var(--text-primary)] md:p-12">
-      <div className="w-full max-w-4xl mx-auto flex flex-col gap-10">
-        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
-          Professional journey timeline
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <h1 className="text-[24px] font-semibold tracking-tight text-[var(--text-primary)] md:text-[28px]">
-            Experience
-          </h1>
-          <div className="text-[14px] text-[var(--text-muted)]">
-            Professional roles across software engineering, testing, and cloud systems.
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 font-sans text-[13px] text-[var(--text-primary)] md:p-12"
+    >
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-10">
+        <motion.div variants={item}>
+          <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--text-muted)]">
+            Professional journey timeline
           </div>
-        </div>
+        </motion.div>
 
-        <div className="relative ml-4 mt-4 pl-8 border-l-2 border-[var(--border-default)] flex flex-col gap-16">
+        <motion.div variants={item} className="flex flex-col gap-2">
+          <h1 className="text-[28px] font-bold tracking-[-0.04em]">
+            <span className="gradient-text">Experience</span>
+          </h1>
+          <p className="text-[14px] text-[var(--text-muted)]">
+            Professional roles across software engineering, testing, and cloud systems.
+          </p>
+        </motion.div>
+
+        <div className="relative ml-5 flex flex-col gap-0 border-l-2 border-[var(--border-default)] pl-8">
           {experiences.map((exp, idx) => (
-            <div key={idx} className="relative group">
-              {/* Timeline Dot */}
+            <motion.div
+              key={idx}
+              variants={item}
+              className="relative mb-12 last:mb-0"
+            >
               <div
-                className={`absolute -left-[41px] top-1.5 h-4 w-4 rounded-full border-4 border-[var(--bg-surface)] transition-all duration-300 ${
-                  exp.current
-                    ? "bg-[var(--accent)] scale-110 shadow-[0_0_12px_var(--accent-muted)]"
-                    : "bg-[var(--text-disabled)] group-hover:bg-[var(--text-muted)]"
-                }`}
-              />
-              
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-widest text-[var(--text-muted)]">
+                className="absolute -left-[45px] top-1 flex h-8 w-8 items-center justify-center rounded-sm border-2 bg-[var(--bg-surface)]"
+                style={{ borderColor: exp.accentColor }}
+              >
+                <exp.Icon size={14} style={{ color: exp.accentColor }} />
+              </div>
+
+              <motion.div
+                whileHover={{ x: 4 }}
+                className="glow-card rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 transition-all"
+                style={{ borderLeftWidth: 3, borderLeftColor: exp.accentColor }}
+              >
+                <div className="mb-3 flex flex-wrap items-center gap-2">
+                  <span className="flex items-center gap-1.5 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 font-mono text-[10px] font-medium text-[var(--text-muted)]">
+                    <VscCalendar size={9} />
                     {exp.period}
                   </span>
-                  {exp.type && (
-                    <span className="px-2 py-0.5 rounded-md bg-[var(--bg-elevated)] text-[10px] font-medium text-[var(--text-secondary)] border border-[var(--border-default)]">
-                      {exp.type}
-                    </span>
-                  )}
+                  <span className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-secondary)]">
+                    {exp.type}
+                  </span>
                   {exp.current && (
-                    <span className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-tighter text-[var(--success)]">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
+                    <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[var(--success)]">
+                      <VscCircleFilled size={8} className="animate-pulse" />
                       Active
                     </span>
                   )}
                 </div>
 
-                <div className="mt-1">
-                  <h2 className="text-[20px] font-semibold leading-tight text-[var(--text-primary)]">
-                    {exp.role}
-                  </h2>
-                  <div className="mt-1 text-[16px] font-medium text-[var(--text-secondary)] md:text-[18px]">
-                    {exp.company}
-                  </div>
-                  {exp.location && (
-                    <div className="mt-1 text-[12px] font-medium text-[var(--text-muted)]">
-                      {exp.location}
-                    </div>
-                  )}
+                <h2 className="text-[17px] font-bold leading-tight text-[var(--text-primary)]">
+                  {exp.role}
+                </h2>
+                <div className="mt-1 flex items-center gap-2 text-[13px] font-medium" style={{ color: exp.accentColor }}>
+                  <VscOrganization size={12} />
+                  {exp.company}
+                </div>
+                <div className="mt-1 flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                  <VscLocation size={10} />
+                  {exp.location}
                 </div>
 
-                <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-secondary)] max-w-3xl">
+                <p className="mt-3 text-[13px] leading-relaxed text-[var(--text-secondary)]">
                   {exp.description}
                 </p>
 
-                <div className="mt-6 flex flex-wrap gap-2">
+                <div className="mt-4 flex flex-wrap gap-1.5">
                   {exp.tags.map((tag) => (
                     <span
                       key={tag}
-                    className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-muted)]"
+                      className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-secondary)]"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

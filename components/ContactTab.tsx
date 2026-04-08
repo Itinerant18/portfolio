@@ -4,8 +4,13 @@ import { useState, type FormEvent } from "react";
 import { contactDetails } from "@/data/content";
 import { IDEButton, IDEInput, IDETextArea, SectionLabel } from "@/components/ui/Primitives";
 import { 
-  FaGithub, FaLinkedin, FaEnvelope, FaPaperPlane, FaPhone
+  FaEnvelope,
+  FaGithub,
+  FaLinkedin,
+  FaPaperPlane,
+  FaPhone
 } from "react-icons/fa";
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { VscCheck } from "react-icons/vsc";
 
 export default function ContactTab() {
@@ -107,10 +112,7 @@ export default function ContactTab() {
                     </span>
                   </div>
                   <div className="text-[var(--text-disabled)] transition-all group-hover:translate-x-[2px] group-hover:text-[var(--text-secondary)]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                      <path d="M7 17L17 7" />
-                      <path d="M7 7h10v10" />
-                    </svg>
+                    <FaArrowUpRightFromSquare className="h-4 w-4" />
                   </div>
                 </a>
               ))}

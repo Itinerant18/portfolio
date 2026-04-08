@@ -59,7 +59,11 @@ export default function EditorTabs() {
                   {isActive ? (
                     <motion.span
                       layoutId="active-tab-line"
-                      className="absolute inset-x-0 top-0 h-[2px] bg-[var(--accent)]"
+                      className="absolute inset-x-0 top-0 h-[2px]"
+                      style={{
+                        background: "var(--accent)",
+                        boxShadow: "0 0 8px 1px var(--accent-muted)",
+                      }}
                     />
                   ) : null}
                 </motion.div>

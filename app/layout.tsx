@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import AppShell from "@/components/AppShell";
+import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
 import type { ReactNode } from "react";
 import "./globals.css";
 
@@ -21,7 +23,11 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark">
+    <html
+      lang="en"
+      data-theme="aniket-dark"
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+    >
       <body>
         <AppShell>{children}</AppShell>
       </body>

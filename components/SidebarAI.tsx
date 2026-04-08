@@ -3,6 +3,7 @@
 import { buildAIResponse } from "@/data/content";
 import { getPortfolioFile } from "@/data/files";
 import { type ChatMessage, useIDEStore } from "@/store/useIDEStore";
+import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { 
   VscAdd, VscEllipsis, VscArrowRight, 
@@ -79,6 +80,7 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
       <div className="flex h-9 shrink-0 items-center justify-between px-3 border-b border-[var(--border-default)] bg-[var(--bg-muted)]/30">
         <div className="flex items-center gap-2">
           <VscSparkle className="text-[var(--accent)]" size={14} />
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" style={{ animation: "glow-pulse 2.4s ease-in-out infinite" }} />
           <span className="font-bold text-[var(--text-primary)] text-[11px] uppercase tracking-wider">AI Assistant</span>
         </div>
         <div className="flex items-center gap-1">
@@ -103,14 +105,16 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
               </div>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {suggestions.map((suggestion) => (
-                  <button
+                  <motion.button
                     key={suggestion}
                     type="button"
                     onClick={() => setInput(suggestion)}
+                    whileHover={{ scale: 1.03, y: -1 }}
+                    whileTap={{ scale: 0.97 }}
                     className="inline-flex items-center whitespace-nowrap rounded-sm border border-[var(--border-default)] bg-[var(--bg-base)] px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                   >
                     {suggestion}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
