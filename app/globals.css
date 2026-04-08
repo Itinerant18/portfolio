@@ -2,37 +2,37 @@
 @import "tailwindcss";
 
 :root {
-  /* Core palette */
-  --neutral-0: #0a0a0c;
-  --neutral-25: #111114;
-  --neutral-50: #18181c;
-  --neutral-75: #1f1f24;
-  --neutral-100: #26262c;
-  --neutral-200: rgba(255, 255, 255, 0.07);
-  --neutral-300: rgba(255, 255, 255, 0.11);
-  --neutral-400: rgba(255, 255, 255, 0.16);
-  --neutral-500: #585862;
-  --neutral-600: #8c8c96;
-  --neutral-700: #e2e2e8;
+  /* Core palette (Cursor Dark) */
+  --neutral-0: #0b0b0b;
+  --neutral-25: #141414;
+  --neutral-50: #1c1c1c;
+  --neutral-75: #252525;
+  --neutral-100: #2d2d2d;
+  --neutral-200: #333333;
+  --neutral-300: #3e3e3e;
+  --neutral-400: #A05EF8;
+  --neutral-500: #9e9e9e;
+  --neutral-600: #cccccc;
+  --neutral-700: #f8f8f8;
 
-  --violet-400: #7c80ff;
-  --violet-300: #9498ff;
-  --cyan-400: #5bc4e0;
-  --green-400: #3dba7c;
+  --violet-400: #A05EF8;
+  --violet-300: #b785f9;
+  --cyan-400: #228DF2;
+  --green-400: #1B4721;
   --amber-400: #e8a945;
-  --red-400: #e05252;
+  --red-400: #4B1B1B;
   --red-500: #e81123;
 
   /* Semantic surfaces */
   --bg-base: var(--neutral-0);
   --bg-surface: var(--neutral-25);
   --bg-elevated: var(--neutral-50);
-  --bg-overlay: var(--neutral-75);
-  --bg-muted: var(--neutral-100);
+  --bg-overlay: var(--neutral-100);
+  --bg-muted: var(--neutral-75);
 
   --border-default: var(--neutral-200);
   --border-hover: var(--neutral-300);
-  --border-active: var(--neutral-400);
+  --border-active: var(--accent);
 
   --text-primary: var(--neutral-700);
   --text-secondary: var(--neutral-600);
@@ -91,17 +91,17 @@
   --radius-xl: 14px;
 
   /* Typography */
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+  --font-sans: "Geist Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
     sans-serif;
-  --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+  --font-mono: "Geist Mono", "JetBrains Mono", "SF Mono", "Fira Code", monospace;
 
   /* Type scale */
   --text-2xs: 10px;
   --text-xs: 11px;
-  --text-sm: 12px;
-  --text-base: 13px;
-  --text-md: 14px;
-  --text-lg: 16px;
+  --text-sm: 11px;
+  --text-base: 12px;
+  --text-md: 13px;
+  --text-lg: 14px;
   --text-xl: 20px;
   --text-2xl: 28px;
   --text-3xl: 40px;
@@ -247,12 +247,12 @@ button {
   color: inherit;
   cursor: pointer;
   transition:
-    background-color 140ms ease,
-    border-color 140ms ease,
-    color 140ms ease,
-    box-shadow 180ms ease,
-    transform 140ms ease,
-    opacity 140ms ease;
+    background-color 100ms ease-out,
+    border-color 100ms ease-out,
+    color 100ms ease-out,
+    box-shadow 100ms ease-out,
+    transform 100ms ease-out,
+    opacity 100ms ease-out;
 }
 
 button:active {
@@ -272,17 +272,17 @@ kbd {
 
 .ide-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.10) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.05) transparent;
 }
 
 .ide-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 .ide-scrollbar::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .ide-scrollbar::-webkit-scrollbar-track {

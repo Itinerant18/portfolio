@@ -6,6 +6,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 export type ThemeMode = "dark" | "light";
 export type PaletteMode = "commands" | "files";
+export type IDEMode = "editor" | "agent";
 
 export interface ChatMessage {
   id: string;
@@ -22,6 +23,7 @@ interface IDEState {
   mobileAIPanelOpen: boolean;
   terminalOpen: boolean;
   terminalResetKey: number;
+  currentMode: IDEMode;
   theme: ThemeMode;
   commandPaletteOpen: boolean;
   paletteMode: PaletteMode;
@@ -43,6 +45,7 @@ interface IDEState {
   closeCommandPalette: () => void;
   setSearchQuery: (query: string) => void;
   closeAllTabs: () => void;
+  toggleMode: () => void;
   focusAIPanel: () => void;
   addMessage: (message: ChatMessage) => void;
   clearChat: () => void;
@@ -71,6 +74,7 @@ export const useIDEStore = create<IDEState>()(
       mobileAIPanelOpen: false,
       terminalOpen: true,
       terminalResetKey: 0,
+      currentMode: "agent",
       theme: "dark",
       commandPaletteOpen: false,
       paletteMode: "commands",
@@ -137,6 +141,10 @@ export const useIDEStore = create<IDEState>()(
         set((state) => ({
           terminalOpen: !state.terminalOpen,
         })),
+      toggleMode: () =>
+        set((state) => ({
+          currentMode: state.currentMode === "editor" ? "agent" : "editor",
+        })),
       resetTerminal: () =>
         set((state) => ({
           terminalOpen: true,
@@ -198,6 +206,7 @@ export const useIDEStore = create<IDEState>()(
         activeFile: state.activeFile,
         sidebarOpen: state.sidebarOpen,
         aiPanelOpen: state.aiPanelOpen,
+        currentMode: state.currentMode,
         terminalOpen: state.terminalOpen,
         theme: state.theme,
         zoomLevel: state.zoomLevel,

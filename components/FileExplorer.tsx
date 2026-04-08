@@ -121,23 +121,7 @@ function ActionIcon({ children, onClick, title }: { children: React.ReactNode, o
   );
 }
 
-function ActivityIcon({ icon: Icon, title, active = false, onClick }: { icon: any, title: string, active?: boolean, onClick?: () => void }) {
-  return (
-    <button
-      type="button"
-      title={title}
-      onClick={onClick}
-      className={`relative flex h-11 w-11 items-center justify-center transition-colors ${
-        active 
-          ? "text-[var(--text-primary)]" 
-          : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-      }`}
-    >
-      {active && <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--accent)]" />}
-      <Icon size={24} />
-    </button>
-  );
-}
+
 
 export default function FileExplorer() {
   const activeFile = useIDEStore((state) => state.activeFile);
@@ -174,7 +158,7 @@ export default function FileExplorer() {
             <button
                type="button"
                onClick={() => toggleFolder(nodePath)}
-               className="group flex h-6 w-full items-center px-1 transition-colors hover:bg-[var(--bg-muted)]"
+               className="group flex h-5 w-full items-center px-1 transition-colors hover:bg-[var(--bg-muted)]"
                style={{ paddingLeft: `${depth * 12 + 4}px` }}
             >
               <div className="shrink-0 flex items-center justify-center w-5 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">
@@ -217,10 +201,10 @@ export default function FileExplorer() {
             openFile(node.file.path);
             if (window.innerWidth < 1024) toggleMobileSidebar();
           }}
-          className={`group relative flex h-6 w-full items-center gap-2 transition-colors ${isActive ? "bg-[var(--bg-muted)] text-[var(--text-primary)]" : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"}`}
+          className={`group relative flex h-5 w-full items-center gap-2 transition-colors ${isActive ? "bg-[var(--bg-muted)] text-[var(--text-primary)]" : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"}`}
           style={{ paddingLeft: `${depth * 12 + 12}px` }}
         >
-          {isActive ? <span className="absolute left-0 top-0 h-full w-px bg-[var(--accent)]" /> : null}
+          {isActive ? <span className="absolute left-0 top-0 h-full w-[2px] bg-[var(--accent)]" /> : null}
           <div className="flex h-full w-4 items-center justify-center shrink-0">
              {getFileIcon(node.name)}
           </div>
@@ -233,28 +217,16 @@ export default function FileExplorer() {
   const collapseAll = () => setExpandedFolders({});
 
   return (
-    <div className="flex h-full min-h-0 w-full bg-[var(--bg-elevated)] text-[13px] font-sans select-none border-l border-[var(--border-default)]">
-      
-      {/* Activity Bar (Vertical) */}
-      <div className="flex w-11 flex-col items-center border-r border-[var(--border-default)] bg-[var(--bg-elevated)] py-2">
-        <ActivityIcon icon={VscFiles} title="Explorer" active={true} />
-        <ActivityIcon icon={VscSearch} title="Search" onClick={() => openCommandPalette("files")} />
-        <ActivityIcon icon={VscSourceControl} title="Source Control" onClick={() => openExternal(contactDetails.github)} />
-        <ActivityIcon icon={VscExtensions} title="Extensions" onClick={openSkillsTab} />
-        <div className="mt-auto">
-          <ActivityIcon icon={VscEllipsis} title="More" />
-        </div>
-      </div>
+    <div className="flex h-full min-h-0 w-full flex-col bg-[var(--bg-elevated)] text-[13px] font-sans select-none">
 
       {/* Explorer Content */}
-      <div className="flex flex-1 flex-col min-h-0">
-        <div className="flex h-9 shrink-0 items-center px-4">
-          <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">Explorer</span>
+        <div className="flex h-8 shrink-0 items-center px-4">
+          <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)] opacity-70">Explorer</span>
         </div>
 
         <div className="flex flex-1 flex-col min-h-0">
-          <div className="group flex h-7 items-center justify-between border-y border-[var(--border-default)] bg-[var(--bg-muted)] px-1.5" onClick={() => toggleFolder('root_portfolio')}>
-            <div className="flex items-center gap-[2px] text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--text-primary)]">
+          <div className="group flex h-6 items-center justify-between border-y border-[var(--border-default)] bg-[var(--bg-muted)] px-1.5" onClick={() => toggleFolder('root_portfolio')}>
+            <div className="flex items-center gap-[2px] text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--text-primary)]">
               <span className="opacity-80 group-hover:opacity-100 transition-opacity">
                 {expandedFolders['root_portfolio'] !== false ? <VscChevronDown size={14} /> : <VscChevronRight size={14} />}
               </span>
@@ -276,7 +248,6 @@ export default function FileExplorer() {
             )}
           </div>
         </div>
-      </div>
     </div>
   );
 }

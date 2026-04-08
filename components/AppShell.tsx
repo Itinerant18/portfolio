@@ -10,9 +10,10 @@ import { useIDEStore } from "@/store/useIDEStore";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { VscFiles, VscSearch, VscSparkle, VscTerminal } from "react-icons/vsc";
+import { VscFiles, VscSearch, VscSourceControl, VscExtensions, VscSparkle, VscTerminal } from "react-icons/vsc";
 
 export default function AppShell({ children }: { children: ReactNode }) {
+  const currentMode = useIDEStore((state) => state.currentMode);
   const theme = useIDEStore((state) => state.theme);
   const sidebarOpen = useIDEStore((state) => state.sidebarOpen);
   const aiPanelOpen = useIDEStore((state) => state.aiPanelOpen);
@@ -29,6 +30,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const toggleAIPanel = useIDEStore((state) => state.toggleAIPanel);
   const toggleMobileAIPanel = useIDEStore((state) => state.toggleMobileAIPanel);
   const closeMobilePanels = useIDEStore((state) => state.closeMobilePanels);
+  const toggleSidebar = useIDEStore((state) => state.toggleSidebar);
+  const toggleMode = useIDEStore((state) => state.toggleMode);
   const [isDesktop, setIsDesktop] = useState(false);
   const mobileNavItems = [
     {
@@ -86,46 +89,47 @@ export default function AppShell({ children }: { children: ReactNode }) {
     const handleKeyDown = (event: KeyboardEvent) => {
       const isModifier = event.ctrlKey || event.metaKey;
       const isDesktop = window.innerWidth >= 1024;
+      const state = useIDEStore.getState();
 
       if (isModifier && event.key === "=") {
         event.preventDefault();
-        zoomIn();
+        state.zoomIn();
       }
 
       if (isModifier && event.key === "-") {
         event.preventDefault();
-        zoomOut();
+        state.zoomOut();
       }
 
       if (isModifier && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        openCommandPalette("commands");
+        state.openCommandPalette("commands");
       }
 
       if (isModifier && event.key.toLowerCase() === "p") {
         event.preventDefault();
-        openCommandPalette("files");
+        state.openCommandPalette("files");
       }
 
       if (isModifier && event.key === "`") {
         event.preventDefault();
-        toggleTerminal();
+        state.toggleTerminal();
       }
 
       if (isModifier && event.key.toLowerCase() === "b" && !isDesktop) {
         event.preventDefault();
-        toggleMobileSidebar();
+        state.toggleMobileSidebar();
       }
 
       if (isModifier && event.shiftKey && event.key.toLowerCase() === "a") {
         event.preventDefault();
 
         if (isDesktop) {
-          if (!aiPanelOpen) {
-            toggleAIPanel();
+          if (!state.aiPanelOpen) {
+            state.toggleAIPanel();
           }
         } else {
-          toggleMobileAIPanel();
+          state.toggleMobileAIPanel();
         }
 
         window.setTimeout(() => {
@@ -133,32 +137,27 @@ export default function AppShell({ children }: { children: ReactNode }) {
         }, 60);
       }
 
+      if (isModifier && event.shiftKey && event.key.toLowerCase() === "m") {
+        event.preventDefault();
+        state.toggleMode();
+      }
+
       if (event.key === "Escape") {
-        closeCommandPalette();
+        state.closeCommandPalette();
 
         if (!isDesktop) {
-          closeMobilePanels();
+          state.closeMobilePanels();
         }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
-    aiPanelOpen,
-    closeCommandPalette,
-    closeMobilePanels,
-    openCommandPalette,
-    sidebarOpen,
-    toggleAIPanel,
-    toggleMobileAIPanel,
-    toggleMobileSidebar,
-    toggleTerminal,
-    zoomIn,
-    zoomOut,
-  ]);
+  }, []);
 
   const gridTemplateColumns = !isDesktop
+    ? "1fr"
+    : currentMode === "agent"
     ? "1fr"
     : [
         aiPanelOpen ? "260px" : null,
@@ -169,10 +168,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
         .join(" ");
 
   const gridTemplateRows = [
-    "36px", // TopBar
-    "minmax(0, 1fr)", // Main content
-    terminalOpen ? "180px" : "0px", // Terminal
-    "22px", // StatusBar
+    "32px",
+    "minmax(0, 1fr)",
+    terminalOpen ? "180px" : "0px",
+    "22px",
   ].join(" ");
 
   return (
@@ -188,42 +187,97 @@ export default function AppShell({ children }: { children: ReactNode }) {
           gridTemplateRows,
         } as React.CSSProperties}
       >
-        <div className="col-start-1 row-start-1 min-w-0" style={{ gridColumn: "1 / -1" }}>
+        <div
+          className="col-start-1 row-start-1 min-w-0"
+          style={{ gridColumn: "1 / -1" }}
+        >
           <TopBar />
         </div>
 
-        {aiPanelOpen ? (
-          <aside
-            className="hidden min-h-0 min-w-0 border-r border-[var(--border-default)] bg-[var(--bg-elevated)] lg:col-start-1 lg:block"
+
+
+        {currentMode === "agent" ? (
+          <main
+            className="min-h-0 min-w-0 bg-[var(--bg-surface)]"
             style={{
-               gridRow: "2 / 4"
+              gridColumn: "1 / -1",
+              gridRow: "2 / 3",
+            }}
+          >
+            <SidebarAI mode="full" />
+          </main>
+        ) : (
+          <main
+            className="min-h-0 min-w-0 bg-[var(--bg-surface)]"
+            style={{
+              gridColumn: isDesktop
+                ? (aiPanelOpen ? "2 / 3" : "1 / 2")
+                : "1 / -1",
+              gridRow: "2 / 3",
+            }}
+          >
+            {children}
+          </main>
+        )}
+
+        {currentMode === "editor" && aiPanelOpen && (
+          <aside
+            className="hidden min-h-0 min-w-0 border-r border-[var(--border-default)] bg-[var(--bg-elevated)] lg:block"
+            style={{
+              gridRow: "2 / 4"
             }}
           >
             <SidebarAI />
           </aside>
-        ) : null}
+        )}
 
-        <main
-          className="min-h-0 min-w-0 bg-[var(--bg-surface)]"
-          style={{
-            gridColumn: isDesktop ? (aiPanelOpen ? "2 / 3" : "1 / 2") : "1 / -1",
-            gridRow: "2 / 3",
-          }}
-        >
-          {children}
-        </main>
-
-        {sidebarOpen ? (
+        {currentMode === "editor" && sidebarOpen ? (
           <aside
-            className="hidden min-h-0 min-w-0 border-l border-[var(--border-default)] bg-[var(--bg-elevated)] lg:block"
+            className="hidden min-h-0 min-w-0 border-l border-[var(--border-default)] bg-[var(--bg-elevated)] lg:flex lg:flex-col"
             style={{
-              gridColumn: isDesktop 
-                ? (aiPanelOpen ? "3 / 4" : "2 / 3") 
+              gridColumn: isDesktop
+                ? (aiPanelOpen ? "3 / 4" : "2 / 3")
                 : undefined,
               gridRow: "2 / 4"
             }}
           >
-            <FileExplorer />
+            {/* Activity Bar — horizontal row at the top, matching Cursor IDE */}
+            <div className="flex items-center justify-end gap-0.5 px-2 py-1 border-b border-[var(--border-default)] shrink-0">
+              <button
+                onClick={() => {
+                  if (!sidebarOpen) toggleSidebar();
+                }}
+                title="Explorer"
+                className={`p-1.5 rounded-sm transition-colors ${sidebarOpen ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"}`}
+              >
+                <VscFiles size={16} />
+              </button>
+              <button
+                onClick={() => openCommandPalette("files")}
+                title="Search"
+                className="p-1.5 rounded-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              >
+                <VscSearch size={16} />
+              </button>
+              <button
+                onClick={() => {}}
+                title="Source Control"
+                className="p-1.5 rounded-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              >
+                <VscSourceControl size={16} />
+              </button>
+              <button
+                onClick={() => {}}
+                title="Extensions"
+                className="p-1.5 rounded-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              >
+                <VscExtensions size={16} />
+              </button>
+            </div>
+            {/* File Explorer */}
+            <div className="flex-1 min-h-0 overflow-auto">
+              <FileExplorer />
+            </div>
           </aside>
         ) : null}
 
@@ -231,7 +285,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
           className="min-h-0 min-w-0 overflow-hidden border-t border-[var(--border-default)]"
           style={{
             gridRow: "3 / 4",
-            gridColumn: isDesktop ? (aiPanelOpen ? "2 / 3" : "1 / 2") : "1 / -1",
+            gridColumn: isDesktop
+              ? (currentMode === "agent"
+                  ? "1 / -1"
+                  : aiPanelOpen
+                    ? "2 / 3"
+                    : "1 / 2")
+              : "1 / -1",
           }}
         >
           <Terminal />

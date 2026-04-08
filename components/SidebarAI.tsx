@@ -24,7 +24,7 @@ function createMessage(role: "user" | "assistant", content: string): ChatMessage
   };
 }
 
-export default function SidebarAI() {
+export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "full" }) {
   const activeFile = useIDEStore((state) => state.activeFile);
   const chatMessages = useIDEStore((state) => state.chatMessages);
   const addMessage = useIDEStore((state) => state.addMessage);
@@ -154,8 +154,8 @@ export default function SidebarAI() {
       </div>
 
       {/* Input Section */}
-      <div className="p-3 border-t border-[var(--border-default)] bg-[var(--bg-elevated)]">
-        <div className="flex flex-col rounded-lg border border-[var(--border-default)] bg-[var(--bg-muted)] transition-all focus-within:border-[var(--accent)] focus-within:ring-1 focus-within:ring-[var(--accent)]/30 relative overflow-hidden">
+      <div className="p-4 border-t border-[var(--border-default)] bg-[var(--bg-elevated)]">
+        <div className="flex flex-col rounded-xl border border-[var(--border-default)] bg-[var(--bg-base)] transition-all focus-within:border-[var(--accent)] focus-within:ring-1 focus-within:ring-[var(--accent)]/20 relative overflow-hidden shadow-lg">
           <textarea
             ref={inputRef}
             rows={3}
@@ -167,24 +167,24 @@ export default function SidebarAI() {
                 handleSend();
               }
             }}
-            placeholder="Ask about projects, skills, or experience..."
-            className="w-full resize-none bg-transparent px-3 pt-3 pb-10 text-[13px] leading-relaxed text-[var(--text-primary)] outline-none placeholder:text-[var(--text-disabled)]"
+            placeholder="Ask anything..."
+            className="w-full resize-none bg-transparent px-4 pt-4 pb-14 text-[13px] leading-relaxed text-[var(--text-primary)] outline-none placeholder:text-[var(--text-disabled)]"
           />
-          
+
           {/* Input Toolbar */}
-          <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <button className="flex h-6 items-center gap-1.5 rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 text-[10px] font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]">
-                <VscCircuitBoard size={12} className="text-[var(--text-muted)]" />
+          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <button className="flex h-7 items-center gap-1.5 rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2.5 text-[11px] font-medium text-[var(--text-secondary)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]">
+                <VscCircuitBoard size={13} className="text-[var(--accent)]" />
                 <span>Agent</span>
               </button>
-              <button className="flex h-6 items-center gap-1.5 rounded-md border border-transparent bg-transparent px-2 text-[10px] font-medium text-[var(--text-muted)] transition-all hover:text-[var(--text-primary)]">
-                <VscLibrary size={12} />
+              <button className="flex h-7 items-center gap-1.5 rounded-md px-2.5 text-[11px] font-medium text-[var(--text-muted)] transition-all hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]">
+                <VscLibrary size={13} />
                 <span>Context</span>
               </button>
             </div>
-            
-            <button 
+
+            <button
               onClick={handleSend}
               disabled={!input.trim() || pending}
               className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-all disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed shadow-sm"
@@ -193,8 +193,8 @@ export default function SidebarAI() {
             </button>
           </div>
         </div>
-        <div className="mt-2 text-[10px] text-center text-[var(--text-disabled)] font-medium">
-          Press Enter to send, Shift + Enter for new line
+        <div className="mt-3 text-[10px] text-center text-[var(--text-disabled)] font-medium opacity-50">
+          ⌘ + Enter to send • ⇧ + Enter for new line
         </div>
       </div>
     </div>
