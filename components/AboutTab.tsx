@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 export default function AboutTab() {
   return (
     <div className="flex flex-col overflow-auto bg-[var(--bg-surface)] text-[var(--text-primary)] font-sans text-[13px] ide-scrollbar h-full w-full p-6 md:p-12 pb-32">
@@ -20,7 +18,7 @@ export default function AboutTab() {
         </div>
 
         <div className="flex flex-col gap-10">
-          <div className="border border-[var(--border-default)] rounded-xl p-6 md:p-8 bg-[var(--bg-elevated)] text-[var(--text-secondary)] leading-relaxed text-[15px] md:text-[16px] shadow-sm">
+          <div className="rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 text-[15px] leading-relaxed text-[var(--text-secondary)] shadow-sm md:p-8 md:text-[16px]">
             Hi! I'm <span className="text-[var(--accent)] font-bold">Aniket Karmakar</span>, pursuing a Bachelor of Technology in Electronics and Communication Engineering at NSHM Knowledge Campus, with a strong passion for <span className="text-[var(--info)] font-semibold">Front-end UI Development</span> and <span className="text-[var(--info)] font-semibold">Full-stack Web Development</span>. I'm a passionate Web Developer with a strong foundation in <span className="text-[var(--info)] font-semibold">Front-End Web Dev</span> with competitive programming. With a passion for elegantly-designed architecture and code, I am committed to leveraging technology to build scalable, unique software solutions. Currently working as a <span className="text-[var(--text-primary)] font-semibold underline decoration-[var(--accent)]/30 underline-offset-4">Junior Software Engineer in R&D at Security Engineers Pvt. Ltd. (SEPLE)</span>.
           </div>
 
@@ -59,7 +57,7 @@ export default function AboutTab() {
                 { icon: "⚡", text: "Shipping real products across startup and enterprise settings" },
                 { icon: "✨", text: "Targeting Generative AI and software development roles" }
               ].map((item, i) => (
-                <div key={i} className="flex items-start gap-4 border border-[var(--border-default)] rounded-xl p-5 bg-[var(--bg-muted)]/50 hover:bg-[var(--bg-muted)] transition-colors group">
+                <div key={i} className="group flex items-start gap-4 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)]/50 p-5 transition-colors hover:bg-[var(--bg-muted)]">
                   <span className="text-[20px] filter grayscale group-hover:grayscale-0 transition-all">{item.icon}</span>
                   <span className="text-[13px] font-medium text-[var(--text-secondary)] leading-relaxed group-hover:text-[var(--text-primary)] transition-colors">{item.text}</span>
                 </div>
@@ -73,7 +71,7 @@ export default function AboutTab() {
               Academic Foundation
             </h2>
             <div className="flex flex-col gap-4">
-              <div className="border border-[var(--border-default)] rounded-xl p-6 bg-[var(--bg-elevated)] flex flex-col md:flex-row justify-between gap-4 shadow-sm hover:border-[var(--accent)]/30 transition-all">
+              <div className="flex flex-col justify-between gap-4 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 shadow-sm transition-all hover:border-[var(--accent)]/30 md:flex-row">
                 <div className="flex flex-col gap-2">
                   <h3 className="text-[16px] md:text-[18px] font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <span className="text-[var(--accent)]">🎓</span> NSHM College of Management and Technology
@@ -86,7 +84,7 @@ export default function AboutTab() {
                   <div className="text-[var(--success)] font-bold text-[14px]">CGPA: 8.6</div>
                 </div>
               </div>
-              <div className="border border-[var(--border-default)] rounded-xl p-6 bg-[var(--bg-elevated)] flex flex-col md:flex-row justify-between gap-4 shadow-sm hover:border-[var(--accent)]/30 transition-all">
+              <div className="flex flex-col justify-between gap-4 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 shadow-sm transition-all hover:border-[var(--accent)]/30 md:flex-row">
                 <div className="flex flex-col gap-2">
                   <h3 className="text-[16px] md:text-[18px] font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <span className="text-[var(--accent)]">🎓</span> NSHM Knowledge Campus
@@ -98,7 +96,7 @@ export default function AboutTab() {
                   <div className="text-[var(--text-disabled)] font-mono text-[12px] mt-1">Aug 2021 - Aug 2024</div>
                 </div>
               </div>
-              <div className="border border-[var(--border-default)] rounded-xl p-6 bg-[var(--bg-elevated)] flex flex-col md:flex-row justify-between gap-4 shadow-sm hover:border-[var(--accent)]/30 transition-all">
+              <div className="flex flex-col justify-between gap-4 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 shadow-sm transition-all hover:border-[var(--accent)]/30 md:flex-row">
                 <div className="flex flex-col gap-2">
                   <h3 className="text-[16px] md:text-[18px] font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <span className="text-[var(--accent)]">🏫</span> Jemo NN High School
@@ -118,7 +116,7 @@ export default function AboutTab() {
               Certifications
             </h2>
             <div className="flex flex-col gap-4">
-              <div className="border border-[var(--border-default)] rounded-xl p-6 bg-[var(--bg-elevated)] flex flex-col md:flex-row justify-between gap-4 shadow-sm hover:border-[var(--accent)]/30 transition-all">
+              <div className="flex flex-col justify-between gap-4 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 shadow-sm transition-all hover:border-[var(--accent)]/30 md:flex-row">
                 <div className="flex flex-col gap-2">
                   <h3 className="text-[16px] md:text-[18px] font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <span className="text-[var(--accent)]">☁️</span> Cloud Computing – Amazon AWS
@@ -128,7 +126,7 @@ export default function AboutTab() {
                   <div className="text-[var(--text-disabled)] font-mono text-[12px]">Jun 2023</div>
                 </div>
               </div>
-              <div className="border border-[var(--border-default)] rounded-xl p-6 bg-[var(--bg-elevated)] flex flex-col md:flex-row justify-between gap-4 shadow-sm hover:border-[var(--accent)]/30 transition-all">
+              <div className="flex flex-col justify-between gap-4 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 shadow-sm transition-all hover:border-[var(--accent)]/30 md:flex-row">
                 <div className="flex flex-col gap-2">
                   <h3 className="text-[16px] md:text-[18px] font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <span className="text-[var(--accent)]">🤖</span> AI & Machine Learning – Edu Skill

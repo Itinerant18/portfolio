@@ -4,7 +4,14 @@ import { defaultFilePath } from "@/data/files";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export type ThemeMode = "dark" | "light";
+export type ThemeMode =
+  | "aniket-dark"
+  | "rose-pine"
+  | "tokyo-night"
+  | "catppuccin"
+  | "nord"
+  | "gruvbox"
+  | "light";
 export type PaletteMode = "commands" | "files";
 export type IDEMode = "editor" | "agent";
 
@@ -15,6 +22,7 @@ export interface ChatMessage {
 }
 
 interface IDEState {
+  hasHydrated: boolean;
   openFiles: string[];
   activeFile: string;
   sidebarOpen: boolean;
@@ -25,6 +33,7 @@ interface IDEState {
   terminalResetKey: number;
   currentMode: IDEMode;
   theme: ThemeMode;
+  settingsOpen: boolean;
   commandPaletteOpen: boolean;
   paletteMode: PaletteMode;
   searchQuery: string;
@@ -41,6 +50,9 @@ interface IDEState {
   toggleTerminal: () => void;
   resetTerminal: () => void;
   toggleTheme: () => void;
+  setTheme: (theme: ThemeMode) => void;
+  toggleSettings: () => void;
+  closeSettings: () => void;
   openCommandPalette: (mode?: PaletteMode) => void;
   closeCommandPalette: () => void;
   setSearchQuery: (query: string) => void;
@@ -53,6 +65,7 @@ interface IDEState {
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
+  setHasHydrated: (value: boolean) => void;
 }
 
 const initialMessages: ChatMessage[] = [
@@ -66,6 +79,7 @@ const initialMessages: ChatMessage[] = [
 export const useIDEStore = create<IDEState>()(
   persist(
     (set) => ({
+      hasHydrated: false,
       openFiles: [defaultFilePath],
       activeFile: defaultFilePath,
       sidebarOpen: true,
@@ -74,8 +88,9 @@ export const useIDEStore = create<IDEState>()(
       mobileAIPanelOpen: false,
       terminalOpen: true,
       terminalResetKey: 0,
-      currentMode: "agent",
-      theme: "dark",
+      currentMode: "editor",
+      theme: "aniket-dark",
+      settingsOpen: false,
       commandPaletteOpen: false,
       paletteMode: "commands",
       searchQuery: "",
@@ -152,8 +167,11 @@ export const useIDEStore = create<IDEState>()(
         })),
       toggleTheme: () =>
         set((state) => ({
-          theme: state.theme === "dark" ? "light" : "dark",
+          theme: state.theme === "aniket-dark" ? "light" : "aniket-dark",
         })),
+      setTheme: (theme) => set({ theme }),
+      toggleSettings: () => set((state) => ({ settingsOpen: !state.settingsOpen })),
+      closeSettings: () => set({ settingsOpen: false }),
       openCommandPalette: (mode = "commands") =>
         set({
           commandPaletteOpen: true,
@@ -197,20 +215,20 @@ export const useIDEStore = create<IDEState>()(
         set({
           zoomLevel: 1,
         }),
+      setHasHydrated: (value) =>
+        set({
+          hasHydrated: value,
+        }),
     }),
     {
-      name: "cursor-portfolio-v5",
+      name: "cursor-portfolio-v6",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        openFiles: state.openFiles,
-        activeFile: state.activeFile,
-        sidebarOpen: state.sidebarOpen,
-        aiPanelOpen: state.aiPanelOpen,
-        currentMode: state.currentMode,
-        terminalOpen: state.terminalOpen,
         theme: state.theme,
-        zoomLevel: state.zoomLevel,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );

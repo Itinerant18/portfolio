@@ -9,9 +9,21 @@ import {
 } from "@/utils/commands";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { VscSearch, VscFile, VscSymbolMethod } from "react-icons/vsc";
+import {
+  VscFile,
+  VscSymbolMethod,
+  VscSparkle,
+  VscMarkdown,
+  VscJson,
+  VscCode,
+  VscFilePdf,
+} from "react-icons/vsc";
 
 type PaletteEntry =
+  | {
+    kind: "copilot";
+    value: { title: string; shortcut: string };
+  }
   | {
     kind: "command";
     value: CommandDescriptor;
@@ -21,6 +33,26 @@ type PaletteEntry =
     value: IDEFile;
   };
 
+const FileIcon = ({ name, className }: { name: string; className?: string }) => {
+  const ext = name.split(".").pop()?.toLowerCase();
+  switch (ext) {
+    case "md":
+      return <VscMarkdown className={className} />;
+    case "json":
+      return <VscJson className={className} />;
+    case "pdf":
+      return <VscFilePdf className={className} />;
+    case "tsx":
+    case "ts":
+    case "js":
+    case "jsx":
+    case "html":
+      return <VscCode className={className} />;
+    default:
+      return <VscFile className={className} />;
+  }
+};
+
 export default function CommandPalette() {
   const isOpen = useIDEStore((state) => state.commandPaletteOpen);
   const paletteMode = useIDEStore((state) => state.paletteMode);
@@ -28,12 +60,11 @@ export default function CommandPalette() {
   const closeCommandPalette = useIDEStore((state) => state.closeCommandPalette);
   const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
   const openFile = useIDEStore((state) => state.openFile);
-  const theme = useIDEStore((state) => state.theme);
-  const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
-  const closeAllTabs = useIDEStore((state) => state.closeAllTabs);
   const focusAIPanel = useIDEStore((state) => state.focusAIPanel);
   const setSearchQuery = useIDEStore((state) => state.setSearchQuery);
   const toggleTheme = useIDEStore((state) => state.toggleTheme);
+  const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
+  const closeAllTabs = useIDEStore((state) => state.closeAllTabs);
   const deferredQuery = useDeferredValue(searchQuery);
   const inputRef = useRef<HTMLInputElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -56,25 +87,39 @@ export default function CommandPalette() {
   );
 
   const items = useMemo<PaletteEntry[]>(() => {
-    if (paletteMode === "files") {
-      return searchPortfolioFiles(deferredQuery).map((file) => ({
-        kind: "file",
-        value: file,
-      }));
+    const list: PaletteEntry[] = [];
+
+    // Always add Copilot at the top if it matches or if search is empty
+    const copilotMatch = "copilot".includes(deferredQuery.toLowerCase());
+    if (deferredQuery === "" || copilotMatch) {
+      list.push({
+        kind: "copilot",
+        value: { title: "Open Aniket's Copilot", shortcut: "Ctrl+Shift+C" },
+      });
     }
 
-    const normalized = deferredQuery.trim().toLowerCase();
-
-    return commands
-      .filter((command) =>
-        normalized
-          ? `${command.title} ${command.description}`.toLowerCase().includes(normalized)
-          : true,
-      )
-      .map((command) => ({
-        kind: "command",
-        value: command,
+    if (paletteMode === "files") {
+      const files = searchPortfolioFiles(deferredQuery).map((file) => ({
+        kind: "file" as const,
+        value: file,
       }));
+      list.push(...files);
+    } else {
+      const normalized = deferredQuery.trim().toLowerCase();
+      const matchedCommands = commands
+        .filter((command) =>
+          normalized
+            ? `${command.title} ${command.description}`.toLowerCase().includes(normalized)
+            : true,
+        )
+        .map((command) => ({
+          kind: "command" as const,
+          value: command,
+        }));
+      list.push(...matchedCommands);
+    }
+
+    return list;
   }, [commands, deferredQuery, paletteMode]);
 
   useEffect(() => {
@@ -92,6 +137,11 @@ export default function CommandPalette() {
   }, [deferredQuery, paletteMode]);
 
   function handleSelect(entry: PaletteEntry) {
+    if (entry.kind === "copilot") {
+      focusAIPanel();
+      closeCommandPalette();
+      return;
+    }
     if (entry.kind === "file") {
       openFile(entry.value.path);
       closeCommandPalette();
@@ -105,26 +155,34 @@ export default function CommandPalette() {
     }
   }
 
+  // Helper to format path as directory
+  const formatPath = (path: string) => {
+    const parts = path.split("/");
+    if (parts.length <= 1) return "./";
+    return parts.slice(0, -1).join("/") + "/";
+  };
+
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen ? (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-start justify-center bg-black/60 backdrop-blur-[2px] px-4 pt-[15vh]"
+           className="fixed inset-0 z-[100] flex items-start justify-center bg-black/60 backdrop-blur-[1px] px-4 pt-[12vh]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={closeCommandPalette}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: -10 }}
+            initial={{ opacity: 0, scale: 0.99, y: -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: -10 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            exit={{ opacity: 0, scale: 0.99, y: -4 }}
+            transition={{ duration: 0.1, ease: "easeOut" }}
             onClick={(event) => event.stopPropagation()}
-            className="w-full max-w-[600px] border border-[var(--border-default)] bg-[var(--bg-overlay)] rounded-xl shadow-2xl overflow-hidden"
+            className="w-full max-w-[640px] overflow-hidden rounded-lg border border-[#3c3c3c] bg-[#1e1e1e] shadow-[0_16px_48px_rgba(0,0,0,0.5)] flex flex-col"
           >
-            <div className="flex items-center gap-3 px-4 py-3 bg-[var(--bg-muted)]/50 border-b border-[var(--border-default)]">
-              <VscSearch className="text-[var(--text-muted)]" size={18} />
+            {/* Header: Input Area */}
+            <div className="flex items-center gap-3 px-4 py-[11px] bg-[#1e1e1e]">
+              <span className="text-[#858585] text-[15px] font-mono leading-none flex items-center">&gt;</span>
               <input
                 ref={inputRef}
                 value={searchQuery}
@@ -157,92 +215,104 @@ export default function CommandPalette() {
                     closeCommandPalette();
                   }
                 }}
-                placeholder={
-                  paletteMode === "files" ? "Search portfolio files..." : "Execute a workspace command..."
-                }
-                className="h-8 w-full bg-transparent text-[14px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-disabled)] font-medium"
+                placeholder="Go to file or run command..."
+                className="h-6 w-full bg-transparent text-[14px] text-[#cccccc] outline-none placeholder:text-[#5c5c5c] font-medium"
               />
-              <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[10px] font-bold text-[var(--text-muted)] shadow-sm">ESC</kbd>
+              <div className="flex items-center">
+                <span className="px-1.5 py-[2px] rounded-sm border border-[#454545] bg-[#333333] text-[9px] font-bold text-[#8c8c8c] leading-none uppercase select-none">Esc</span>
               </div>
             </div>
 
-            <div className="ide-scrollbar max-h-[400px] overflow-y-auto py-2 px-2 bg-[var(--bg-overlay)]">
+            <div className="h-[1px] w-full bg-[#3c3c3c]" />
+
+            {/* List Content */}
+            <div className="max-h-[min(520px,70vh)] overflow-y-auto py-1.5 flex flex-col">
               {items.length ? (
                 items.map((entry, index) => {
                   const isActive = activeIndex === index;
+                  
+                  // Show "FILES" header before the first file if both copilot and files exist
+                  const showFilesHeader = entry.kind === "file" && (index === 0 || items[index - 1].kind !== "file");
 
-                  if (entry.kind === "file") {
-                    return (
+                  return (
+                    <div key={entry.kind === "file" ? entry.value.path : entry.kind === "copilot" ? "copilot" : entry.value.id}>
+                      {showFilesHeader && (
+                        <div className="px-4 pt-3 pb-1 text-[10px] font-bold text-[#6f6f6f] uppercase tracking-wider select-none">
+                          Files
+                        </div>
+                      )}
+                      
                       <button
-                        key={entry.value.path}
                         type="button"
                         onMouseEnter={() => setActiveIndex(index)}
                         onClick={() => handleSelect(entry)}
-                        className={`group flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-left text-[13px] transition-all ${isActive
-                            ? "bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent-subtle)]"
-                            : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+                        className={`group flex w-full items-center gap-3.5 px-3 py-1.5 text-left text-[13px] transition-colors relative ${isActive
+                            ? "bg-[#2a2d2e]"
+                            : "text-[#cccccc]"
                           }`}
                       >
-                        <VscFile className={isActive ? "text-white" : "text-[var(--accent)]"} size={16} />
-                        <div className="flex flex-col min-w-0">
-                          <span className="font-bold truncate">{entry.value.name}</span>
-                          <span className={`text-[11px] truncate opacity-70 ${isActive ? 'text-white' : 'text-[var(--text-muted)]'}`}>{entry.value.path}</span>
-                        </div>
-                        <span className={`ml-auto text-[10px] font-medium uppercase tracking-widest opacity-60`}>
-                          {entry.value.language}
-                        </span>
+                        {entry.kind === "copilot" ? (
+                          <>
+                            <VscSparkle className={`${isActive ? "text-[#a981ff]" : "text-[#8e6fd7]"}`} size={16} />
+                            <span className={`font-medium ${isActive ? "text-white" : "text-[#c2abff]"}`}>
+                              {entry.value.title}
+                            </span>
+                            <span className="ml-auto text-[10px] font-mono text-[#6f6f6f] border border-[#3c3c3c] px-1.5 py-[1px] rounded bg-[#252526]">
+                              {entry.value.shortcut}
+                            </span>
+                          </>
+                        ) : entry.kind === "file" ? (
+                          <>
+                            <FileIcon name={entry.value.name} className={`${isActive ? "text-[#cccccc]" : "text-[#858585]"}`} />
+                            <span className={`font-semibold truncate ${isActive ? "text-white" : "text-[#cccccc]"}`}>
+                              {entry.value.name}
+                            </span>
+                            <span className="ml-auto text-[12px] font-mono text-[#6f6f6f] select-none italic">
+                              {formatPath(entry.value.path)}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                             <VscSymbolMethod className={`${isActive ? "text-[#cccccc]" : "text-[#858585]"}`} size={16} />
+                             <span className={`font-semibold ${isActive ? "text-white" : "text-[#cccccc]"}`}>
+                                {entry.value.title}
+                             </span>
+                             {entry.value.shortcut && (
+                               <span className="ml-auto text-[10px] font-mono text-[#6f6f6f] border border-[#3c3c3c] px-1.5 py-[1px] rounded bg-[#252526]">
+                                 {entry.value.shortcut}
+                               </span>
+                             )}
+                          </>
+                        )}
                       </button>
-                    );
-                  }
-
-                  return (
-                    <button
-                      key={entry.value.id}
-                      type="button"
-                      onMouseEnter={() => setActiveIndex(index)}
-                      onClick={() => handleSelect(entry)}
-                      className={`group flex w-full items-center gap-3 px-3 py-3 rounded-lg text-left text-[13px] transition-all ${isActive
-                          ? "bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent-subtle)]"
-                          : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
-                        }`}
-                    >
-                      <VscSymbolMethod className={isActive ? "text-white" : "text-[var(--info)]"} size={16} />
-                      <div className="flex flex-col">
-                        <span className="font-bold">{entry.value.title}</span>
-                        <span className={`text-[11px] opacity-70 ${isActive ? 'text-white' : 'text-[var(--text-muted)]'}`}>{entry.value.description}</span>
-                      </div>
-                      {entry.value.shortcut && (
-                        <span className={`ml-auto text-[11px] font-mono font-bold opacity-80`}>
-                          {entry.value.shortcut}
-                        </span>
-                      )}
-                    </button>
+                    </div>
                   );
                 })
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                  <div className="w-12 h-12 rounded-full bg-[var(--bg-muted)] flex items-center justify-center mb-3">
-                    <VscSearch size={20} className="text-[var(--text-disabled)]" />
-                  </div>
-                  <div className="text-[13px] font-bold text-[var(--text-primary)]">No matching results found</div>
-                  <div className="text-[11px] text-[var(--text-disabled)] mt-1 font-medium italic">Try adjusting your search query</div>
+                <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                  <div className="text-[13px] font-medium text-[#858585]">No matching results found</div>
                 </div>
               )}
             </div>
             
-            <div className="px-4 py-2 bg-[var(--bg-muted)]/30 border-t border-[var(--border-default)] flex items-center justify-between">
-               <div className="flex items-center gap-4">
-                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                   <kbd className="px-1 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-default)]">↑↓</kbd>
-                   <span>Navigate</span>
-                 </div>
-                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                   <kbd className="px-1 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-default)]">↵</kbd>
-                   <span>Select</span>
-                 </div>
+            {/* Footer */}
+            <div className="px-4 py-[6px] bg-[#1e1e1e] border-t border-[#2d2d2d] flex items-center justify-between select-none">
+               <div className="flex items-center gap-2.5 text-[11px] text-[#858585] font-medium">
+                 <span className="flex items-center gap-1">
+                   <span className="text-[12px]">↑↓</span> navigate
+                 </span>
+                 <span className="opacity-40">·</span>
+                 <span className="flex items-center gap-1">
+                   <span className="text-[12px]">↵</span> open
+                 </span>
+                 <span className="opacity-40">·</span>
+                 <span className="flex items-center gap-1">
+                   Esc close
+                 </span>
                </div>
-               <div className="text-[10px] font-medium uppercase tracking-widest text-[var(--accent)] opacity-80">Workspace Registry</div>
+               <div className="text-[11px] text-[#6f6f6f] flex items-center gap-1.5">
+                 <span className="font-normal">Tip: type <span className="text-[#858585] italic">"copilot"</span> to open AI chat</span>
+               </div>
             </div>
           </motion.div>
         </motion.div>

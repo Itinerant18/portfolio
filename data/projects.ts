@@ -14,6 +14,15 @@ interface RepoMetadata {
   fork?: boolean;
 }
 
+interface RepoMetadataSource {
+  name: string;
+  updatedAt: string;
+  primaryLanguage: { name: string } | null;
+  stargazerCount: number;
+  url: string;
+  description: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -52,7 +61,13 @@ const DEFAULT_CHANGELOG = [
   { v: "1.0.0", t: "January 2026", meta: "Initial technical repository foundation established." }
 ];
 
-const repoMetadata = (repoMetadataRaw as RepoMetadata[]) ?? [];
+const repoMetadata = ((repoMetadataRaw as RepoMetadataSource[]) ?? []).map(
+  (repo): RepoMetadata => ({
+    name: repo.name,
+    updatedAt: repo.updatedAt,
+    fork: false,
+  }),
+);
 const repoMetadataByName = new Map(
   repoMetadata.map((repo) => [repo.name, repo]),
 );

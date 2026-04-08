@@ -27,7 +27,7 @@ export default function ReadmeTab() {
         className="mx-auto flex w-full max-w-4xl flex-col gap-10"
       >
         <motion.div variants={item} className="flex flex-col items-center text-center gap-6">
-          <div className="relative flex h-44 w-full flex-col items-center justify-center overflow-hidden rounded-xl border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-elevated),var(--bg-muted))] shadow-sm">
+          <div className="relative flex h-44 w-full flex-col items-center justify-center overflow-hidden rounded-sm border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-elevated),var(--bg-muted))] shadow-sm">
             <div className="absolute inset-x-0 top-0 h-px bg-[var(--border-hover)]" />
             <h1 className="text-[24px] font-semibold leading-none tracking-[-0.04em] text-[var(--text-primary)] md:text-[28px]">
               Aniket Karmakar
@@ -48,7 +48,7 @@ export default function ReadmeTab() {
                 key={i} 
                 href={link.href} 
                 target="_blank" 
-                rel="noreferrer" 
+                rel="noopener noreferrer" 
                 className="flex items-center gap-2 rounded-md border border-[var(--border-default)] px-3.5 py-2 text-[11px] font-medium tracking-tight transition-all hover:border-[var(--border-hover)]"
                 style={{ backgroundColor: link.background, color: link.foreground }}
               >
@@ -65,7 +65,7 @@ export default function ReadmeTab() {
                 System Overview
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-6">
-                <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 font-mono text-[12px] leading-7 shadow-sm transition-all hover:border-[var(--border-hover)]">
+                <div className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 font-mono text-[12px] leading-7 shadow-sm transition-all hover:border-[var(--border-hover)]">
                     <div className="text-[var(--error)] mb-1">status: <span className="text-[var(--text-primary)]">Ready to Build</span></div>
                     <div className="text-[var(--error)] mb-1">role: <span className="text-[var(--text-primary)]">Junior Software Engineer, R&D</span></div>
                     <div className="text-[var(--error)] mb-1">focus: <span className="text-[var(--text-primary)]">Front-End UI, Full-Stack, AI/ML, IoT & Cloud</span></div>
@@ -81,7 +81,7 @@ export default function ReadmeTab() {
                     <div className="text-[var(--text-secondary)] ml-4">▸ Generative AI & LLM Integration</div>
                     <div className="text-[var(--text-secondary)] ml-4">▸ IoT + Cloud Automation @ Scale</div>
                 </div>
-                <div className="group relative flex items-center justify-center overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--bg-muted)] p-4">
+                <div className="group relative flex items-center justify-center overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] p-4">
                     <VscCircuitBoard className="text-[var(--accent)] opacity-20 absolute -bottom-4 -right-4" size={120} />
                     <div className="text-center relative z-10">
                       <div className="text-[28px] font-semibold leading-none text-[var(--text-primary)]">4+</div>
@@ -104,7 +104,7 @@ export default function ReadmeTab() {
                 { title: "Backend", items: ["Node.js", "REST APIs", "Firebase", "WebSockets"], icon: VscServer },
                 { title: "AI & Cloud", items: ["RAG", "LangChain", "AWS", "ESP32", "MLKit"], icon: VscDatabase }
               ].map((group, i) => (
-                <div key={i} className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 shadow-sm transition-all hover:border-[var(--border-hover)]">
+                <div key={i} className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 shadow-sm transition-all hover:border-[var(--border-hover)]">
                   <div className="flex items-center gap-2 mb-4">
                     <group.icon className="text-[var(--accent)]" size={16} />
                     <h3 className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-primary)]">{group.title}</h3>
@@ -119,7 +119,7 @@ export default function ReadmeTab() {
             </div>
         </motion.div>
 
-        <motion.div variants={item} className="relative mt-4 overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-8 text-center shadow-sm">
+        <motion.div variants={item} className="relative mt-4 overflow-hidden rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] p-8 text-center shadow-sm">
             <div className="absolute inset-x-0 top-0 h-px bg-[var(--border-hover)]" />
             <h2 className="relative z-10 text-[22px] font-semibold tracking-[-0.03em] text-[var(--text-primary)] md:text-[28px]">Let&apos;s Build the Future Together</h2>
             <p className="relative z-10 mx-auto mt-2 max-w-xl text-[14px] font-medium text-[var(--text-secondary)]">Currently open to Generative AI, full-stack, and software development opportunities.</p>

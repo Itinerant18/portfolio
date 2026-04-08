@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 const skillCategories = [
   {
     title: "FRONTEND & UI/UX",
@@ -114,7 +112,7 @@ export default function SkillsTab() {
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-[var(--bg-muted)] overflow-hidden relative border border-[var(--border-default)]/50">
                       <div
-                        className="absolute left-0 top-0 h-full rounded-full transition-all duration-400 ease-out shadow-[0_0_8px_rgba(0,0,0,0.2)]"
+                        className="absolute left-0 top-0 h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_8px_rgba(0,0,0,0.2)]"
                         style={{
                           width: `${skill.percentage}%`,
                           backgroundColor: skill.color,

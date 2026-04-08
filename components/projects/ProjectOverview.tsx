@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
-import { ProjectShape } from "./ProjectData";
+import { useMemo, useState } from "react";
+import type { ProjectDetail, ProjectShape, TechGroup, TechGroupItem } from "./ProjectData";
 import { SectionLabel, VisualBadge, FlowDiagram, TechBadge, SidebarKeyValue } from "./ProjectUI";
 
 /* ─── Live Preview iframe component ─── */
@@ -115,7 +115,7 @@ function GalleryImage({
   const [errored, setErrored] = useState(false);
 
   // Proxy GitHub-hosted images to bypass CORS
-  const resolvedSrc = React.useMemo(() => {
+  const resolvedSrc = useMemo(() => {
     try {
       const parsed = new URL(src);
       const needsProxy =
@@ -178,7 +178,7 @@ function GalleryImage({
 }
 
 /* ─── Main overview component ─── */
-export function ProjectOverview({ project, detail }: { project: ProjectShape; detail: any }) {
+export function ProjectOverview({ project, detail }: { project: ProjectShape; detail: ProjectDetail }) {
   const images: string[] = detail.previewImages ?? [];
   const liveUrl: string | null = detail.liveUrl ?? null;
 
@@ -256,7 +256,7 @@ export function ProjectOverview({ project, detail }: { project: ProjectShape; de
           <section>
             <SectionLabel label="Engine & Stack" />
             <div className="mt-3 flex flex-wrap gap-3">
-              {detail.techGroups.flatMap((g: any) => g.items).map((item: any, iIndex: number) => (
+              {detail.techGroups.flatMap((g: TechGroup) => g.items).map((item: TechGroupItem, iIndex: number) => (
                 <TechBadge key={`${project.id}-tech-${iIndex}`} name={item.n} />
               ))}
             </div>
@@ -264,7 +264,7 @@ export function ProjectOverview({ project, detail }: { project: ProjectShape; de
         </div>
 
         <div className="space-y-8">
-          <aside className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 shadow-sm">
+          <aside className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 shadow-sm">
             <SectionLabel label="Specifications" />
             <div className="mt-4 space-y-3">
               <SidebarKeyValue label="Category" value={detail.category} />
@@ -275,7 +275,7 @@ export function ProjectOverview({ project, detail }: { project: ProjectShape; de
             </div>
           </aside>
 
-          <aside className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 shadow-sm">
+          <aside className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 shadow-sm">
             <SectionLabel label="Topic Graph" />
             <div className="mt-3 flex flex-wrap gap-2">
               {detail.topics.slice(0, 10).map((topic: string, index: number) => (

@@ -8,6 +8,28 @@ export type LoadState = "loading" | "ready" | "fallback";
 export type TechGroupItem = { n: string; v: string; c: string };
 export type TechGroup = { label: string; items: TechGroupItem[] };
 export type ReleaseEntry = { v: string; t: string; meta: string };
+export interface ProjectDetail {
+  architecture: string;
+  backend: string;
+  category: string;
+  dataModels: string[];
+  dependencies: number;
+  features: string[];
+  flows: string[];
+  highLevel: string;
+  language: string;
+  problem: string;
+  releases: ReleaseEntry[];
+  storage: string;
+  tagline: string;
+  techGroups: TechGroup[];
+  topics: string[];
+  why: string;
+  year: string;
+  previewImage: string | null;
+  previewImages: string[];
+  liveUrl: string | null;
+}
 
 export type ProjectShape = Omit<Project, "changelog"> & {
   why?: string;

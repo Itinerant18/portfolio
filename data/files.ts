@@ -1,7 +1,7 @@
 export interface IDEFile {
   name: string;
   path: string;
-  language: "tsx" | "ts" | "json";
+  language: "css" | "tsx" | "ts" | "json";
   content: string;
 }
 
@@ -135,18 +135,7 @@ export const Hero = () => {
   }
 ] as const;`,
   },
-  {
-    name: "projects.json",
-    path: "src/projects.json",
-    language: "json",
-    content: `{
-  "status": "synchronized",
-  "source": "github",
-  "owner": "Itinerant18",
-  "last_sync": "2026-04-05",
-  "projects_count": 11
-}`,
-  },
+
   {
     name: "skills.json",
     path: "src/skills.json",
@@ -242,7 +231,7 @@ export const Hero = () => {
   {
     name: "contact.css",
     path: "src/contact.css",
-    language: "ts",
+    language: "css",
     content: `.contact {
   email: "aniketkarmakar018@gmail.com";
   github: "Itinerant18";

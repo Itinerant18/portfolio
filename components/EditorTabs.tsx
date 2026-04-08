@@ -33,7 +33,7 @@ export default function EditorTabs() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
                   transition={{ duration: 0.15 }}
-                  className={`relative flex h-full min-w-[120px] max-w-[200px] items-center border-r border-[var(--border-default)] text-[12px] transition-all ${isActive
+                  className={`group relative flex h-full min-w-[120px] max-w-[200px] items-center border-r border-[var(--border-default)] text-[12px] transition-all ${isActive
                       ? "bg-[var(--bg-surface)] text-[var(--text-primary)]"
                       : "bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-secondary)]"
                     }`}
@@ -52,7 +52,7 @@ export default function EditorTabs() {
                       e.stopPropagation();
                       closeFile(path);
                     }}
-                    className="mr-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--border-default)] hover:text-[var(--text-primary)]"
+                    className={`mr-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm text-[var(--text-muted)] transition-opacity hover:bg-[var(--border-default)] hover:text-[var(--text-primary)] ${isActive ? "opacity-50 group-hover:opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                   >
                     <VscClose size={14} />
                   </button>

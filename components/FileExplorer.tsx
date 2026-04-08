@@ -1,13 +1,11 @@
 "use client";
 
-import { portfolioFiles, IDEFile } from "@/data/files";
-import { contactDetails } from "@/data/content";
+import { portfolioFiles, type IDEFile } from "@/data/files";
 import { useIDEStore } from "@/store/useIDEStore";
-import { useState, useMemo } from "react";
+import { useMemo, useState, type MouseEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { 
-  VscChevronRight, VscChevronDown, VscFiles, VscSearch, 
-  VscSourceControl, VscExtensions, VscEllipsis,
+  VscChevronRight, VscChevronDown, 
   VscCollapseAll,
   VscJson, VscFile
 } from "react-icons/vsc";
@@ -108,7 +106,7 @@ function buildTree(files: IDEFile[]): TreeNode[] {
   return root;
 }
 
-function ActionIcon({ children, onClick, title }: { children: React.ReactNode, onClick?: (e: React.MouseEvent) => void, title?: string }) {
+function ActionIcon({ children, onClick, title }: { children: ReactNode; onClick?: (e: MouseEvent<HTMLButtonElement>) => void; title?: string }) {
   return (
     <button 
       type="button" 
@@ -127,12 +125,6 @@ export default function FileExplorer() {
   const activeFile = useIDEStore((state) => state.activeFile);
   const openFile = useIDEStore((state) => state.openFile);
   const toggleMobileSidebar = useIDEStore((state) => state.toggleMobileSidebar);
-  const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
-  const openSkillsTab = () => openFile("src/skills.json");
-  const openExternal = (value: string) => {
-    const href = value.startsWith("http") ? value : `https://${value}`;
-    window.open(href, "_blank", "noopener,noreferrer");
-  };
 
   const tree = useMemo(() => buildTree(portfolioFiles), []);
 
@@ -220,7 +212,7 @@ export default function FileExplorer() {
     <div className="flex h-full min-h-0 w-full flex-col bg-[var(--bg-elevated)] text-[13px] font-sans select-none">
 
       {/* Explorer Content */}
-        <div className="flex h-8 shrink-0 items-center px-4">
+        <div className="flex h-7 shrink-0 items-center px-2">
           <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)] opacity-70">Explorer</span>
         </div>
 

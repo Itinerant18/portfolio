@@ -104,7 +104,7 @@ export default function CodeEditor() {
       <div className="min-h-0 flex-1 overflow-hidden">
         {!file || !activeFile ? (
           <div className="flex h-full items-center justify-center px-6 pb-16 text-[var(--text-primary)]">
-            <div className="w-full max-w-3xl rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 md:p-8">
+            <div className="w-full max-w-3xl rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 md:p-8">
               <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
                 Welcome
               </div>
@@ -115,7 +115,7 @@ export default function CodeEditor() {
                 {shortcuts.map(([label, combo]) => (
                   <div
                     key={label}
-                    className="flex items-center justify-between rounded-lg border border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-3"
+                    className="flex items-center justify-between rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-3"
                   >
                     <span className="text-[13px] text-[var(--text-secondary)]">{label}</span>
                     <kbd className="rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-1 text-[11px] text-[var(--text-primary)]">
@@ -128,9 +128,7 @@ export default function CodeEditor() {
           </div>
         ) : (
           <div className="h-full">
-            <div className="border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-2 text-[11px] text-[var(--text-muted)]">
-              {file.path}
-            </div>
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={file.path}

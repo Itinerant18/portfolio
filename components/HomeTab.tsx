@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useIDEStore } from "@/store/useIDEStore";
 import { IDEButton, SectionLabel } from "@/components/ui/Primitives";
 import { 
@@ -82,7 +81,7 @@ export default function HomeTab() {
           </IDEButton>
         </div>
 
-        <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] md:grid-cols-4">
+        <div className="grid grid-cols-2 overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] md:grid-cols-4">
           {[
             { value: "8.6", label: "CGPA" },
             { value: "36+", label: "PROJECTS" },

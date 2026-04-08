@@ -5,7 +5,7 @@ import { executeTerminalCommand } from "@/utils/commands";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { 
   VscClose, VscChevronDown, VscAdd, 
-  VscTerminal, VscWarning, VscCircleFilled 
+  VscTerminal, VscWarning
 } from "react-icons/vsc";
 
 interface TerminalEntry {
@@ -215,25 +215,22 @@ export default function Terminal() {
         {activeTab === "Terminal" ? (
           <div
             ref={scrollRef}
-            className="ide-scrollbar h-full overflow-y-auto px-4 py-3"
+            className="ide-scrollbar h-full overflow-y-auto px-3 py-2"
             onClick={() => inputRef.current?.focus()}
           >
             {entries.map((entry) => (
               <div key={entry.id} className="mb-1 last:mb-0">
                 {entry.command ? (
                   <div className="flex items-center gap-2 leading-relaxed text-[var(--text-secondary)]">
-                    <div className="flex items-center gap-2">
-                      <VscCircleFilled size={10} className="text-[var(--text-disabled)]" />
                     <span className="font-medium">{prompt}</span>
+                    <span className="text-[var(--text-primary)]">{entry.command}</span>
                   </div>
-                  <span className="text-[var(--text-primary)]">{entry.command}</span>
-                </div>
                 ) : null}
 
                 {entry.lines.map((line, index) => (
                   <div
                     key={`${entry.id}-${index}`}
-                    className="pl-4.5 leading-relaxed text-[var(--text-muted)]"
+                    className="pl-[18px] leading-relaxed text-[var(--text-muted)]"
                     style={{ transitionDelay: `${index * 30}ms` }}
                   >
                     {line}
@@ -244,10 +241,7 @@ export default function Terminal() {
 
             <form onSubmit={handleSubmit} className="mt-1 pb-4">
               <label className="flex items-center gap-2">
-                <div className="flex items-center gap-2">
-                  <VscCircleFilled size={10} className="text-[var(--accent)]" />
-                  <span className="font-medium text-[var(--text-secondary)]">{prompt}</span>
-                </div>
+                <span className="font-medium text-[var(--accent)]">{prompt}</span>
                 <input
                   ref={inputRef}
                   value={input}

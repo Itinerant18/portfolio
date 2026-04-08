@@ -10,7 +10,7 @@ import {
 import { useIDEStore } from "@/store/useIDEStore";
 import { IDEButton, IDEInput } from "@/components/ui/Primitives";
 import { 
-  ProjectShape, TabKey, LoadState, 
+  ProjectDetail, ProjectShape, TabKey, LoadState, 
   isProjectLike, asProjectShape, getInitials, techColor, 
   categoryOf, languageOf, yearOf, whyOf, problemOf, 
   techGroupsOf, featuresOf, topicsOf, flowsOf, 
@@ -142,10 +142,10 @@ export default function ProjectsTab() {
       topics,
       why: whyOf(selectedProject),
       year: yearOf(selectedProject),
-      previewImage: selectedProject.previewImage,
-      previewImages: (selectedProject as any).previewImages ?? (selectedProject.previewImage ? [selectedProject.previewImage] : []),
-      liveUrl: (selectedProject as any).liveUrl ?? null,
-    };
+      previewImage: selectedProject.previewImage ?? null,
+      previewImages: selectedProject.previewImages ?? (selectedProject.previewImage ? [selectedProject.previewImage] : []),
+      liveUrl: selectedProject.liveUrl ?? null,
+    } satisfies ProjectDetail;
   }, [selectedProject]);
 
   if (loadState === "loading" || !selectedProject || !detail) {

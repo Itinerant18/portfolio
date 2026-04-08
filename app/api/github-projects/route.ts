@@ -1,5 +1,18 @@
 import { NextResponse } from "next/server";
 
+interface GitHubRepo {
+  default_branch?: string;
+  description: string | null;
+  fork: boolean;
+  homepage: string | null;
+  html_url: string;
+  language: string | null;
+  name: string;
+  private: boolean;
+  topics?: string[];
+  updated_at: string;
+}
+
 function extractTechFromReadme(readmeText: string) {
   const techs: string[] = [];
   const lowerReadme = readmeText.toLowerCase();
@@ -149,10 +162,10 @@ export async function GET() {
       return NextResponse.json({ error: "Failed to fetch repositories" }, { status: res.status });
     }
 
-    const repos = await res.json();
+    const repos = (await res.json()) as GitHubRepo[];
 
     // Filter out forked, private, and profile README repos
-    const filteredRepos = repos.filter((repo: any) => {
+    const filteredRepos = repos.filter((repo) => {
       if (repo.fork) return false;
       if (repo.private) return false;
       if (repo.name === username) return false; // profile README repo
@@ -160,7 +173,7 @@ export async function GET() {
     });
 
     const projectsWithImages = await Promise.all(
-      filteredRepos.map(async (repo: any) => {
+      filteredRepos.map(async (repo) => {
         const previewImages: string[] = [];
         let archInfo = {
           highLevel: "Standard repository architecture.",

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { ReleaseEntry } from "./ProjectData";
 import { SectionLabel } from "./ProjectUI";
 
@@ -23,7 +22,7 @@ export function ProjectChangelog({ releases }: { releases: ReleaseEntry[] }) {
               ) : null}
               <div className="absolute right-[-4px] top-[14px] h-2 w-2 rounded-full border-[1.5px] border-[var(--accent)] bg-[var(--bg-base)] z-10" />
             </div>
-            <div className="mb-8 rounded-xl border border-[var(--border-default)] border-l-[3px] border-l-[var(--accent)] bg-[var(--bg-elevated)] px-5 py-4 transition-all hover:bg-[var(--bg-muted)] shadow-sm group">
+            <div className="group mb-8 rounded-sm border border-[var(--border-default)] border-l-[3px] border-l-[var(--accent)] bg-[var(--bg-elevated)] px-5 py-4 shadow-sm transition-all hover:bg-[var(--bg-muted)]">
               <div className="flex items-center justify-between gap-4 mb-2">
                 <div className="text-[10px] font-medium uppercase tracking-widest text-[var(--text-muted)] transition-colors group-hover:text-[var(--text-secondary)]">
                   {release.meta}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { contactDetails } from "@/data/content";
 import { IDEButton, IDEInput, IDETextArea, SectionLabel } from "@/components/ui/Primitives";
 import { 
@@ -45,7 +45,7 @@ export default function ContactTab() {
     }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message || !emailValid) return;
 
@@ -90,7 +90,7 @@ export default function ContactTab() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex flex-row items-center rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 shadow-sm transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)]"
+                  className="group flex flex-row items-center rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 shadow-sm transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)]"
                 >
                   <div
                     className="mr-4 flex h-10 w-10 items-center justify-center rounded-lg shadow-inner"

@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
 import { 
-  FaDesktop, FaMobileScreen, FaServer, FaDatabase, FaMicrochip,
+  FaDesktop, FaMobile, FaServer, FaDatabase, FaMicrochip,
   FaBolt, FaChartLine, FaLayerGroup, FaEye, FaWifi, FaUser,
   FaTerminal, FaPlay, FaCheck, FaPowerOff, FaBox, FaGear, FaShareNodes,
   FaChevronRight, FaRegCircleQuestion
@@ -19,7 +18,7 @@ export function SectionLabel({ label }: { label: string }) {
 export function LoadingState() {
   return (
     <div className="flex h-full items-center justify-center bg-[var(--bg-base)] p-8 font-sans">
-      <div className="w-full max-w-[620px] overflow-hidden rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-md">
+      <div className="w-full max-w-[620px] overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-md">
         <div className="border-b border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
           sync status
         </div>
@@ -96,7 +95,7 @@ export function VisualBadge({ label, icon }: { label: string; icon: React.ReactN
 export function IconMapper({ name, size = 20 }: { name: string; size?: number }) {
   const n = name.toLowerCase();
   if (n === "monitor") return <FaDesktop size={size} />;
-  if (n === "smartphone") return <FaMobileScreen size={size} />;
+  if (n === "smartphone") return <FaMobile size={size} />;
   if (n === "server") return <FaServer size={size} />;
   if (n === "database") return <FaDatabase size={size} />;
   if (n === "cpu") return <FaMicrochip size={size} />;
@@ -150,7 +149,7 @@ export function FlowDiagram({ project }: { project: ProjectShape }) {
     : [];
 
   return (
-    <div className="mt-3 flex flex-wrap items-center justify-center gap-4 border border-[var(--border-default)] bg-[var(--bg-base)] py-8 px-4 rounded-xl shadow-inner">
+    <div className="mt-3 flex flex-wrap items-center justify-center gap-4 rounded-sm border border-[var(--border-default)] bg-[var(--bg-base)] px-4 py-8 shadow-inner">
       {flow.map((node, index) => (
         <FlowNode
           key={`${project.id}-flow-${index}`}
@@ -231,7 +230,7 @@ export function TechIcon({ name, size = 20 }: { name: string; size?: number }) {
       alt={name}
       style={{ width: size, height: size, objectFit: "contain" }}
       onError={(e) => {
-        (e.target as any).outerHTML = `<div style="width: ${size}px; height: ${size}px;" class="flex items-center justify-center rounded-sm bg-[var(--bg-muted)] text-[9px] font-bold text-[var(--text-muted)]">${name.slice(0, 1).toUpperCase()}</div>`;
+        e.currentTarget.outerHTML = `<div style="width: ${size}px; height: ${size}px;" class="flex items-center justify-center rounded-sm bg-[var(--bg-muted)] text-[9px] font-bold text-[var(--text-muted)]">${name.slice(0, 1).toUpperCase()}</div>`;
       }}
     />
   );

@@ -3,9 +3,8 @@
 import { contactDetails } from "@/data/content";
 import { defaultFilePath } from "@/data/files";
 import { useIDEStore } from "@/store/useIDEStore";
-import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
-import { VscLayoutSidebarLeft, VscSparkle, VscCode } from "react-icons/vsc";
+import { FaGear } from "react-icons/fa6";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 type MenuKey =
   | "File"
@@ -27,17 +26,6 @@ interface MenuAction {
   className?: string;
 }
 
-const menuOrder: MenuKey[] = [
-  "File",
-  "Edit",
-  "Selection",
-  "View",
-  "Go",
-  "Run",
-  "Terminal",
-  "Help",
-];
-
 function withProtocol(value: string) {
   return value.startsWith("http://") || value.startsWith("https://")
     ? value
@@ -48,15 +36,18 @@ function WindowButton({
   onClick,
   children,
   close = false,
+  title,
 }: {
   onClick: () => void;
   children: ReactNode;
   close?: boolean;
+  title?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      title={title}
       className={`flex h-8 w-11 items-center justify-center transition-colors ${close
         ? "hover:bg-[var(--danger)] hover:text-white"
         : "hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
@@ -82,9 +73,10 @@ export default function TopBar() {
   const toggleAIPanel = useIDEStore((state) => state.toggleAIPanel);
   const resetTerminal = useIDEStore((state) => state.resetTerminal);
   const toggleMode = useIDEStore((state) => state.toggleMode);
+  const toggleSettings = useIDEStore((state) => state.toggleSettings);
   const menuRef = useRef<HTMLDivElement>(null);
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
-  const [topBarMessage] = useState("portfolio");
+
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -158,16 +150,16 @@ export default function TopBar() {
       { type: "divider" },
     ],
     Edit: [
-      { label: "Find...", shortcut: "Ctrl+P", run: () => openCommandPalette("files") },
+      { label: "Find...", shortcut: "Ctrl+F", run: () => openCommandPalette("files") },
       { type: "divider" },
       { label: "Select All", shortcut: "Ctrl+A", run: selectEditorContent },
-      { label: "Copy", shortcut: "Ctrl+C", run: () => { document.execCommand("copy"); } },
+      { label: "Copy", shortcut: "Ctrl+C", run: async () => { try { await navigator.clipboard.writeText(window.getSelection()?.toString() ?? ""); } catch {} } },
     ],
     Selection: [
       { label: "Select All", shortcut: "Ctrl+A", run: selectEditorContent },
     ],
     View: [
-      { label: "Command Palette", shortcut: "Ctrl+P", run: () => openCommandPalette("commands") },
+      { label: "Command Palette", shortcut: "Ctrl+K", run: () => openCommandPalette("commands") },
       { type: "divider" },
       {
         label: currentMode === "agent" ? "Switch to Editor Mode" : "Switch to Agent Mode",
@@ -230,15 +222,34 @@ export default function TopBar() {
     setOpenMenu(null);
   };
 
+  const editorMenuOrder: MenuKey[] = [
+    "File",
+    "Edit",
+    "Selection",
+    "View",
+    "Go",
+    "Run",
+    "Terminal",
+    "Help",
+  ];
+
+  const agentMenuOrder: MenuKey[] = ["File", "Edit", "View", "Help"];
+  const currentMenuOrder = currentMode === "agent" ? agentMenuOrder : editorMenuOrder;
+
   return (
-    <header className="relative flex h-8 shrink-0 items-center justify-between border-b border-[var(--border-default)] bg-[var(--bg-base)] pl-2 select-none">
-      <div ref={menuRef} className="flex min-w-0 items-center gap-3">
-        <div className="flex h-5 w-5 items-center justify-center rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[11px] font-bold text-[var(--accent)] shadow-sm">
-          C
+    <header className="relative flex h-8 shrink-0 items-center justify-between border-b border-[var(--border-default)] bg-[var(--bg-base)] pl-0.5 pr-2 select-none">
+      {/* Left: Logo + Menu items */}
+      <div ref={menuRef} className="flex min-w-0 items-center gap-1.5 pl-1.5">
+        <div className="flex h-5 w-5 items-center justify-center pointer-events-none">
+          <img 
+            src="https://img.icons8.com/?size=32&id=LhC2HfftBElY&format=png" 
+            alt="Cursor AI Logo" 
+            className="h-full w-full object-contain"
+          />
         </div>
 
-        <nav className="hidden items-center gap-1 lg:flex">
-          {menuOrder.map((item) => (
+        <nav className="hidden items-center gap-0.5 lg:flex ml-1">
+          {currentMenuOrder.map((item) => (
             <div
               key={item}
               className="relative"
@@ -250,8 +261,8 @@ export default function TopBar() {
             >
               <button
                 type="button"
-                onClick={() => setOpenMenu((current) => (current === item ? null : item))}
-                className={`h-7 px-2.5 rounded-md text-[12px] font-medium leading-none transition-colors ${openMenu === item
+                onClick={() => setOpenMenu((current: MenuKey | null) => (current === item ? null : item))}
+                className={`h-7 px-1.5 rounded-md text-[12.5px] font-medium leading-none transition-colors ${openMenu === item
                   ? "bg-[var(--bg-muted)] text-[var(--text-primary)]"
                   : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                   }`}
@@ -260,7 +271,7 @@ export default function TopBar() {
               </button>
 
               {openMenu === item ? (
-                <div className="absolute left-0 top-full z-50 mt-1 min-w-[240px] rounded-lg border border-[var(--border-default)] bg-[var(--bg-overlay)] py-1.5 shadow-xl backdrop-blur-md">
+                <div className="absolute left-0 top-full z-50 mt-1 min-w-[240px] rounded-sm border border-[var(--border-default)] bg-[var(--bg-overlay)] py-1.5 shadow-xl backdrop-blur-md">
                   {menuActions[item].map((action, i) => {
                     if (action.type === "divider") {
                       return <div key={i} className="my-1 border-t border-[var(--border-default)]" />;
@@ -298,58 +309,118 @@ export default function TopBar() {
         </nav>
       </div>
 
-      <div className="pointer-events-auto absolute left-1/2 -translate-x-1/2">
-        <button
-          type="button"
-          onClick={() => openCommandPalette("files")}
-          className="flex h-6 w-[220px] sm:w-[320px] md:w-[480px] items-center justify-center gap-2.5 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-4 text-[var(--text-secondary)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] group"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60 group-hover:opacity-100 transition-opacity">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <span className="text-[11px] font-medium tracking-tight opacity-70 group-hover:opacity-100 transition-opacity">{topBarMessage === "portfolio" ? "Search files, commands, and pages" : topBarMessage}</span>
-          <span className="ml-auto flex items-center gap-1 opacity-40 group-hover:opacity-60">
-            <span className="rounded border border-[var(--border-default)] px-1.5 py-0.5 text-[9px] font-bold">CTRL</span>
-            <span className="rounded border border-[var(--border-default)] px-1.5 py-0.5 text-[9px] font-bold">P</span>
-          </span>
-        </button>
-      </div>
+      {/* Center: Back button + Search bar — Editor Mode only */}
+      {currentMode === "editor" && (
+        <div className="pointer-events-auto absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5">
 
-      <div className="flex h-full items-center">
-        <div className="hidden md:flex items-center gap-[14px] pr-4 text-[var(--text-secondary)]">
-          <div className="flex items-center gap-[4px] ml-2">
-            <button 
-              onClick={toggleMode} 
-              title={`Switch to ${currentMode === 'agent' ? 'Editor' : 'Agent'} Mode`} 
-              className={`w-7 h-7 flex items-center justify-center rounded-md transition-all ${currentMode === 'agent' ? 'bg-[var(--accent-subtle)] text-[var(--accent)]' : 'text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]'}`}
-            >
-              {currentMode === "agent" ? (
-                <VscSparkle size={15} />
-              ) : (
-                <VscCode size={16} />
-              )}
-            </button>
-            <div className="w-[1px] h-4 bg-[var(--border-default)] mx-1" />
-            <button onClick={toggleAIPanel} title="Toggle AI Panel (Ctrl+Shift+A)" className={`w-7 h-7 flex items-center justify-center rounded-md transition-colors ${aiPanelOpen ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"}`}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <line x1="9" y1="3" x2="9" y2="21"/>
-              </svg>
-            </button>
-            <button onClick={toggleTerminal} title="Toggle Terminal (Ctrl+`)" className={`w-7 h-7 flex items-center justify-center rounded-md transition-colors ${terminalOpen ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"}`}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <line x1="3" y1="15" x2="21" y2="15"/>
-              </svg>
-            </button>
-            <button onClick={toggleSidebar} title="Toggle Sidebar (Ctrl+B)" className={`w-7 h-7 flex items-center justify-center rounded-md transition-colors ${sidebarOpen ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"}`}>
-              <VscLayoutSidebarLeft size={15} />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => openCommandPalette("files")}
+            className="flex h-[22px] w-[220px] sm:w-[260px] md:w-[320px] lg:w-[380px] items-center gap-2 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 text-[var(--text-secondary)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] group"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-50 group-hover:opacity-100 shrink-0 transition-opacity">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <span className="text-[11px] font-medium tracking-tight opacity-60 group-hover:opacity-100 transition-opacity truncate">
+              portfolio
+            </span>
+            <span className="ml-auto flex items-center gap-1 opacity-30 group-hover:opacity-50 shrink-0">
+              <span className="rounded border border-[var(--border-default)] px-1 py-[1px] text-[9px] font-bold leading-none">CTRL</span>
+              <span className="rounded border border-[var(--border-default)] px-1 py-[1px] text-[9px] font-bold leading-none">P</span>
+            </span>
+          </button>
         </div>
+      )}
 
+      {/* Right side — Mode specific controls */}
+      <div className="flex h-full items-center">
+        {currentMode === "editor" && (
+          <>
+            {/* Mode toggle toggle */}
+            <button
+              type="button"
+              onClick={toggleMode}
+              title={`Switch to Agent Mode`}
+              className="hidden md:flex items-center gap-1 mr-2 px-2 h-[22px] rounded-md text-[11px] font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"
+            >
+              <span>Editor</span>
+            </button>
+
+            {/* Panel toggle icons */}
+            <div className="hidden md:flex items-center gap-[4px] mr-1.5">
+              <button
+                onClick={toggleSidebar}
+                title="Toggle Sidebar"
+                className={`w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${sidebarOpen
+                  ? "bg-[#2d2d2d] text-[var(--text-primary)] shadow-[0_0_8px_rgba(0,0,0,0.4)] border border-[#404040]"
+                  : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
+                  }`}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="2" y="2" width="12" height="12" rx="1.5" />
+                  <line x1="6" y1="2" x2="6" y2="14" />
+                </svg>
+              </button>
+              <button
+                onClick={toggleTerminal}
+                title="Toggle Terminal"
+                className={`w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${terminalOpen
+                  ? "bg-[#2d2d2d] text-[var(--text-primary)] shadow-[0_0_8px_rgba(0,0,0,0.4)] border border-[#404040]"
+                  : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
+                  }`}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="2" y="2" width="12" height="12" rx="1.5" />
+                  <line x1="2" y1="10" x2="14" y2="10" />
+                </svg>
+              </button>
+              <button
+                onClick={toggleAIPanel}
+                title="Toggle AI Panel"
+                className={`w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${aiPanelOpen
+                  ? "bg-[#2d2d2d] text-[var(--text-primary)] shadow-[0_0_10px_rgba(59,130,246,0.15)] border border-[#444444]"
+                  : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
+                  }`}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="2" y="2" width="12" height="12" rx="1.5" />
+                  <line x1="10" y1="2" x2="10" y2="14" />
+                </svg>
+              </button>
+            </div>
+          </>
+        )}
+
+        {currentMode === "agent" && (
+          <button
+            type="button"
+            onClick={toggleMode}
+            title={`Switch to Editor Mode`}
+            className="flex items-center gap-1 mr-2 px-2 h-[22px] rounded-md text-[11px] font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"
+          >
+            <span>Agent</span>
+          </button>
+        )}
+
+        {/* Window controls */}
         <div className="flex h-full items-center">
+          <button
+            type="button"
+            onClick={toggleSettings}
+            title="Settings"
+            className="mr-1 flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+          >
+            <FaGear size={13} />
+          </button>
+          <WindowButton
+            onClick={() => {}}
+            title="Minimize"
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <line x1="3" y1="8" x2="13" y2="8" />
+            </svg>
+          </WindowButton>
           <WindowButton
             onClick={() => {
               if (!document.fullscreenElement) {

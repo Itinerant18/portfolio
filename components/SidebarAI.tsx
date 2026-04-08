@@ -8,13 +8,6 @@ import {
   VscAdd, VscEllipsis, VscArrowRight, 
   VscCircuitBoard, VscLibrary, VscSparkle 
 } from "react-icons/vsc";
-import { IDEButton } from "@/components/ui/Primitives";
-
-const agents = [
-  { id: "default", label: "Default Agent", detail: "General workspace help" },
-  { id: "projects", label: "Projects Agent", detail: "Project and delivery questions" },
-  { id: "systems", label: "Systems Agent", detail: "Architecture and tooling questions" },
-] as const;
 
 function createMessage(role: "user" | "assistant", content: string): ChatMessage {
   return {
@@ -25,6 +18,7 @@ function createMessage(role: "user" | "assistant", content: string): ChatMessage
 }
 
 export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "full" }) {
+  void mode;
   const activeFile = useIDEStore((state) => state.activeFile);
   const chatMessages = useIDEStore((state) => state.chatMessages);
   const addMessage = useIDEStore((state) => state.addMessage);
@@ -98,26 +92,25 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
       </div>
 
       {/* Agent Chat Container */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto ide-scrollbar px-3 py-4 flex flex-col gap-6">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto ide-scrollbar px-2 py-3 flex flex-col gap-4">
         
         {/* Chat History */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           {chatMessages.length === 1 && !pending ? (
             <div className="flex flex-col gap-3">
               <div className="text-[12px] text-[var(--text-muted)]">
                 Start with a prompt or use one of these suggestions.
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="mt-1 flex flex-wrap gap-1.5">
                 {suggestions.map((suggestion) => (
-                  <IDEButton
+                  <button
                     key={suggestion}
-                    variant="secondary"
-                    size="sm"
-                    className="justify-start"
+                    type="button"
                     onClick={() => setInput(suggestion)}
+                    className="inline-flex items-center whitespace-nowrap rounded-sm border border-[var(--border-default)] bg-[var(--bg-base)] px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                   >
                     {suggestion}
-                  </IDEButton>
+                  </button>
                 ))}
               </div>
             </div>
@@ -154,8 +147,8 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
       </div>
 
       {/* Input Section */}
-      <div className="p-4 border-t border-[var(--border-default)] bg-[var(--bg-elevated)]">
-        <div className="flex flex-col rounded-xl border border-[var(--border-default)] bg-[var(--bg-base)] transition-all focus-within:border-[var(--accent)] focus-within:ring-1 focus-within:ring-[var(--accent)]/20 relative overflow-hidden shadow-lg">
+      <div className="border-t border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-2">
+        <div className="relative flex flex-col overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-base)] shadow-lg transition-all focus-within:border-[var(--accent)] focus-within:ring-1 focus-within:ring-[var(--accent)]/20">
           <textarea
             ref={inputRef}
             rows={3}

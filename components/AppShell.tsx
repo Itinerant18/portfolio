@@ -2,6 +2,7 @@
 
 import CommandPalette from "@/components/CommandPalette";
 import FileExplorer from "@/components/FileExplorer";
+import SettingsOverlay from "@/components/SettingsOverlay";
 import SidebarAI from "@/components/SidebarAI";
 import Terminal from "@/components/Terminal";
 import TopBar from "@/components/TopBar";
@@ -10,9 +11,10 @@ import { useIDEStore } from "@/store/useIDEStore";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { VscFiles, VscSearch, VscSourceControl, VscExtensions, VscSparkle, VscTerminal } from "react-icons/vsc";
+import { VscFiles, VscSearch, VscSourceControl, VscExtensions, VscSparkle, VscTerminal, VscClose } from "react-icons/vsc";
 
 export default function AppShell({ children }: { children: ReactNode }) {
+  const hasHydrated = useIDEStore((state) => state.hasHydrated);
   const currentMode = useIDEStore((state) => state.currentMode);
   const theme = useIDEStore((state) => state.theme);
   const sidebarOpen = useIDEStore((state) => state.sidebarOpen);
@@ -32,6 +34,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const closeMobilePanels = useIDEStore((state) => state.closeMobilePanels);
   const toggleSidebar = useIDEStore((state) => state.toggleSidebar);
   const toggleMode = useIDEStore((state) => state.toggleMode);
+  const [isMounted, setIsMounted] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const mobileNavItems = [
     {
@@ -75,6 +78,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }, [theme]);
 
   useEffect(() => {
+    setIsMounted(true);
     const updateViewport = () => {
       setIsDesktop(window.innerWidth >= 1024);
     };
@@ -174,6 +178,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
     "22px",
   ].join(" ");
 
+  if (!isMounted || !hasHydrated) {
+    return (
+      <div className="grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]" style={{ gridTemplateRows: "32px minmax(0, 1fr) 22px" }}>
+        <div className="border-b border-[var(--border-default)] bg-[var(--bg-base)]" />
+        <div className="bg-[var(--bg-surface)]" />
+        <div className="border-t border-[var(--border-default)] bg-[var(--bg-elevated)]" />
+      </div>
+    );
+  }
+
   return (
     <>
       <div
@@ -241,38 +255,42 @@ export default function AppShell({ children }: { children: ReactNode }) {
               gridRow: "2 / 4"
             }}
           >
-            {/* Activity Bar — horizontal row at the top, matching Cursor IDE */}
-            <div className="flex items-center justify-end gap-0.5 px-2 py-1 border-b border-[var(--border-default)] shrink-0">
-              <button
-                onClick={() => {
-                  if (!sidebarOpen) toggleSidebar();
-                }}
-                title="Explorer"
-                className={`p-1.5 rounded-sm transition-colors ${sidebarOpen ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"}`}
-              >
-                <VscFiles size={16} />
-              </button>
-              <button
-                onClick={() => openCommandPalette("files")}
-                title="Search"
-                className="p-1.5 rounded-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-              >
-                <VscSearch size={16} />
-              </button>
-              <button
-                onClick={() => {}}
-                title="Source Control"
-                className="p-1.5 rounded-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-              >
-                <VscSourceControl size={16} />
-              </button>
-              <button
-                onClick={() => {}}
-                title="Extensions"
-                className="p-1.5 rounded-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-              >
-                <VscExtensions size={16} />
-              </button>
+            {/* Activity Bar — refined horizontal header for the explorer */}
+            <div className="flex items-center justify-between px-2.5 py-1.5 border-b border-[var(--border-default)] bg-[var(--bg-elevated)] shrink-0 select-none">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] px-1">
+                Explorer
+              </div>
+              <div className="flex items-center gap-0.5">
+                <button
+                  onClick={() => openCommandPalette("files")}
+                  title="Search files..."
+                  className="p-1 rounded-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all"
+                >
+                  <VscSearch size={16} />
+                </button>
+                <button
+                  onClick={() => {}}
+                  title="Source Control"
+                  className="p-1 rounded-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all"
+                >
+                  <VscSourceControl size={16} />
+                </button>
+                <button
+                  onClick={() => {}}
+                  title="Extensions"
+                  className="p-1 rounded-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all"
+                >
+                  <VscExtensions size={16} />
+                </button>
+                <div className="mx-1 h-3 w-[1px] bg-[var(--border-default)] opacity-50" />
+                <button
+                  onClick={() => toggleSidebar()}
+                  title="Hide Sidebar"
+                  className="p-1 rounded-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all"
+                >
+                  <VscClose size={16} />
+                </button>
+              </div>
             </div>
             {/* File Explorer */}
             <div className="flex-1 min-h-0 overflow-auto">
@@ -378,6 +396,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </nav>
 
       <CommandPalette />
+      <SettingsOverlay />
     </>
   );
 }
