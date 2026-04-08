@@ -13,19 +13,9 @@
 # production
 /build
 
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-*.log
-
 # local env files
+.env
 .env*.local
-.env.local
 
 # vercel
 .vercel
@@ -34,31 +24,42 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# IDE and Agents
+# IDEs and AI Agents
 .agent/
-.windsurf/
 .claude/
 .codebuddy/
 .codex/
 .continue/
 .cursor/
 .gemini/
-.vscode/
 .idea/
 .kiro/
 .opencode/
 .qoder/
 .roo/
 .trae/
+.vscode/
+.windsurf/
 
-# Unnecessary files
-image copy*.png
+# Internal Documentation & Planning
+IMPLEMENTATION_PLAN.md
+project-archetecture.*
+CONFIG.md
+daily-progress/
+outputs/
+
+# Large Data & Media
+tech-stack.js
 image.png
+image copy*.png
+repos.json
+
+# Scratch & Dev Utilities
 create-commits.ps1
 create-daily-commits.ps1
 test-fuzzy-score.ts
-outputs/
-daily-progress/
-repos.json
-*.tsbuildinfo
-tsconfig.tsbuildinfo
+
+# Misc
+.DS_Store
+*.pem
+*.log
