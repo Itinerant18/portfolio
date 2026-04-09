@@ -1,22 +1,42 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { 
   FaDesktop, FaMobile, FaServer, FaDatabase, FaMicrochip,
   FaBolt, FaChartLine, FaLayerGroup, FaEye, FaWifi, FaUser,
   FaTerminal, FaPlay, FaCheck, FaPowerOff, FaBox, FaGear, FaShareNodes,
-  FaChevronRight, FaRegQuestionCircle
+  FaRegCircleQuestion
 } from "react-icons/fa6";
 import { VscSync } from "react-icons/vsc";
-import { TechGroupItem } from "./ProjectData";
+import type { ProjectShape, TechGroupItem } from "./ProjectData";
 
-export const LABEL_CLASS =
-  "border-b border-[var(--border-default)] pb-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]";
+const hexagonClipPath =
+  "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
 
 export function SectionLabel({ label }: { label: string }) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <div className={`${LABEL_CLASS} mb-3 flex items-center gap-2`}>
-      <span className="gradient-text">{label}</span>
+    <div className="mb-3 flex items-center gap-3">
+      <div className="flex w-full items-center gap-2">
+        <span className="h-px w-6 bg-gradient-to-r from-[var(--accent)] to-transparent" />
+        <span
+          className="gradient-text text-[10px] font-bold uppercase tracking-[0.2em]"
+          data-text={label}
+        >
+          {label}
+        </span>
+        <div className="relative h-px flex-1 overflow-hidden bg-gradient-to-r from-[var(--accent-muted)] to-transparent">
+          {!shouldReduceMotion ? (
+            <motion.span
+              className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent"
+              animate={{ x: ["-100%", "320%"] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "linear" }}
+            />
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }
@@ -80,18 +100,28 @@ export function TechPill({ item }: { item: TechGroupItem }) {
   );
 }
 
-export function StatCell({ label, value, icon }: { label: string; value: number | string; icon?: React.ReactNode }) {
+export function StatCell({
+  label,
+  value,
+  icon,
+  className = "",
+}: {
+  label: string;
+  value: number | string;
+  icon?: React.ReactNode;
+  className?: string;
+}) {
   return (
     <motion.div 
       whileHover={{ backgroundColor: "var(--bg-muted)" }}
-      className="group flex min-w-0 flex-1 flex-col gap-1.5 border-r border-[var(--border-default)] px-4 py-4 transition-colors last:border-r-0"
+      className={`group flex min-w-0 flex-1 flex-col gap-1.5 bg-[var(--bg-elevated)]/95 px-4 py-4 transition-colors sm:px-5 ${className}`}
     >
       <div className="flex items-center gap-2">
         {icon && <div className="text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors">{icon}</div>}
         <motion.span 
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-[14px] font-bold tracking-tight text-[var(--text-primary)]"
+          className="text-[13px] font-bold tracking-tight text-[var(--text-primary)] sm:text-[14px]"
         >
           {value}
         </motion.span>
@@ -137,27 +167,90 @@ export function IconMapper({ name, size = 20 }: { name: string; size?: number })
   if (n === "box") return <FaBox size={size} />;
   if (n === "settings") return <FaGear size={size} />;
   if (n === "share") return <FaShareNodes size={size} />;
-  return <FaRegQuestionCircle size={size} />;
+  return <FaRegCircleQuestion size={size} />;
 }
 
 export function FlowNode({ label, icon, isLast, protocol }: { label: string; icon: string; isLast?: boolean; protocol?: string }) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <div className="flex items-center gap-3">
+    <div className="group flex shrink-0 items-center gap-2 sm:gap-3">
       <div className="flex flex-col items-center gap-2">
-        <motion.div 
-          whileHover={{ scale: 1.1 }}
-          className="flex h-10 w-10 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[var(--accent)] shadow-sm transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]"
+        <motion.div
+          whileHover={shouldReduceMotion ? undefined : { scale: 1.15, rotate: 3 }}
+          whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.5, rotate: -10 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="relative flex h-11 w-11 items-center justify-center transition-shadow duration-300 group-hover:shadow-[var(--glow-accent)] sm:h-12 sm:w-12"
         >
-          <IconMapper name={icon} />
+          <div
+            className="absolute inset-0 border border-[var(--accent-muted)] bg-[linear-gradient(135deg,var(--bg-elevated),var(--bg-overlay))]"
+            style={{ clipPath: hexagonClipPath }}
+          />
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 100 100"
+            className="absolute inset-0 h-full w-full text-[var(--accent-muted)] opacity-70"
+          >
+            <polygon
+              points="25,0 75,0 100,50 75,100 25,100 0,50"
+              fill="currentColor"
+              fillOpacity="0.08"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+          <div
+            className="absolute inset-[5px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            style={{
+              clipPath: hexagonClipPath,
+              background:
+                "radial-gradient(circle at center, var(--accent-muted), transparent 70%)",
+            }}
+          />
+          <span className="relative z-10 text-[var(--accent)] drop-shadow-[0_0_10px_var(--accent)]">
+            <IconMapper name={icon} size={18} />
+          </span>
         </motion.div>
-        <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-[var(--text-muted)]">{label}</span>
+        <motion.span
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="max-w-[72px] text-center text-[9px] font-bold uppercase tracking-[0.15em] text-[var(--accent)]"
+        >
+          {label}
+        </motion.span>
       </div>
       {!isLast && (
-        <div className="mb-4 flex flex-col items-center gap-1 opacity-40">
-          {protocol && <span className="text-[7px] font-medium uppercase tracking-widest text-[var(--accent)]">{protocol}</span>}
-          <div className="flex items-center gap-1">
-            <div className="h-[1px] w-8 bg-gradient-to-r from-[var(--accent)] to-[var(--border-default)]" />
-            <FaChevronRight className="text-[var(--accent)] -ml-1 text-[8px]" />
+        <div className="mb-4 flex flex-col items-center gap-1 opacity-50">
+          {protocol ? (
+            <motion.span
+              initial={shouldReduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="typewriter-text inline-block max-w-[56px] text-center text-[7px] font-bold uppercase tracking-widest text-[var(--text-muted)] sm:max-w-[72px]"
+            >
+              {protocol}
+            </motion.span>
+          ) : null}
+          <div className="relative flex w-8 items-center sm:w-12">
+            <div className="h-px w-full border-t border-dashed border-[var(--accent-muted)]" />
+            {!shouldReduceMotion ? (
+              <>
+                <motion.span
+                  className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--accent)] shadow-[var(--glow-accent)]"
+                  animate={{ x: [0, 30, 42], opacity: [0, 1, 1, 0] }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                />
+                <motion.span
+                  className="absolute left-0 top-1/2 h-1 w-1 -translate-y-1/2 rounded-full bg-[var(--info)] shadow-[var(--glow-info)]"
+                  animate={{ x: [-4, 24, 36], opacity: [0, 0.8, 0] }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: "linear", delay: 0.35 }}
+                />
+              </>
+            ) : null}
           </div>
         </div>
       )}
@@ -165,29 +258,31 @@ export function FlowNode({ label, icon, isLast, protocol }: { label: string; ico
   );
 }
 
-export function FlowDiagram({ project }: { project: any }) {
-  const flow = project.visualFlow || [
+export function FlowDiagram({ project }: { project: ProjectShape }) {
+  const flow = project.visualFlow ?? [
     { label: "Input", icon: "box" },
     { label: "Process", icon: "settings" },
     { label: "Output", icon: "share" }
   ];
 
-  const highLevel = project.highLevel || "";
+  const highLevel = project.highLevel ?? "";
   const protocols = highLevel.includes("->")
     ? highLevel.split("->").map((p: string) => p.trim())
     : [];
 
   return (
-    <div className="mt-3 flex flex-wrap items-center justify-center gap-4 rounded-sm border border-[var(--border-default)] bg-[var(--bg-base)] px-4 py-8 shadow-inner">
-      {flow.map((node: any, index: number) => (
-        <FlowNode
-          key={`${project.id}-flow-${index}`}
-          label={node.label}
-          icon={node.icon}
-          isLast={index === flow.length - 1}
-          protocol={protocols[index + 1]?.split(" ")[0]}
-        />
-      ))}
+    <div className="ide-scrollbar mt-3 overflow-x-auto overflow-y-hidden rounded-sm border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-base),var(--bg-elevated))] px-3 py-6 shadow-inner sm:px-4 sm:py-8">
+      <div className="mx-auto flex w-fit min-w-max items-center gap-3 sm:gap-4">
+        {flow.map((node, index) => (
+          <FlowNode
+            key={`${project.id}-flow-${index}`}
+            label={node.label}
+            icon={node.icon}
+            isLast={index === flow.length - 1}
+            protocol={protocols[index + 1]?.split(" ")[0]}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -266,24 +361,105 @@ export function TechIcon({ name, size = 20 }: { name: string; size?: number }) {
 }
 
 export function TechBadge({ name }: { name: string }) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <motion.div 
-      whileHover={{ y: -3, scale: 1.05 }}
-      className="group relative flex h-10 w-10 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] backdrop-blur-sm transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)] hover:shadow-lg"
+    <motion.div
+      whileHover={shouldReduceMotion ? undefined : { y: -6, scale: 1.12 }}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+      className="group relative flex h-11 w-11 items-center justify-center sm:h-12 sm:w-12"
     >
-      <TechIcon name={name} size={22} />
-      <div className="absolute -top-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-sm border border-[var(--border-default)] bg-[var(--bg-overlay)] px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-[var(--text-primary)] opacity-0 transition-opacity pointer-events-none group-hover:opacity-100">
-        {name}
+      <div
+        className="absolute inset-[-4px] rounded-full border border-[var(--accent-muted)] opacity-0 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
+        style={{
+          animation: shouldReduceMotion ? undefined : "spin-slow 4s linear infinite",
+        }}
+      />
+      <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-sm transition-all duration-300 group-hover:border-[var(--accent)] group-hover:shadow-[var(--glow-accent)] sm:h-10 sm:w-10">
+        <TechIcon name={name} size={22} />
+      </div>
+      <div className="pointer-events-none absolute -top-10 left-1/2 z-50 hidden -translate-x-1/2 whitespace-nowrap sm:block">
+        <div className="relative rounded-sm border border-[var(--accent-muted)] bg-[var(--bg-overlay)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[var(--accent)] opacity-0 transition-all duration-200 group-hover:opacity-100">
+          <span className="absolute left-0 top-0 h-1 w-1 border-l border-t border-[var(--accent)]" />
+          <span className="absolute right-0 top-0 h-1 w-1 border-r border-t border-[var(--accent)]" />
+          <span className="absolute bottom-0 left-0 h-1 w-1 border-b border-l border-[var(--accent)]" />
+          <span className="absolute bottom-0 right-0 h-1 w-1 border-b border-r border-[var(--accent)]" />
+          {name}
+        </div>
       </div>
     </motion.div>
   );
 }
 
-export function SidebarKeyValue({ label, value }: { label: string; value: string }) {
+export function SidebarKeyValue({
+  label,
+  value,
+  delay = 0,
+}: {
+  label: string;
+  value: string;
+  delay?: number;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+  const isYearValue = /^\d{4}$/.test(value.trim());
+  const [displayedValue, setDisplayedValue] = useState(
+    isYearValue && !shouldReduceMotion ? "0" : value,
+  );
+
+  useEffect(() => {
+    if (!isYearValue || shouldReduceMotion) {
+      setDisplayedValue(value);
+      return;
+    }
+
+    const target = Number.parseInt(value, 10);
+    let intervalId: number | undefined;
+    const timeoutId = window.setTimeout(() => {
+      let current = 0;
+      const increment = Math.max(1, Math.ceil(target / 24));
+      intervalId = window.setInterval(() => {
+        current = Math.min(target, current + increment);
+        setDisplayedValue(String(current));
+
+        if (current >= target) {
+          if (intervalId) {
+            window.clearInterval(intervalId);
+          }
+        }
+      }, 28);
+    }, delay);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId) {
+        window.clearInterval(intervalId);
+      }
+    };
+  }, [delay, isYearValue, shouldReduceMotion, value]);
+
   return (
-    <div className="flex items-start justify-between gap-3 border-b border-[var(--border-default)] py-2 last:border-b-0">
-      <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--text-muted)]">{label}</span>
-      <span className="text-right text-[11px] font-semibold text-[var(--text-secondary)]">{value}</span>
-    </div>
+    <motion.div
+      initial={shouldReduceMotion ? false : { opacity: 0, x: 8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: delay / 1000, duration: 0.35 }}
+      className="flex items-start justify-between gap-3 border-b border-[var(--border-default)] py-2 last:border-b-0 sm:items-center"
+    >
+      <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--text-muted)]">{label}</span>
+      {isYearValue ? (
+        <span
+          className="min-w-0 max-w-[58%] text-right text-[11px] font-semibold text-[var(--text-secondary)] [animation:counter-up_0.35s_ease-out_both] sm:max-w-[70%]"
+          style={{ animationDelay: `${delay}ms` }}
+        >
+          {displayedValue}
+        </span>
+      ) : (
+        <span
+          className="typewriter-text inline-block max-w-[58%] truncate text-right text-[11px] font-semibold text-[var(--text-secondary)] sm:max-w-[70%]"
+          style={{ animationDelay: `${delay}ms, ${delay}ms` }}
+        >
+          {value}
+        </span>
+      )}
+    </motion.div>
   );
 }

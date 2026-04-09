@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 import {
   fallbackProjects,
   isForkedProject,
@@ -29,7 +29,7 @@ function openExternal(url: string) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -39,7 +39,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, x: -10 },
   show: { opacity: 1, x: 0 },
 };
@@ -167,7 +167,7 @@ export default function ProjectsTab() {
   if (loadState === "loading" || !selectedProject || !detail) {
     return (
       <div className="flex h-full w-full overflow-hidden bg-[var(--bg-base)] font-sans text-[var(--text-primary)]">
-        <aside className="hidden md:flex h-full w-[268px] shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)]">
+        <aside className="hidden h-full shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:flex md:w-[248px] xl:w-[268px]">
           <div className="shrink-0 border-b border-[var(--border-default)] px-4 py-3">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--text-muted)]">
@@ -195,7 +195,7 @@ export default function ProjectsTab() {
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-[var(--bg-base)] font-sans text-[var(--text-primary)]">
-      <aside className="hidden md:flex h-full w-[280px] shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)]">
+      <aside className="hidden h-full shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:flex md:w-[248px] xl:w-[280px]">
         <div className="shrink-0 border-b border-[var(--border-default)] px-4 py-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -280,19 +280,101 @@ export default function ProjectsTab() {
       </aside>
 
       <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[var(--bg-base)]">
+        <div className="border-b border-[var(--border-default)] bg-[var(--bg-elevated)] md:hidden">
+          <div className="px-4 py-4 sm:px-6">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <VscProject className="text-[var(--accent)]" size={14} />
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--text-primary)]">
+                  Project Registry
+                </span>
+              </div>
+              <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                {filteredProjects.length} loaded
+              </span>
+            </div>
+
+            <div className="mt-4">
+              <IDEInput
+                type="text"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search registry..."
+              />
+            </div>
+
+            {filteredProjects.length > 0 ? (
+              <div className="-mx-4 mt-4 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6">
+                <div className="flex min-w-max gap-3">
+                  {filteredProjects.map((project) => {
+                    const active = project.id === selectedProjectId;
+                    const projectLanguage = languageOf(project);
+
+                    return (
+                      <button
+                        key={`mobile-${project.id}`}
+                        type="button"
+                        onClick={() => {
+                          setSelectedProjectId(project.id);
+                          setActiveTab("overview");
+                        }}
+                        className={`w-[240px] shrink-0 rounded-sm border px-4 py-3 text-left transition-all sm:w-[280px] ${
+                          active
+                            ? "border-[var(--accent)] bg-[var(--bg-muted)] shadow-[var(--glow-accent)]"
+                            : "border-[var(--border-default)] bg-[var(--bg-base)] hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]/40"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm text-[12px] font-bold text-white shadow-sm"
+                            style={{ backgroundColor: techColor(projectLanguage) }}
+                          >
+                            {getInitials(project.name)}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-[12px] font-bold text-[var(--text-primary)]">
+                              {project.name}
+                            </div>
+                            <div className="mt-1 line-clamp-2 text-[10px] font-medium leading-relaxed text-[var(--text-muted)]">
+                              {project.shortDescription || "No description provided."}
+                            </div>
+                          </div>
+                          {active ? (
+                            <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)]" />
+                          ) : null}
+                        </div>
+                        <div className="mt-3 flex flex-wrap items-center gap-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                          <span className="rounded-full border border-[var(--border-default)] px-2 py-1">
+                            {categoryOf(project)}
+                          </span>
+                          <span>{projectLanguage}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 rounded-sm border border-dashed border-[var(--border-default)] px-4 py-5 text-center text-[12px] font-medium italic text-[var(--text-disabled)]">
+                No matching records in registry.
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="shrink-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
-          <div className="px-6 py-8 md:px-10">
+          <div className="mx-auto w-full max-w-[1200px] px-4 py-5 sm:px-6 sm:py-6 lg:px-8 xl:px-10">
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               key={`hero-${selectedProject.id}`}
-              className="flex flex-col items-start gap-6 md:flex-row md:items-center md:gap-8"
+              className="flex flex-col items-start gap-5 md:flex-row md:items-center md:gap-8"
             >
               <div className="shrink-0 relative">
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="flex h-[80px] w-[80px] items-center justify-center rounded-sm text-[28px] font-bold text-white shadow-xl"
+                  className="flex h-16 w-16 items-center justify-center rounded-sm text-[22px] font-bold text-white shadow-xl sm:h-[72px] sm:w-[72px] sm:text-[24px] xl:h-[80px] xl:w-[80px] xl:text-[28px]"
                   style={{ 
                     backgroundColor: techColor(detail.language),
                     boxShadow: `0 8px 24px -4px color-mix(in srgb, ${techColor(detail.language)} 40%, transparent)`
@@ -304,24 +386,26 @@ export default function ProjectsTab() {
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.2em]">
                   <span className="text-[var(--accent)]">{detail.category}</span>
                   <span className="opacity-30">•</span>
                   <span>{detail.language}</span>
                   <span className="opacity-30">•</span>
                   <span>{detail.year}</span>
                 </div>
-                <h1 className="mt-2 text-[32px] font-bold leading-none tracking-tight text-[var(--text-primary)] md:text-[42px]">
+                <h1 className="mt-2 text-[26px] font-bold leading-[0.94] tracking-tight text-[var(--text-primary)] sm:text-[32px] xl:text-[42px]">
                   <span className="gradient-text">{selectedProject.name}</span>
                 </h1>
-                <p className="mt-4 max-w-[75ch] text-[15px] font-medium leading-relaxed text-[var(--text-secondary)]">{detail.tagline}</p>
+                <p className="mt-3 max-w-[75ch] text-[14px] font-medium leading-relaxed text-[var(--text-secondary)] sm:mt-4 sm:text-[15px]">
+                  {detail.tagline}
+                </p>
                 
-                <div className="mt-6 flex flex-wrap items-center gap-3">
+                <div className="mt-5 flex flex-col items-stretch gap-2.5 sm:mt-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                   <IDEButton
                     type="button"
                     onClick={() => openExternal(selectedProject.links.github)}
                     variant="primary"
-                    className="gap-2"
+                    className="w-full gap-2 sm:w-auto"
                   >
                     <VscRepo size={14} /> Repository
                   </IDEButton>
@@ -330,7 +414,7 @@ export default function ProjectsTab() {
                       type="button"
                       onClick={() => openExternal(selectedProject.links.demo!)}
                       variant="secondary"
-                      className="gap-2"
+                      className="w-full gap-2 sm:w-auto"
                     >
                       <VscLiveShare size={14} /> Live Demo
                     </IDEButton>
@@ -339,7 +423,7 @@ export default function ProjectsTab() {
                     type="button"
                     onClick={() => openFile("data/projects.ts")}
                     variant="ghost"
-                    className="gap-2"
+                    className="w-full gap-2 sm:w-auto"
                   >
                     <VscCode size={14} /> Source
                   </IDEButton>
@@ -353,45 +437,50 @@ export default function ProjectsTab() {
             animate="show"
             variants={containerVariants}
             key={`stats-${selectedProject.id}`}
-            className="grid grid-cols-2 md:grid-cols-5 divide-x divide-[var(--border-default)] border-t border-[var(--border-default)] bg-[var(--bg-muted)]/20"
+            className="mx-auto grid w-full max-w-[1200px] grid-cols-2 gap-px border-t border-[var(--border-default)] bg-[var(--border-default)] sm:grid-cols-3 xl:grid-cols-5"
           >
             <StatCell label="Dependencies" value={detail.dependencies} />
             <StatCell label="Features" value={detail.features.length} />
             <StatCell label="Flow steps" value={detail.flows.length} />
             <StatCell label="Releases" value={detail.releases.length} />
-            <StatCell label="Topics" value={detail.topics.length} />
+            <StatCell label="Topics" value={detail.topics.length} className="col-span-2 sm:col-span-1" />
           </motion.div>
         </div>
 
-        <div className="shrink-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-6 md:px-10">
-          <div className="flex items-center gap-8">
-            {([
-              ["overview", "Overview"],
-              ["architecture", "Architecture"],
-              ["changelog", "Changelog"],
-            ] as Array<[TabKey, string]>).map(([tabKey, label]) => (
-              <button
-                key={tabKey}
-                type="button"
-                onClick={() => setActiveTab(tabKey)}
-                className={`relative px-0 py-4 text-[11px] font-bold uppercase tracking-[0.15em] transition-all ${activeTab === tabKey
-                  ? "text-[var(--text-primary)]"
-                  : "text-[var(--text-disabled)] hover:text-[var(--text-muted)]"
-                  }`}
-              >
-                {label}
-                {activeTab === tabKey && (
-                  <motion.div 
-                    layoutId="activeTabUnderline" 
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]"
-                  />
-                )}
-              </button>
-            ))}
+        <div className="shrink-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
+          <div className="mx-auto w-full max-w-[1200px]">
+            <div className="ide-scrollbar overflow-x-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+              <div className="flex min-w-max items-center gap-6 sm:gap-8">
+                {([
+                  ["overview", "Overview"],
+                  ["architecture", "Architecture"],
+                  ["changelog", "Changelog"],
+                ] as Array<[TabKey, string]>).map(([tabKey, label]) => (
+                  <button
+                    key={tabKey}
+                    type="button"
+                    onClick={() => setActiveTab(tabKey)}
+                    className={`relative whitespace-nowrap px-0 py-4 text-[10px] font-bold uppercase tracking-[0.15em] transition-all sm:text-[11px] ${
+                      activeTab === tabKey
+                        ? "text-[var(--text-primary)]"
+                        : "text-[var(--text-disabled)] hover:text-[var(--text-muted)]"
+                    }`}
+                  >
+                    {label}
+                    {activeTab === tabKey && (
+                      <motion.div 
+                        layoutId="activeTabUnderline" 
+                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]"
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto bg-[var(--bg-base)] px-6 py-8 md:px-10">
+        <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto bg-[var(--bg-base)]">
           <AnimatePresence mode="wait">
             <motion.div
               key={`${selectedProject.id}-${activeTab}`}
@@ -399,6 +488,7 @@ export default function ProjectsTab() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
+              className="mx-auto w-full max-w-[1200px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 xl:px-10"
             >
               {activeTab === "overview" && (
                 <ProjectOverview project={selectedProject} detail={detail} />

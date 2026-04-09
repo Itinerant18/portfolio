@@ -59,7 +59,7 @@ export function createCommandDescriptors(
       id: "toggle-theme",
       title: "Toggle Theme",
       description: "Switch between dark and light themes.",
-      shortcut: "Ctrl+K",
+      shortcut: "Ctrl+Shift+T",
       run: context.toggleTheme,
     },
     {

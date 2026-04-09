@@ -7,9 +7,10 @@ import SidebarAI from "@/components/SidebarAI";
 import Terminal from "@/components/Terminal";
 import TopBar from "@/components/TopBar";
 import StatusBar from "@/components/StatusBar";
+import ParticleField from "@/components/ui/ParticleField";
 import { useIDEStore } from "@/store/useIDEStore";
 import { AnimatePresence, motion } from "framer-motion";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { VscFiles, VscSearch, VscSourceControl, VscExtensions, VscSparkle, VscTerminal, VscClose } from "react-icons/vsc";
 
@@ -25,6 +26,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const zoomLevel = useIDEStore((state) => state.zoomLevel);
   const zoomIn = useIDEStore((state) => state.zoomIn);
   const zoomOut = useIDEStore((state) => state.zoomOut);
+  const toggleTheme = useIDEStore((state) => state.toggleTheme);
   const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
   const closeCommandPalette = useIDEStore((state) => state.closeCommandPalette);
   const toggleMobileSidebar = useIDEStore((state) => state.toggleMobileSidebar);
@@ -120,6 +122,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
         state.toggleTerminal();
       }
 
+      if (isModifier && event.shiftKey && event.key.toLowerCase() === "t") {
+        event.preventDefault();
+        state.toggleTheme();
+      }
+
       if (isModifier && event.key.toLowerCase() === "b" && !isDesktop) {
         event.preventDefault();
         state.toggleMobileSidebar();
@@ -157,7 +164,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [toggleTheme]);
 
   const gridTemplateColumns = !isDesktop
     ? "1fr"
@@ -177,21 +184,33 @@ export default function AppShell({ children }: { children: ReactNode }) {
     terminalOpen ? "180px" : "0px",
     "22px",
   ].join(" ");
+  const showParticleField = theme === "aniket-dark" || theme === "tokyo-night";
 
   if (!isMounted || !hasHydrated) {
     return (
-      <div className="grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]" style={{ gridTemplateRows: "32px minmax(0, 1fr) 22px" }}>
-        <div className="border-b border-[var(--border-default)] bg-[var(--bg-base)]" />
-        <div className="bg-[var(--bg-surface)]" />
-        <div className="border-t border-[var(--border-default)] bg-[var(--bg-elevated)]" />
+      <div className="relative h-screen overflow-hidden">
+        {showParticleField ? (
+          <ParticleField className="pointer-events-none fixed inset-0 z-0 opacity-40" />
+        ) : null}
+        <div
+          className="relative z-10 grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]"
+          style={{ gridTemplateRows: "32px minmax(0, 1fr) 22px" }}
+        >
+          <div className="border-b border-[var(--border-default)] bg-[var(--bg-base)]" />
+          <div className="bg-[var(--bg-surface)]" />
+          <div className="border-t border-[var(--border-default)] bg-[var(--bg-elevated)]" />
+        </div>
       </div>
     );
   }
 
   return (
     <>
+      {showParticleField ? (
+        <ParticleField className="pointer-events-none fixed inset-0 z-0 opacity-40" />
+      ) : null}
       <div
-        className="grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
+        className="relative z-10 grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
         style={{
           transform: `scale(${zoomLevel})`,
           transformOrigin: "0 0",
@@ -199,7 +218,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           height: `${100 / zoomLevel}%`,
           gridTemplateColumns,
           gridTemplateRows,
-        } as React.CSSProperties}
+        } as CSSProperties}
       >
         <div
           className="col-start-1 row-start-1 min-w-0"

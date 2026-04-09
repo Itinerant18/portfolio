@@ -1,22 +1,22 @@
 export const portfolioProfile = {
-  name: "Nyla Verma",
-  role: "Senior Full-stack Engineer",
-  location: "Bengaluru, India",
-  headline:
-    "I build AI-native products, internal tools, and frontend systems that feel deliberate under pressure.",
-  availability: "Open to staff-level, platform, and founding engineer opportunities.",
+  name: "Aniket Karmakar",
+  role: "Front-end UI Developer | React.js | Web Designer",
+  location: "Kolkata, West Bengal, India",
+  headline: "Front-end UI Developer | React.js | Web Designer",
+  availability: "Open to software engineering internship & full-time opportunities.",
   summary:
-    "I work across product strategy, frontend architecture, and systems design, with a bias toward interfaces that make complex workflows feel calm.",
+    "Software Engineer with experience in full-stack development, AI/ML systems, IoT, and cloud infrastructure. Proficient in Java, TypeScript, and Python, with a record of shipping real products across startup and enterprise settings. Targeting Generative AI and software development roles.",
   focusAreas: [
-    "AI copilots and chat surfaces",
-    "Developer experience and workflow tools",
-    "Realtime collaboration systems",
-    "Design-forward product engineering",
+    "Full-stack development and API architecture",
+    "AI/ML integrations and Generative AI",
+    "IoT automation and embedded systems",
+    "Cloud infrastructure and deployment",
+    "Front-end UI/UX development with React.js",
   ],
   links: {
-    github: "github.com/nylaverma",
-    linkedin: "linkedin.com/in/nylaverma",
-    email: "nyla@cursorfolio.dev",
+    github: "github.com/Itinerant18",
+    linkedin: "linkedin.com/in/aniket-karmakar",
+    email: "aniketkarmakar018@gmail.com",
     website: "cursorfolio.dev",
   },
 } as const;
@@ -540,11 +540,11 @@ export const experienceTimeline = [
 ] as const;
 
 export const contactDetails = {
-  email: "nyla@cursorfolio.dev",
-  calendly: "cal.com/nyla-verma",
-  github: "github.com/nylaverma",
-  linkedin: "linkedin.com/in/nylaverma",
-  x: "x.com/nylaverma",
+  email: "aniketkarmakar018@gmail.com",
+  calendly: "cal.com/aniket-karmakar",
+  github: "github.com/Itinerant18",
+  linkedin: "linkedin.com/in/aniket-karmakar",
+  x: "x.com/Itinerant18",
   status: "Usually replies within 24 hours.",
 } as const;
 
@@ -650,5 +650,5 @@ export function buildAIResponse(
     return `${portfolioProfile.name} is a ${portfolioProfile.role} based in ${portfolioProfile.location}. ${portfolioProfile.summary}`;
   }
 
-  return `I can walk through ${activeFileName ?? "the portfolio"} in detail, explain the underlying architecture, or summarize Nyla's work through projects, experience, and contact routes.`;
+  return `I can walk through ${activeFileName ?? "the portfolio"} in detail, explain the underlying architecture, or summarize Aniket's work through projects, experience, and contact routes.`;
 }

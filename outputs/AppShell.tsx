@@ -110,7 +110,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   return (
     <>
       <div
-        className="grid h-screen grid-cols-1 overflow-hidden bg-[var(--bg-main)] text-[var(--text)] transition-[grid-template-rows] duration-200 lg:grid-cols-[260px_minmax(0,1fr)_300px]"
+        className="grid h-screen grid-cols-1 overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)] transition-[grid-template-rows] duration-200 lg:grid-cols-[260px_minmax(0,1fr)_300px]"
         style={{
           gridTemplateRows: terminalOpen
             ? "36px minmax(0, 1fr) 180px"
@@ -121,15 +121,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <TopBar />
         </div>
 
-        <aside className="hidden min-h-0 min-w-0 border-r border-[var(--border)] bg-[var(--bg-main)] lg:col-start-1 lg:row-start-2 lg:block">
+        <aside className="hidden min-h-0 min-w-0 border-r border-[var(--border-default)] bg-[var(--bg-base)] lg:col-start-1 lg:row-start-2 lg:block">
           <SidebarAI />
         </aside>
 
-        <main className="col-start-1 row-start-2 min-h-0 min-w-0 bg-[var(--bg-main)] lg:col-start-2">
+        <main className="col-start-1 row-start-2 min-h-0 min-w-0 bg-[var(--bg-base)] lg:col-start-2">
           {children}
         </main>
 
-        <aside className="hidden min-h-0 min-w-0 border-l border-[var(--border)] bg-[var(--bg-main)] lg:col-start-3 lg:row-start-2 lg:block">
+        <aside className="hidden min-h-0 min-w-0 border-l border-[var(--border-default)] bg-[var(--bg-base)] lg:col-start-3 lg:row-start-2 lg:block">
           <FileExplorer />
         </aside>
 
@@ -154,7 +154,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -12, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-y-0 left-0 w-[260px] border-r border-[var(--border)] bg-[var(--bg-main)]"
+              className="absolute inset-y-0 left-0 w-[260px] border-r border-[var(--border-default)] bg-[var(--bg-base)]"
               onClick={(event) => event.stopPropagation()}
             >
               <SidebarAI />
@@ -179,7 +179,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 12, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-y-0 right-0 w-[300px] border-l border-[var(--border)] bg-[var(--bg-main)]"
+              className="absolute inset-y-0 right-0 w-[300px] border-l border-[var(--border-default)] bg-[var(--bg-base)]"
               onClick={(event) => event.stopPropagation()}
             >
               <FileExplorer />

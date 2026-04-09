@@ -2,6 +2,7 @@
 
 import { useIDEStore, ThemeMode } from "@/store/useIDEStore";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import {
   VscClose,
   VscCheck,
@@ -13,14 +14,14 @@ import {
   VscSymbolMethod,
 } from "react-icons/vsc";
 
-const THEMES: { id: ThemeMode; label: string; color: string }[] = [
-  { id: "aniket-dark", label: "Aniket Dark", color: "#A05EF8" },
-  { id: "rose-pine", label: "Rosé Pine", color: "#ebbcba" },
-  { id: "tokyo-night", label: "Tokyo Night", color: "#7aa2f7" },
-  { id: "catppuccin", label: "Catppuccin", color: "#cba6f7" },
-  { id: "nord", label: "Nord", color: "#88c0d0" },
-  { id: "gruvbox", label: "Gruvbox", color: "#fabd2f" },
-  { id: "light", label: "Light", color: "#ffffff" },
+const THEMES: { color: string; id: ThemeMode; label: string; tones: [string, string, string] }[] = [
+  { id: "aniket-dark", label: "Aniket Dark", color: "#A05EF8", tones: ["#0b0b0b", "#1c1c1c", "#A05EF8"] },
+  { id: "light", label: "Light", color: "#A05EF8", tones: ["#ffffff", "#f3f3f3", "#A05EF8"] },
+  { id: "rose-pine", label: "Rosé Pine", color: "#ebbcba", tones: ["#191724", "#26233a", "#ebbcba"] },
+  { id: "tokyo-night", label: "Tokyo Night", color: "#7aa2f7", tones: ["#1a1b26", "#24283b", "#7aa2f7"] },
+  { id: "catppuccin", label: "Catppuccin", color: "#cba6f7", tones: ["#1e1e2e", "#313244", "#cba6f7"] },
+  { id: "nord", label: "Nord", color: "#88c0d0", tones: ["#2e3440", "#4c566a", "#88c0d0"] },
+  { id: "gruvbox", label: "Gruvbox", color: "#fabd2f", tones: ["#282828", "#3c3836", "#fabd2f"] },
 ];
 
 export default function SettingsOverlay() {
@@ -30,15 +31,49 @@ export default function SettingsOverlay() {
   const setTheme = useIDEStore((state) => state.setTheme);
   const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
   const openCommandPalette = useIDEStore((state) => state.openCommandPalette);
+  const [hoveredTheme, setHoveredTheme] = useState<ThemeMode | null>(null);
+  const [flashActive, setFlashActive] = useState(false);
+  const [flashKey, setFlashKey] = useState(0);
+  const timerRef = useRef<number[]>([]);
+
+  const clearThemeTimers = () => {
+    for (const timerId of timerRef.current) {
+      window.clearTimeout(timerId);
+    }
+    timerRef.current = [];
+  };
+
+  useEffect(() => () => clearThemeTimers(), []);
+
+  useEffect(() => {
+    if (!settingsOpen) {
+      setHoveredTheme(null);
+    }
+  }, [settingsOpen]);
 
   const shortcuts = [
     { label: "Command Palette", keys: "Ctrl+K" },
     { label: "File Search", keys: "Ctrl+P" },
+    { label: "Toggle Theme", keys: "Ctrl+Shift+T" },
     { label: "Toggle Terminal", keys: "Ctrl+`" },
     { label: "Toggle AI Panel", keys: "Ctrl+Shift+A" },
     { label: "Toggle Sidebar", keys: "Ctrl+B" },
     { label: "Zoom In/Out", keys: "Ctrl +/-" },
   ];
+  const previewTheme =
+    THEMES.find((entry) => entry.id === (hoveredTheme ?? theme)) ?? THEMES[0];
+
+  const handleThemeSelect = (nextTheme: ThemeMode) => {
+    if (nextTheme === theme) {
+      return;
+    }
+
+    clearThemeTimers();
+    setFlashActive(true);
+    setFlashKey((current) => current + 1);
+    timerRef.current.push(window.setTimeout(() => setTheme(nextTheme), 150));
+    timerRef.current.push(window.setTimeout(() => setFlashActive(false), 300));
+  };
 
   return (
     <AnimatePresence>
@@ -52,6 +87,19 @@ export default function SettingsOverlay() {
             onClick={closeSettings}
             className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-[1px]"
           />
+
+          <AnimatePresence>
+            {flashActive ? (
+              <motion.div
+                key={flashKey}
+                className="pointer-events-none fixed inset-0 z-[102] bg-white"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0.15, 0] }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              />
+            ) : null}
+          </AnimatePresence>
 
           {/* Settings Panel */}
           <motion.div
@@ -86,26 +134,69 @@ export default function SettingsOverlay() {
                     <VscColorMode size={14} />
                     Color Theme
                   </h3>
-                  <div className="grid gap-1">
+                  <div className="mb-4 rounded-sm border border-[var(--border-default)] bg-[var(--bg-surface)] p-3">
+                    <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                      <span>Accent Preview</span>
+                      <span className="text-[var(--text-primary)]">{previewTheme.label}</span>
+                    </div>
+                    <motion.div
+                      animate={{
+                        backgroundColor: previewTheme.color,
+                        boxShadow: `0 0 16px ${previewTheme.color}66`,
+                      }}
+                      transition={{ duration: 0.2 }}
+                      className="mt-3 h-2 rounded-full"
+                    />
+                  </div>
+                  <div className="grid gap-2">
                     {THEMES.map((t) => (
                       <button
                         key={t.id}
-                        onClick={() => setTheme(t.id)}
-                        className={`group flex items-center justify-between rounded-sm px-3 py-2 text-[13px] transition-all ${
+                        onClick={() => handleThemeSelect(t.id)}
+                        onMouseEnter={() => setHoveredTheme(t.id)}
+                        onMouseLeave={() => setHoveredTheme(null)}
+                        className={`group flex items-center justify-between rounded-sm border px-3 py-2.5 text-[13px] transition-all ${
                           theme === t.id
-                            ? "bg-[var(--accent-subtle)] text-[var(--text-primary)]"
-                            : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+                            ? "border-[var(--accent)] bg-[var(--accent-subtle)] text-[var(--text-primary)]"
+                            : "border-[var(--border-default)] text-[var(--text-secondary)] hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className="h-3 w-3 rounded-full border border-black/10"
-                            style={{ backgroundColor: t.color }}
-                          />
-                          <span>{t.label}</span>
+                            className={`relative flex h-10 w-16 overflow-hidden rounded-sm border ${
+                              theme === t.id ? "neon-border" : "border-black/10"
+                            }`}
+                          >
+                            {t.tones.map((tone, index) => (
+                              <span
+                                key={`${t.id}-${index}`}
+                                className="flex-1"
+                                style={{ backgroundColor: tone }}
+                              />
+                            ))}
+                            <span className="absolute inset-0 bg-[linear-gradient(135deg,transparent,rgba(255,255,255,0.14))]" />
+                          </div>
+                          <div className="flex flex-col items-start">
+                            <span>{t.label}</span>
+                            <span className="text-[10px] uppercase tracking-[0.15em] text-[var(--text-muted)]">
+                              {t.id}
+                            </span>
+                          </div>
                         </div>
                         {theme === t.id && (
                           <VscCheck className="text-[var(--accent)]" size={16} />
+                        )}
+                        {theme !== t.id && (
+                          <span
+                            className="h-2.5 w-2.5 rounded-full transition-all duration-200"
+                            style={{
+                              backgroundColor: t.color,
+                              boxShadow:
+                                hoveredTheme === t.id
+                                  ? `0 0 10px ${t.color}`
+                                  : "none",
+                            }}
+                          />
                         )}
                       </button>
                     ))}

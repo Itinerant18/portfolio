@@ -68,6 +68,16 @@ interface IDEState {
   setHasHydrated: (value: boolean) => void;
 }
 
+const themeOrder: ThemeMode[] = [
+  "aniket-dark",
+  "light",
+  "rose-pine",
+  "tokyo-night",
+  "catppuccin",
+  "nord",
+  "gruvbox",
+];
+
 const initialMessages: ChatMessage[] = [
   {
     id: "assistant-welcome",
@@ -166,9 +176,15 @@ export const useIDEStore = create<IDEState>()(
           terminalResetKey: state.terminalResetKey + 1,
         })),
       toggleTheme: () =>
-        set((state) => ({
-          theme: state.theme === "aniket-dark" ? "light" : "aniket-dark",
-        })),
+        set((state) => {
+          const currentIndex = themeOrder.indexOf(state.theme);
+          const nextIndex =
+            currentIndex >= 0 ? (currentIndex + 1) % themeOrder.length : 0;
+
+          return {
+            theme: themeOrder[nextIndex],
+          };
+        }),
       setTheme: (theme) => set({ theme }),
       toggleSettings: () => set((state) => ({ settingsOpen: !state.settingsOpen })),
       closeSettings: () => set({ settingsOpen: false }),

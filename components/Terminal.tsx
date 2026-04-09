@@ -14,11 +14,18 @@ interface TerminalEntry {
   lines: string[];
 }
 
+const bootSequence = [
+  "> Initializing workspace...",
+  "> Loading project registry...",
+  "> GitHub sync: OK",
+  "> Ready. Type 'help' for commands.",
+] as const;
+
 const initialEntries: TerminalEntry[] = [
   {
     id: "boot",
     command: "",
-    lines: ['Type "help" to list commands.'],
+    lines: [],
   },
 ];
 
@@ -37,6 +44,7 @@ const tabMessages: Record<Exclude<TabKey, "Terminal">, string> = {
 
 export default function Terminal() {
   const openFile = useIDEStore((state) => state.openFile);
+  const terminalOpen = useIDEStore((state) => state.terminalOpen);
   const terminalResetKey = useIDEStore((state) => state.terminalResetKey);
   const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
   const resetTerminal = useIDEStore((state) => state.resetTerminal);
@@ -49,7 +57,37 @@ export default function Terminal() {
   
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bootTimeoutsRef = useRef<number[]>([]);
+  const bootStartedRef = useRef(false);
+  const previousTerminalOpenRef = useRef<boolean | null>(null);
   const prompt = useMemo(() => "PS portfolio>", []);
+
+  function clearBootTimers() {
+    for (const timeoutId of bootTimeoutsRef.current) {
+      window.clearTimeout(timeoutId);
+    }
+    bootTimeoutsRef.current = [];
+  }
+
+  function startBootSequence() {
+    clearBootTimers();
+    bootStartedRef.current = true;
+    setEntries([{ id: "boot", command: "", lines: [] }]);
+
+    bootSequence.forEach((line, index) => {
+      const timeoutId = window.setTimeout(() => {
+        setEntries((current) =>
+          current.map((entry) =>
+            entry.id === "boot"
+              ? { ...entry, lines: [...entry.lines, line] }
+              : entry,
+          ),
+        );
+      }, index * 80);
+
+      bootTimeoutsRef.current.push(timeoutId);
+    });
+  }
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -57,7 +95,11 @@ export default function Terminal() {
     }
   }, [entries]);
 
+  useEffect(() => () => clearBootTimers(), []);
+
   useEffect(() => {
+    clearBootTimers();
+    bootStartedRef.current = false;
     setEntries(initialEntries);
     setHistory([]);
     setHistoryIndex(-1);
@@ -67,6 +109,23 @@ export default function Terminal() {
       inputRef.current?.focus();
     }, 10);
   }, [terminalResetKey]);
+
+  useEffect(() => {
+    const bootEntry = entries[0];
+    const shouldBoot =
+      terminalOpen &&
+      entries.length === 1 &&
+      bootEntry?.id === "boot" &&
+      bootEntry.command === "" &&
+      bootEntry.lines.length === 0 &&
+      (!bootStartedRef.current || previousTerminalOpenRef.current === false);
+
+    if (shouldBoot) {
+      startBootSequence();
+    }
+
+    previousTerminalOpenRef.current = terminalOpen;
+  }, [entries, terminalOpen]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

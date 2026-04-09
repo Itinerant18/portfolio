@@ -3,6 +3,7 @@
 import { contactDetails } from "@/data/content";
 import { defaultFilePath } from "@/data/files";
 import { useIDEStore } from "@/store/useIDEStore";
+import { motion } from "framer-motion";
 import { FaGear } from "react-icons/fa6";
 import {
   VscChromeClose,
@@ -64,6 +65,31 @@ function WindowButton({
     >
       {children}
     </button>
+  );
+}
+
+function LiveClock() {
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    const update = () =>
+      setTime(
+        new Date().toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+      );
+
+    update();
+    const intervalId = window.setInterval(update, 10000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  return (
+    <span className="hidden text-[10px] font-mono text-[var(--text-muted)] opacity-60 lg:block">
+      {time}
+    </span>
   );
 }
 
@@ -318,24 +344,45 @@ export default function TopBar() {
         </nav>
       </div>
 
-      {/* Center: Back button + Search bar — Editor Mode only */}
-      {currentMode === "editor" && (
+      {/* Center: Search / title */}
+      {currentMode === "editor" ? (
         <div className="pointer-events-auto absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-
           <button
             type="button"
             onClick={() => openCommandPalette("files")}
             className="flex h-[22px] w-[220px] sm:w-[260px] md:w-[320px] lg:w-[380px] items-center gap-2 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 text-[var(--text-secondary)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] group"
           >
             <VscSearch size={13} className="shrink-0 opacity-60 transition-opacity group-hover:opacity-100" />
-            <span className="text-[11px] font-medium tracking-tight opacity-60 group-hover:opacity-100 transition-opacity truncate">
-              portfolio
-            </span>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="min-w-0 cursor-pointer"
+            >
+              <span
+                className="glitch-text gradient-text text-[12px] font-bold"
+                data-text="cursorfolio.dev"
+              >
+                cursorfolio.dev
+              </span>
+            </motion.div>
             <span className="ml-auto flex items-center gap-1 opacity-30 group-hover:opacity-50 shrink-0">
               <span className="rounded border border-[var(--border-default)] px-1 py-[1px] text-[9px] font-bold leading-none">CTRL</span>
               <span className="rounded border border-[var(--border-default)] px-1 py-[1px] text-[9px] font-bold leading-none">P</span>
             </span>
           </button>
+        </div>
+      ) : (
+        <div className="pointer-events-auto absolute left-1/2 -translate-x-1/2">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="cursor-pointer"
+          >
+            <span
+              className="glitch-text gradient-text text-[12px] font-bold"
+              data-text="cursorfolio.dev"
+            >
+              cursorfolio.dev
+            </span>
+          </motion.div>
         </div>
       )}
 
@@ -399,6 +446,10 @@ export default function TopBar() {
             <span>Agent</span>
           </button>
         )}
+
+        <div className="mr-2">
+          <LiveClock />
+        </div>
 
         {/* Window controls */}
         <div className="flex h-full items-center">

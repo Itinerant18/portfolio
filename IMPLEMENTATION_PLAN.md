@@ -1,1517 +1,584 @@
-## Portfolio IDE — Animation, Typography, Icon & Tab Overhaul
+You are working on a Next.js 15 portfolio codebase (Cursor IDE theme) for Aniket Karmakar.
+The stack is: Next.js 15, React 19, TypeScript, Tailwind v4, Framer Motion 12, Zustand 5, Geist fonts.
 
-You are working on a Next.js 15 portfolio app styled as a Cursor IDE clone. The codebase is already set up with Tailwind CSS, Framer Motion, Zustand, and react-icons. Your task is a deep visual and interaction upgrade across all content tabs and the shell. Do **not** touch routing, API routes, data files, or store logic unless explicitly listed below.
+Your task is to implement ALL of the following in sequence. Do not skip any section.
+After each section, verify TypeScript compiles with zero errors before moving on.
 
----
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 1 — BUG FIXES (do these first, they block everything else)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-### PREREQUISITES — Install missing icon packages
+FIX 1.1 — utils/commands.ts
+  Change the shortcut for id="toggle-theme" from "Ctrl+K" to "Ctrl+Shift+T".
+  Ctrl+K is already bound to openCommandPalette in AppShell — this is a live conflict.
 
-```bash
-npm install react-icons
-```
+FIX 1.2 — AppShell.tsx CSS variable references
+  Replace ALL occurrences of:
+    var(--bg-main)   → var(--bg-base)
+    var(--border)    → var(--border-default)
+    var(--text)      → var(--text-primary)
+    var(--bg-panel)  → var(--bg-surface)
+    var(--bg-hover)  → var(--bg-muted)
+    var(--bg-overlay) → var(--bg-overlay)  [this one exists, keep]
+    var(--accent-soft) → var(--accent-subtle)
+  These undefined vars are why the IDE shell renders with no background or borders.
 
-Confirm `react-icons` is already present (it is — `VscFiles`, `FaGithub` etc. are already used). You will use it exclusively for all icons. **Remove every inline `<svg>` element** from component files and replace with react-icons equivalents. Never write raw SVG JSX.
+FIX 1.3 — store/useIDEStore.ts toggleTheme
+  The toggleTheme action currently only cycles aniket-dark ↔ light.
+  Replace it with a full cycle through all 7 themes in order:
+    aniket-dark → light → rose-pine → tokyo-night → catppuccin → nord → gruvbox → aniket-dark
 
----
+FIX 1.4 — data/content.ts vs outputs/content.ts identity conflict
+  The file outputs/content.ts contains a fictional persona "Nyla Verma".
+  This file is used by SidebarAI and Terminal as a fallback.
+  Replace the portfolioProfile in outputs/content.ts with Aniket's actual data from data/content.ts.
+  Keep the outputs/ file structure intact (it's the older version used by some components).
+  The name, role, email, github, linkedin, summary must all match data/content.ts exactly.
 
-### PART 1 — Global CSS upgrades (`app/globals.css`)
+FIX 1.5 — ProjectOverview.tsx gallery grid
+  The images grid:
+    grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+  Add a max-w and ensure it never overflows on mobile. Change to:
+    grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4
+  and wrap the grid div with: overflow-hidden rounded-sm
 
-**1A — Typography tokens: switch to Geist**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 2 — COLOR SYSTEM + TYPOGRAPHY OVERHAUL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-The current font stack uses Inter. Replace with Geist which is sharper at small IDE sizes:
+Edit app/globals.css.
 
-```css
-/* In :root */
---font-sans:
-  "Geist", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
---font-mono: "Geist Mono", "JetBrains Mono", "SF Mono", monospace;
-```
+2.1 — Add these new CSS variables inside :root (aniket-dark theme):
+  /* Chromatic aberration colors */
+  --chroma-r: rgba(160, 94, 248, 0.08);
+  --chroma-g: rgba(34, 141, 242, 0.06);
+  /* Neon glow intensities */
+  --glow-accent: 0 0 8px rgba(160, 94, 248, 0.4), 0 0 24px rgba(160, 94, 248, 0.15);
+  --glow-info:   0 0 8px rgba(34, 141, 242, 0.4),  0 0 24px rgba(34, 141, 242, 0.12);
+  --glow-success: 0 0 8px rgba(27, 71, 33, 0.5);
+  /* Futuristic typography */
+  --font-display: "Geist Mono", "JetBrains Mono", monospace;
+  --tracking-display: -0.05em;
+  --tracking-code: 0.02em;
 
-Add the Geist import at the top of the file (replace the existing Google Fonts import):
+2.2 — Add these @keyframes AFTER existing ones:
 
-```css
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
-```
-
-Geist is bundled via Next.js font optimization — add this to `app/layout.tsx`:
-
-```tsx
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
-
-// In RootLayout, add className to <html>:
-<html lang="en" data-theme="aniket-dark" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-```
-
-Update CSS font variables to use the Next.js variables:
-
-```css
---font-sans: var(--font-geist-sans), "Inter", system-ui, sans-serif;
---font-mono: var(--font-geist-mono), "JetBrains Mono", monospace;
-```
-
-**1B — Animation keyframes: add to globals.css**
-
-Add these at the bottom of the file, before the PrismJS section:
-
-```css
-/* ── Ambient glow pulse (for accent dots and active indicators) ── */
-@keyframes glow-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 4px 1px var(--accent-muted);
-  }
-  50% {
-    box-shadow:
-      0 0 12px 3px var(--accent-muted),
-      0 0 24px 6px color-mix(in srgb, var(--accent) 8%, transparent);
-  }
+@keyframes crt-scanline {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 4px; }
 }
 
-/* ── Gradient shimmer (for skeleton loaders and hero text) ── */
-@keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
+@keyframes glitch-clip {
+  0%, 100% { clip-path: inset(0 0 98% 0); transform: translate(-2px, 0); }
+  20% { clip-path: inset(20% 0 60% 0); transform: translate(2px, 0); }
+  40% { clip-path: inset(50% 0 30% 0); transform: translate(-1px, 0); }
+  60% { clip-path: inset(80% 0 5% 0); transform: translate(1px, 0); }
+  80% { clip-path: inset(10% 0 85% 0); transform: translate(-2px, 0); }
 }
 
-/* ── Floating upward drift ── */
-@keyframes float-up {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
+@keyframes glitch-clip-2 {
+  0%, 100% { clip-path: inset(95% 0 0% 0); transform: translate(2px, 0); }
+  20% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 0); }
+  40% { clip-path: inset(70% 0 15% 0); transform: translate(1px, 0); }
+  60% { clip-path: inset(5% 0 88% 0); transform: translate(-1px, 0); }
+  80% { clip-path: inset(60% 0 30% 0); transform: translate(2px, 0); }
 }
 
-/* ── Typewriter blink ── */
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
 }
 
-/* ── Slide in from left (panels) ── */
-@keyframes slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+@keyframes cursor-blink {
+  0%, 100% { border-right-color: var(--accent); }
+  50% { border-right-color: transparent; }
 }
 
-/* ── Slide in from bottom (cards stagger) ── */
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes neon-pulse {
+  0%, 100% { box-shadow: var(--glow-accent); }
+  50% { box-shadow: 0 0 16px rgba(160, 94, 248, 0.6), 0 0 40px rgba(160, 94, 248, 0.2); }
 }
 
-/* ── Gradient text animation ── */
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(0.5deg); }
+  66% { transform: translateY(-4px) rotate(-0.5deg); }
 }
 
-/* ── Spin (loading indicators) ── */
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(32px) skewY(1deg); }
+  to { opacity: 1; transform: translateY(0) skewY(0deg); }
 }
 
-/* ── Stagger children helper ── */
-.stagger-children > * {
-  animation: slide-up 0.4s ease-out both;
-}
-.stagger-children > *:nth-child(1) {
-  animation-delay: 0ms;
-}
-.stagger-children > *:nth-child(2) {
-  animation-delay: 60ms;
-}
-.stagger-children > *:nth-child(3) {
-  animation-delay: 120ms;
-}
-.stagger-children > *:nth-child(4) {
-  animation-delay: 180ms;
-}
-.stagger-children > *:nth-child(5) {
-  animation-delay: 240ms;
-}
-.stagger-children > *:nth-child(6) {
-  animation-delay: 300ms;
+@keyframes reveal-chars {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Gradient text utility ── */
-.gradient-text {
-  background: linear-gradient(
-    135deg,
-    var(--accent) 0%,
-    var(--info) 50%,
-    var(--accent-hover) 100%
+@keyframes counter-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes led-blink {
+  0%, 90%, 100% { opacity: 1; }
+  95% { opacity: 0.3; }
+}
+
+2.3 — Add utility classes after @keyframes:
+
+.glitch-text {
+  position: relative;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: inherit;
+}
+.glitch-text::before {
+  color: var(--cyan-400);
+  animation: glitch-clip 3.5s infinite linear;
+  animation-delay: 0.5s;
+}
+.glitch-text::after {
+  color: var(--violet-400);
+  animation: glitch-clip-2 3.5s infinite linear;
+  animation-delay: 1s;
+}
+
+.typewriter-text {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--accent);
+  animation: typewriter 2s steps(40, end) both, cursor-blink 1s step-end infinite;
+}
+
+.neon-border {
+  border-color: var(--accent);
+  box-shadow: var(--glow-accent);
+  transition: box-shadow 300ms ease;
+}
+.neon-border:hover {
+  box-shadow: 0 0 20px rgba(160, 94, 248, 0.7), 0 0 60px rgba(160, 94, 248, 0.25);
+}
+
+.led-dot {
+  animation: led-blink 4s ease-in-out infinite;
+}
+
+.float-card {
+  animation: float 6s ease-in-out infinite;
+}
+
+.reveal-text > span {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+.reveal-text > span > span {
+  display: inline-block;
+  animation: reveal-chars 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.crt-overlay::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0,0,0,0.03) 1px,
+    rgba(0,0,0,0.03) 2px
   );
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradient-shift 4s ease infinite;
+  z-index: 9999;
+  animation: crt-scanline 0.1s linear infinite;
 }
 
-/* ── Glow card hover ── */
-.glow-card {
-  transition:
-    box-shadow 200ms ease-out,
-    border-color 200ms ease-out;
-}
-.glow-card:hover {
-  box-shadow:
-    0 0 0 1px var(--accent-muted),
-    0 4px 20px color-mix(in srgb, var(--accent) 10%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border-default));
-}
-```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 3 — PROJECTUI.TSX DEEP REWORK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**1C — Color palette additions**
+File: components/projects/ProjectUI.tsx
 
-Add these new semantic tokens to `:root`:
+3.1 — Replace SectionLabel component:
+  Old version just renders a div with text.
+  New version: animated gradient text with a scanning underline effect.
 
-```css
-/* Gradient accent backgrounds */
---gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--info) 100%);
---gradient-warm: linear-gradient(135deg, #f97316 0%, var(--accent) 100%);
---gradient-cool: linear-gradient(135deg, var(--info) 0%, #06b6d4 100%);
---gradient-surface: linear-gradient(
-  180deg,
-  var(--bg-elevated) 0%,
-  var(--bg-base) 100%
-);
-
-/* Tag colors for skill/tech badges */
---tag-ts: #3178c6;
---tag-react: #61dafb;
---tag-python: #3572a5;
---tag-java: #b07219;
---tag-flutter: #54c5f8;
---tag-iot: #22c55e;
---tag-ai: #a855f7;
---tag-cloud: #f59e0b;
-```
-
----
-
-### PART 2 — HomeTab.tsx full rewrite (`components/HomeTab.tsx`)
-
-Replace the entire component with this richer animated version. Keep all data references pointing to the existing `useIDEStore` and hardcoded content — do not import from different data files than currently used:
-
-```tsx
-"use client";
-
-import { motion } from "framer-motion";
-import { useIDEStore } from "@/store/useIDEStore";
-import {
-  VscFiles,
-  VscAccount,
-  VscMail,
-  VscSparkle,
-  VscTerminal,
-  VscGithub,
-  VscCode,
-} from "react-icons/vsc";
-import {
-  FaGithub,
-  FaLinkedin,
-  FaEnvelope,
-  FaPhone,
-  FaReact,
-  FaPython,
-  FaJava,
-  FaAws,
-} from "react-icons/fa";
-import { SiTypescript, SiFlutter, SiNextdotjs } from "react-icons/si";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-const techIcons = [
-  { Icon: SiTypescript, color: "#3178c6", label: "TypeScript" },
-  { Icon: FaReact, color: "#61dafb", label: "React" },
-  { Icon: SiNextdotjs, color: "#ffffff", label: "Next.js" },
-  { Icon: FaPython, color: "#3572a5", label: "Python" },
-  { Icon: FaJava, color: "#b07219", label: "Java" },
-  { Icon: SiFlutter, color: "#54c5f8", label: "Flutter" },
-  { Icon: FaAws, color: "#f59e0b", label: "AWS" },
-];
-
-export default function HomeTab() {
-  const openFile = useIDEStore((state) => state.openFile);
-
+export function SectionLabel({ label }: { label: string }) {
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] px-6 pb-28 pt-8 font-sans text-[13px] text-[var(--text-primary)] md:px-10 md:pt-12"
-    >
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
-        {/* ── Hero status badge ── */}
-        <motion.div variants={item}>
-          <div className="inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-muted)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-pulse" />
-            Available for new opportunities · Noida / Remote
-          </div>
-        </motion.div>
-
-        {/* ── Name hero ── */}
-        <motion.div variants={item} className="flex flex-col gap-2">
-          <h1 className="text-[52px] font-bold leading-[0.95] tracking-[-0.05em] text-[var(--text-primary)] md:text-[72px]">
-            <span className="gradient-text">Aniket</span>
-          </h1>
-          <h1 className="text-[52px] font-bold leading-[0.95] tracking-[-0.05em] text-[var(--text-primary)] md:text-[72px]">
-            Karmakar
-          </h1>
-          <p className="mt-3 max-w-[52ch] text-[15px] font-medium leading-relaxed text-[var(--text-muted)] md:text-[17px]">
-            Front-end UI Developer · Full-stack · AI/ML · IoT · Cloud
-            <span
-              className="ml-1 inline-block h-[16px] w-[2px] translate-y-[3px] bg-[var(--accent)]"
-              style={{ animation: "blink 1.2s step-end infinite" }}
-            />
-          </p>
-        </motion.div>
-
-        {/* ── Tech icon strip ── */}
-        <motion.div variants={item} className="flex flex-wrap gap-3">
-          {techIcons.map(({ Icon, color, label }) => (
-            <div
-              key={label}
-              title={label}
-              className="glow-card flex h-9 w-9 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] transition-all hover:scale-110"
-            >
-              <Icon size={18} style={{ color }} />
-            </div>
-          ))}
-        </motion.div>
-
-        {/* ── CTA buttons ── */}
-        <motion.div variants={item} className="flex flex-wrap gap-3">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => openFile("src/projects.ts")}
-            className="inline-flex items-center gap-2 rounded-sm border border-transparent bg-[var(--accent)] px-5 py-2.5 text-[12px] font-semibold text-white shadow-lg shadow-[var(--accent-muted)] transition-all hover:bg-[var(--accent-hover)]"
-          >
-            <VscFiles size={15} /> View Projects
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => openFile("src/about.html")}
-            className="inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-5 py-2.5 text-[12px] font-medium text-[var(--text-secondary)] transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]"
-          >
-            <VscAccount size={15} /> About Me
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => openFile("src/contact.css")}
-            className="inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-transparent px-5 py-2.5 text-[12px] font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
-          >
-            <VscMail size={15} /> Contact
-          </motion.button>
-        </motion.div>
-
-        {/* ── Stats grid ── */}
-        <motion.div
-          variants={item}
-          className="grid grid-cols-2 overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] md:grid-cols-4"
+    <div className="mb-3 flex items-center gap-3">
+      <div className="flex items-center gap-2">
+        <span className="h-px w-6 bg-gradient-to-r from-[var(--accent)] to-transparent" />
+        <span
+          className="gradient-text text-[10px] font-bold uppercase tracking-[0.2em]"
+          data-text={label}
         >
-          {[
-            { value: "8.6", label: "CGPA", color: "var(--success)" },
-            { value: "36+", label: "PROJECTS", color: "var(--accent)" },
-            { value: "4+", label: "INTERNSHIPS", color: "var(--info)" },
-            { value: "2+", label: "YEARS EXP", color: "var(--warning)" },
-          ].map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              whileHover={{ backgroundColor: "var(--bg-muted)" }}
-              className={`flex flex-col items-center justify-center px-4 py-6 transition-colors ${i < 3 ? "md:border-r border-[var(--border-default)]" : ""} ${i < 2 ? "border-b md:border-b-0 border-[var(--border-default)]" : ""}`}
-            >
-              <div
-                className="text-[28px] font-bold tracking-[-0.04em] md:text-[32px]"
-                style={{ color: stat.color }}
-              >
-                {stat.value}
-              </div>
-              <div className="mt-1 text-[9px] font-medium tracking-[0.14em] text-[var(--text-muted)]">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* ── Social links ── */}
-        <motion.div variants={item} className="flex flex-col gap-3">
-          <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
-            Connect
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {[
-              {
-                label: "GitHub",
-                Icon: FaGithub,
-                color: "var(--text-primary)",
-                href: "https://github.com/Itinerant18",
-              },
-              {
-                label: "LinkedIn",
-                Icon: FaLinkedin,
-                color: "#0077b5",
-                href: "https://linkedin.com/in/aniket-karmakar",
-              },
-              {
-                label: "Email",
-                Icon: FaEnvelope,
-                color: "var(--info)",
-                href: "mailto:aniketkarmakar018@gmail.com",
-              },
-              {
-                label: "Phone",
-                Icon: FaPhone,
-                color: "var(--success)",
-                href: "tel:+917602676448",
-              },
-            ].map(({ label, Icon, color, href }) => (
-              <motion.a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.03, y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3.5 py-2 text-[12px] font-medium text-[var(--text-secondary)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
-              >
-                <Icon size={14} style={{ color }} />
-                {label}
-              </motion.a>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* ── Current focus ── */}
-        <motion.div
-          variants={item}
-          className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5"
-        >
-          <div className="mb-4 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--accent)]">
-            <VscSparkle size={12} />
-            Current Focus
-          </div>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {[
-              {
-                icon: "🔭",
-                text: "Building FAS-Control, SWatch360 & Dexter AI at SEPLE",
-              },
-              {
-                icon: "🧠",
-                text: "Computer Vision, Gesture Recognition & RAG Pipelines",
-              },
-              {
-                icon: "🪴",
-                text: "Full-stack apps with React, TypeScript, Java & Python",
-              },
-              {
-                icon: "⚡",
-                text: "IoT automation with ESP32/MQTT & AWS cloud services",
-              },
-            ].map((focus, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ x: 3 }}
-                className="flex items-start gap-3 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)]/50 p-3 transition-colors hover:bg-[var(--bg-muted)]"
-              >
-                <span className="text-[16px]">{focus.icon}</span>
-                <span className="text-[12px] leading-relaxed text-[var(--text-secondary)]">
-                  {focus.text}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+          {label}
+        </span>
+        <span className="h-px flex-1 bg-gradient-to-r from-[var(--accent-muted)] to-transparent" />
       </div>
-    </motion.div>
+    </div>
   );
 }
-```
 
----
+3.2 — Replace FlowNode component with a futuristic holographic node:
+  Each node should have:
+  - A hexagon-clip SVG background
+  - Neon border pulse on hover
+  - A protocol label that types in on mount
+  - The connector arrow becomes a data-stream dashed line with moving dots
 
-### PART 3 — AboutTab.tsx full rewrite (`components/AboutTab.tsx`)
-
-Replace with an animated, colorful, icon-rich version:
-
-```tsx
-"use client";
-
-import { motion } from "framer-motion";
-import {
-  VscAccount,
-  VscMortarBoard,
-  VscBriefcase,
-  VscVerified,
-  VscGlobe,
-} from "react-icons/vsc";
-import {
-  FaReact,
-  FaPython,
-  FaJava,
-  FaAws,
-  FaDocker,
-  FaGraduationCap,
-  FaCertificate,
-  FaLanguage,
-} from "react-icons/fa";
-import {
-  SiTypescript,
-  SiFlutter,
-  SiNextdotjs,
-  SiTailwindcss,
-} from "react-icons/si";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.07 } },
-};
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-const services = [
-  "Web Design",
-  "Software Testing",
-  "Web Development",
-  "Application Development",
-  "Cloud Application Development",
-];
-
-const serviceColors = [
-  "var(--accent)",
-  "var(--info)",
-  "var(--warning)",
-  "var(--success)",
-  "var(--accent-hover)",
-];
-
-export default function AboutTab() {
+export function FlowNode({ label, icon, isLast, protocol }: { label: string; icon: string; isLast?: boolean; protocol?: string }) {
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 font-sans text-[13px] text-[var(--text-primary)] md:p-12"
-    >
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-10">
-        {/* Header */}
-        <motion.div variants={item}>
-          <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--text-muted)]">
-            About Aniket Karmakar
-          </div>
-        </motion.div>
-
-        {/* Hero bio card */}
+    <div className="flex items-center gap-2">
+      <div className="flex flex-col items-center gap-2">
         <motion.div
-          variants={item}
-          className="glow-card relative overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 md:p-8"
+          whileHover={{ scale: 1.15, rotate: 3 }}
+          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="relative flex h-12 w-12 items-center justify-center"
+          style={{
+            clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
+            background: "linear-gradient(135deg, var(--bg-elevated), var(--bg-overlay))",
+            border: "1px solid var(--accent-muted)",
+          }}
         >
-          <div className="absolute right-0 top-0 h-32 w-32 rounded-bl-full bg-[var(--accent-subtle)] blur-2xl" />
-          <div className="relative flex flex-col gap-4 md:flex-row md:items-start md:gap-8">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)]">
-              <VscAccount size={32} className="text-[var(--accent)]" />
-            </div>
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-[22px] font-bold tracking-tight text-[var(--text-primary)]">
-                  <span className="gradient-text">Aniket Karmakar</span>
-                </h1>
-                <span className="rounded-sm border border-[var(--accent-muted)] bg-[var(--accent-subtle)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent)]">
-                  He/Him
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2 text-[11px]">
-                {[
-                  "Front-end UI Developer",
-                  "React.js",
-                  "Full-stack",
-                  "AI/ML",
-                  "IoT",
-                ].map((tag, i) => (
-                  <span
-                    key={tag}
-                    className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 font-medium"
-                    style={{ color: serviceColors[i % serviceColors.length] }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <p className="max-w-[60ch] text-[13px] leading-relaxed text-[var(--text-secondary)]">
-                Pursuing B.Tech in Electronics & Communication Engineering at
-                NSHM Knowledge Campus. Passionate about Front-end UI Development
-                and Full-stack Web Development. Currently a{" "}
-                <strong className="font-semibold text-[var(--text-primary)]">
-                  Junior Software Engineer in R&D at Security Engineers Pvt.
-                  Ltd. (SEPLE)
-                </strong>
-                .
-              </p>
-            </div>
-          </div>
+          {/* Neon inner glow */}
+          <div
+            className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            style={{ background: "radial-gradient(circle at center, var(--accent-muted), transparent 70%)" }}
+          />
+          <span className="relative z-10 text-[var(--accent)]">
+            <IconMapper name={icon} size={18} />
+          </span>
         </motion.div>
-
-        {/* Services */}
-        <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
-            <VscBriefcase size={12} />
-            Services
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {services.map((service, i) => (
-              <motion.div
-                key={service}
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex cursor-default items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-2 text-[12px] font-semibold transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]"
-                style={{ color: serviceColors[i % serviceColors.length] }}
-              >
-                <span
-                  className="h-1.5 w-1.5 rounded-full"
-                  style={{
-                    backgroundColor: serviceColors[i % serviceColors.length],
-                  }}
-                />
-                {service}
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Tech stack visual */}
-        <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
-            <VscGlobe size={12} />
-            Core Stack
-          </div>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-7">
-            {[
-              { Icon: SiTypescript, color: "#3178c6", label: "TypeScript" },
-              { Icon: FaReact, color: "#61dafb", label: "React" },
-              {
-                Icon: SiNextdotjs,
-                color: "var(--text-primary)",
-                label: "Next.js",
-              },
-              { Icon: FaPython, color: "#3572a5", label: "Python" },
-              { Icon: FaJava, color: "#b07219", label: "Java" },
-              { Icon: SiFlutter, color: "#54c5f8", label: "Flutter" },
-              { Icon: FaAws, color: "#f59e0b", label: "AWS" },
-            ].map(({ Icon, color, label }) => (
-              <motion.div
-                key={label}
-                whileHover={{ scale: 1.08, y: -3 }}
-                className="glow-card flex flex-col items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] py-3 px-2 transition-all"
-              >
-                <Icon size={20} style={{ color }} />
-                <span className="text-[9px] font-medium text-[var(--text-muted)]">
-                  {label}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Strategic focus */}
-        <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
-            <VscVerified size={12} />
-            Strategic Focus
-          </div>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            {[
-              {
-                icon: "🔭",
-                text: "Building FAS-Control, SWatch360, & Dexter AI at SEPLE",
-              },
-              {
-                icon: "🧠",
-                text: "Deep research into Computer Vision, Gesture Recognition & RAG Pipelines",
-              },
-              {
-                icon: "🪴",
-                text: "Full-stack apps with React, TypeScript, Java, and Python",
-              },
-              {
-                icon: "💬",
-                text: "Cloud infrastructure with AWS S3, Lambda, ESP32/MQTT, and Cisco",
-              },
-              {
-                icon: "⚡",
-                text: "Shipping real products across startup and enterprise settings",
-              },
-              {
-                icon: "✨",
-                text: "Targeting Generative AI and software development roles",
-              },
-            ].map((focus, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ x: 4 }}
-                className="glow-card flex items-start gap-4 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 transition-all"
-              >
-                <span className="text-[18px]">{focus.icon}</span>
-                <span className="text-[12px] leading-relaxed text-[var(--text-secondary)]">
-                  {focus.text}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Education */}
-        <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
-            <FaGraduationCap size={12} />
-            Education
-          </div>
-          <div className="flex flex-col gap-3">
-            {[
-              {
-                school: "NSHM College of Management and Technology",
-                degree: "B.Tech – Electronics & Communication Engineering",
-                period: "Apr 2020 – Aug 2024",
-                grade: "CGPA: 8.6",
-                location: "Kolkata, West Bengal",
-                accent: "var(--accent)",
-              },
-              {
-                school: "Jemo NN High School",
-                degree: "Higher Secondary",
-                period: "Feb 2018 – Jun 2020",
-                location: "India",
-                accent: "var(--info)",
-              },
-            ].map((edu, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ x: 3 }}
-                className="glow-card flex flex-col gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 transition-all md:flex-row md:items-start md:justify-between"
-                style={{ borderLeftWidth: 3, borderLeftColor: edu.accent }}
-              >
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <VscMortarBoard size={14} style={{ color: edu.accent }} />
-                    <h3 className="text-[14px] font-bold text-[var(--text-primary)]">
-                      {edu.school}
-                    </h3>
-                  </div>
-                  <div className="text-[11px] font-medium text-[var(--text-muted)]">
-                    {edu.location}
-                  </div>
-                  <div
-                    className="text-[12px] font-semibold"
-                    style={{ color: edu.accent }}
-                  >
-                    {edu.degree}
-                  </div>
-                </div>
-                <div className="flex flex-col items-start gap-1 md:items-end">
-                  <div className="font-mono text-[11px] text-[var(--text-disabled)]">
-                    {edu.period}
-                  </div>
-                  {edu.grade && (
-                    <div className="text-[12px] font-bold text-[var(--success)]">
-                      {edu.grade}
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Certifications */}
-        <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
-            <FaCertificate size={12} />
-            Certifications
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {[
-              {
-                name: "Cloud Computing",
-                issuer: "Amazon AWS",
-                date: "Jun 2023",
-                color: "var(--warning)",
-              },
-              {
-                name: "AI & Machine Learning",
-                issuer: "Edu Skill",
-                date: "Aug 2023",
-                color: "var(--accent)",
-              },
-            ].map((cert) => (
-              <motion.div
-                key={cert.name}
-                whileHover={{ scale: 1.02, y: -2 }}
-                className="glow-card flex items-center gap-3 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-3"
-              >
-                <FaCertificate size={16} style={{ color: cert.color }} />
-                <div className="flex flex-col">
-                  <span className="text-[12px] font-semibold text-[var(--text-primary)]">
-                    {cert.name}
-                  </span>
-                  <span className="text-[10px] text-[var(--text-muted)]">
-                    {cert.issuer} · {cert.date}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Languages */}
-        <motion.div variants={item} className="flex flex-col gap-3">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
-            <FaLanguage size={12} />
-            Languages
-          </div>
-          <div className="flex gap-2">
-            <div className="flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-2 text-[12px] font-medium text-[var(--text-secondary)]">
-              🌏 English · Professional Working Proficiency
-            </div>
-          </div>
-        </motion.div>
+        <motion.span
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-[9px] font-bold uppercase tracking-[0.15em] text-[var(--accent)]"
+        >
+          {label}
+        </motion.span>
       </div>
-    </motion.div>
-  );
-}
-```
-
----
-
-### PART 4 — SkillsTab.tsx rewrite (`components/SkillsTab.tsx`)
-
-Replace with a more visual, animated version using react-icons for category headers:
-
-```tsx
-"use client";
-
-import { motion } from "framer-motion";
-import {
-  FaReact,
-  FaPython,
-  FaJava,
-  FaAws,
-  FaDocker,
-  FaCode,
-  FaDatabase,
-  FaBrain,
-  FaCloud,
-  FaMobile,
-} from "react-icons/fa";
-import {
-  SiTypescript,
-  SiNextdotjs,
-  SiTailwindcss,
-  SiFlutter,
-} from "react-icons/si";
-import { VscSymbolNamespace } from "react-icons/vsc";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.06 } },
-};
-const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
-
-const skillCategories = [
-  {
-    title: "Frontend & UI/UX",
-    Icon: FaReact,
-    iconColor: "#61dafb",
-    skills: [
-      { name: "React.js & Next.js", pct: 88, color: "var(--info)" },
-      { name: "HTML5 & CSS3", pct: 92, color: "var(--success)" },
-      { name: "Tailwind CSS", pct: 85, color: "var(--warning)" },
-      { name: "Framer Motion", pct: 80, color: "var(--accent)" },
-      { name: "Flutter & Dart", pct: 65, color: "var(--info)" },
-    ],
-  },
-  {
-    title: "AI / ML & RAG",
-    Icon: FaBrain,
-    iconColor: "var(--accent)",
-    skills: [
-      { name: "LangChain", pct: 82, color: "var(--success)" },
-      { name: "RAG Architecture", pct: 85, color: "var(--info)" },
-      { name: "Computer Vision (OpenCV)", pct: 80, color: "var(--accent)" },
-      { name: "pgvector & Vector DBs", pct: 78, color: "var(--warning)" },
-      { name: "Gesture Recognition", pct: 75, color: "var(--warning)" },
-    ],
-  },
-  {
-    title: "Backend & APIs",
-    Icon: FaCode,
-    iconColor: "var(--success)",
-    skills: [
-      { name: "Java & Core Java", pct: 85, color: "var(--success)" },
-      { name: "Node.js & Express", pct: 80, color: "var(--info)" },
-      { name: "Python (Flask)", pct: 75, color: "var(--warning)" },
-      { name: "REST APIs & WebSockets", pct: 82, color: "var(--accent)" },
-      { name: "JSP & JDBC", pct: 78, color: "var(--info)" },
-    ],
-  },
-  {
-    title: "Databases & BaaS",
-    Icon: FaDatabase,
-    iconColor: "#e24b4a",
-    skills: [
-      { name: "SQL & PostgreSQL", pct: 82, color: "var(--info)" },
-      { name: "Supabase & Convex", pct: 85, color: "var(--success)" },
-      { name: "Firebase", pct: 78, color: "var(--warning)" },
-      { name: "SQLite", pct: 80, color: "var(--accent)" },
-      { name: "Redis", pct: 70, color: "#e24b4a" },
-    ],
-  },
-  {
-    title: "Cloud & IoT",
-    Icon: FaCloud,
-    iconColor: "var(--warning)",
-    skills: [
-      { name: "AWS (S3, Lambda)", pct: 78, color: "var(--warning)" },
-      { name: "ESP32 & MQTT", pct: 82, color: "var(--success)" },
-      { name: "Capacitor & MLKit", pct: 75, color: "var(--accent)" },
-      { name: "Docker & CI/CD", pct: 72, color: "var(--info)" },
-      { name: "GitHub Actions", pct: 78, color: "var(--text-secondary)" },
-    ],
-  },
-];
-
-const familiarTags = [
-  "Zoho Creator",
-  "Android SDK",
-  "Arduino IDE",
-  "Adobe Photoshop",
-  "Netlify",
-  "Agile/Scrum",
-  "Convex",
-  "ThingsBoard",
-  "React Native",
-  "Expo",
-  "pdf-parse",
-  "react-markdown",
-  "C++",
-  "Git BASH",
-];
-
-export default function SkillsTab() {
-  return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 font-sans text-[13px] text-[var(--text-primary)] md:p-12"
-    >
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
-        <motion.div
-          variants={item}
-          className="font-mono text-[var(--text-muted)] text-[12px]"
-        >
-          <span className="text-[var(--accent)]">const</span>{" "}
-          <span className="text-[var(--info)]">capabilities</span>{" "}
-          <span className="text-[var(--text-muted)]">=</span>{" "}
-          <span className="text-[var(--success)]">"actively_evolving"</span>
-        </motion.div>
-
-        <motion.div variants={item} className="flex flex-col gap-2">
-          <h1 className="text-[28px] font-bold tracking-[-0.04em]">
-            <span className="gradient-text">Technical Skills</span>
-          </h1>
-          <p className="text-[14px] text-[var(--text-muted)]">
-            Competency matrix across full-stack, AI/ML, IoT and cloud.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {skillCategories.map((category) => (
-            <motion.div
-              key={category.title}
-              variants={item}
-              className="glow-card flex flex-col gap-5 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5"
+      {!isLast && (
+        <div className="mb-5 flex flex-col items-center gap-1">
+          {protocol && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-[7px] font-bold uppercase tracking-widest text-[var(--text-muted)]"
             >
-              <div className="flex items-center gap-2">
-                <category.Icon
-                  size={14}
-                  style={{ color: category.iconColor }}
-                />
-                <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                  {category.title}
-                </h2>
-              </div>
-              <div className="flex flex-col gap-4">
-                {category.skills.map((skill) => (
-                  <div key={skill.name} className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[12px] font-medium text-[var(--text-secondary)]">
-                        {skill.name}
-                      </span>
-                      <span className="font-mono text-[10px] font-medium text-[var(--text-muted)]">
-                        {skill.pct}%
-                      </span>
-                    </div>
-                    <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--bg-muted)]">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${skill.pct}%` }}
-                        transition={{
-                          duration: 0.9,
-                          delay: 0.2,
-                          ease: "easeOut",
-                        }}
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: skill.color }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
+              {protocol}
+            </motion.span>
+          )}
+          <div className="relative flex items-center">
+            {/* Animated data stream */}
+            <svg width="48" height="8" viewBox="0 0 48 8">
+              <line x1="0" y1="4" x2="48" y2="4" stroke="var(--accent-muted)" strokeWidth="1" strokeDasharray="4 3" />
+              <circle r="2" fill="var(--accent)" opacity="0.8">
+                <animateMotion dur="1.2s" repeatCount="indefinite" path="M0,4 L48,4"/>
+              </circle>
+            </svg>
+          </div>
         </div>
-
-        <motion.div
-          variants={item}
-          className="flex flex-col gap-4 border-t border-[var(--border-default)] pt-8"
-        >
-          <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
-            <VscSymbolNamespace size={12} />
-            Ecosystem & Libraries
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {familiarTags.map((tag, i) => (
-              <motion.span
-                key={tag}
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.025 }}
-                whileHover={{ scale: 1.06, y: -2 }}
-                className="cursor-default rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-secondary)] transition-all hover:border-[var(--accent-muted)] hover:text-[var(--accent)]"
-              >
-                {tag}
-              </motion.span>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </motion.div>
+      )}
+    </div>
   );
 }
-```
 
----
+3.3 — Replace TechBadge with an orbital icon card:
+  On hover, a faint orbit ring appears and the icon scales up.
+  Tooltip becomes a futuristic HUD-style pop.
 
-### PART 5 — ExperienceTab.tsx rewrite (`components/ExperienceTab.tsx`)
-
-Replace timeline dots with react-icons, add animation:
-
-```tsx
-"use client";
-
-import { motion } from "framer-motion";
-import {
-  VscCircleFilled,
-  VscOrganization,
-  VscCalendar,
-  VscLocation,
-  VscTag,
-} from "react-icons/vsc";
-import { FaBriefcase, FaCode, FaCloud, FaFlask } from "react-icons/fa";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
-const item = {
-  hidden: { opacity: 0, x: -20 },
-  show: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-const experiences = [
-  {
-    period: "Oct 2024 - Present",
-    role: "Junior Software Engineer in R&D department",
-    company: "Security Engineers Pvt. Ltd. (SEPLE)",
-    type: "Full-time",
-    location: "Noida, Uttar Pradesh, India · On-site",
-    description:
-      "Built FAS-Control: React + TypeScript Capacitor app using MLKit for QR-based ESP32 server management. Developed Dexter Tech Support AI — a cloud-native RAG system. Built SWatch360 Flutter mobile app on ThingsBoard PE. Developed internal R&D tools in Java and JavaScript; built the company website using Zoho.",
-    tags: [
-      "React",
-      "TypeScript",
-      "Capacitor",
-      "MLKit",
-      "Java",
-      "JavaScript",
-      "ESP32",
-      "IoT",
-      "Flutter",
-      "LangChain",
-      "RAG",
-    ],
-    current: true,
-    Icon: FaBriefcase,
-    accentColor: "var(--accent)",
-  },
-  {
-    period: "May 2024 - Oct 2024",
-    role: "Internship - Java Full Stack Developer",
-    company: "Jspiders",
-    type: "Internship · 6 months",
-    location: "India",
-    description:
-      "Delivered a real-time chat application end-to-end using Java and JSP. Built a procedural dungeon-generation game. Participated in Agile sprints.",
-    tags: ["Java", "JSP", "SQL", "JDBC", "React.js", "CSS", "HTML5", "Agile"],
-    current: false,
-    Icon: FaCode,
-    accentColor: "var(--info)",
-  },
-  {
-    period: "Apr 2024 - Oct 2024",
-    role: "Internship - Software Testing",
-    company: "Qspiders",
-    type: "Internship · 7 months",
-    location: "India",
-    description:
-      "Gained expertise in manual and automation testing, test case design, execution, and defect tracking.",
-    tags: ["Software Testing", "Manual Testing", "Automation Testing", "QA"],
-    current: false,
-    Icon: FaFlask,
-    accentColor: "var(--warning)",
-  },
-  {
-    period: "Jan 2024 - May 2024",
-    role: "Internship - Cloud Computing",
-    company: "Cisco",
-    type: "Internship · 5 months",
-    location: "Remote",
-    description:
-      "Cloud computing fundamentals and infrastructure management. Deployed and maintained cloud infrastructure and services.",
-    tags: ["Cloud Computing", "Cisco", "Networking", "Infrastructure"],
-    current: false,
-    Icon: FaCloud,
-    accentColor: "var(--success)",
-  },
-];
-
-export default function ExperienceTab() {
+export function TechBadge({ name }: { name: string }) {
   return (
     <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 font-sans text-[13px] text-[var(--text-primary)] md:p-12"
+      whileHover={{ y: -6, scale: 1.12 }}
+      whileTap={{ scale: 0.95 }}
+      className="group relative flex h-12 w-12 items-center justify-center"
     >
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-10">
-        <motion.div variants={item}>
-          <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--text-muted)]">
-            Professional journey timeline
-          </div>
-        </motion.div>
-
-        <motion.div variants={item} className="flex flex-col gap-2">
-          <h1 className="text-[28px] font-bold tracking-[-0.04em]">
-            <span className="gradient-text">Experience</span>
-          </h1>
-          <p className="text-[14px] text-[var(--text-muted)]">
-            Professional roles across software engineering, testing, and cloud
-            systems.
-          </p>
-        </motion.div>
-
-        <div className="relative ml-5 flex flex-col gap-0 pl-8 border-l-2 border-[var(--border-default)]">
-          {experiences.map((exp, idx) => (
-            <motion.div
-              key={idx}
-              variants={item}
-              className="relative mb-12 last:mb-0"
-            >
-              {/* Timeline node */}
-              <div
-                className="absolute -left-[45px] top-1 flex h-8 w-8 items-center justify-center rounded-sm border-2 bg-[var(--bg-surface)]"
-                style={{ borderColor: exp.accentColor }}
-              >
-                <exp.Icon size={14} style={{ color: exp.accentColor }} />
-              </div>
-
-              <motion.div
-                whileHover={{ x: 4 }}
-                className="glow-card rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 transition-all"
-                style={{ borderLeftWidth: 3, borderLeftColor: exp.accentColor }}
-              >
-                {/* Top row */}
-                <div className="mb-3 flex flex-wrap items-center gap-2">
-                  <span className="flex items-center gap-1.5 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 font-mono text-[10px] font-medium text-[var(--text-muted)]">
-                    <VscCalendar size={9} />
-                    {exp.period}
-                  </span>
-                  <span className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-secondary)]">
-                    {exp.type}
-                  </span>
-                  {exp.current && (
-                    <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[var(--success)]">
-                      <VscCircleFilled size={8} className="animate-pulse" />
-                      Active
-                    </span>
-                  )}
-                </div>
-
-                {/* Role */}
-                <h2 className="text-[17px] font-bold leading-tight text-[var(--text-primary)]">
-                  {exp.role}
-                </h2>
-                <div
-                  className="mt-1 flex items-center gap-2 text-[13px] font-medium"
-                  style={{ color: exp.accentColor }}
-                >
-                  <VscOrganization size={12} />
-                  {exp.company}
-                </div>
-                {exp.location && (
-                  <div className="mt-1 flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
-                    <VscLocation size={10} />
-                    {exp.location}
-                  </div>
-                )}
-
-                {/* Description */}
-                <p className="mt-3 text-[13px] leading-relaxed text-[var(--text-secondary)]">
-                  {exp.description}
-                </p>
-
-                {/* Tags */}
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {exp.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-secondary)]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            </motion.div>
-          ))}
+      {/* Orbit ring on hover */}
+      <div className="absolute inset-[-4px] rounded-full border border-[var(--accent-muted)] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110"
+        style={{ animation: "spin-slow 4s linear infinite" }}
+      />
+      <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-sm transition-all duration-300 group-hover:border-[var(--accent)] group-hover:shadow-[var(--glow-accent)]">
+        <TechIcon name={name} size={22} />
+      </div>
+      {/* HUD tooltip */}
+      <div className="pointer-events-none absolute -top-10 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap">
+        <div className="relative rounded-sm border border-[var(--accent-muted)] bg-[var(--bg-overlay)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[var(--accent)] opacity-0 transition-all duration-200 group-hover:opacity-100">
+          {/* HUD corners */}
+          <span className="absolute top-0 left-0 h-1 w-1 border-t border-l border-[var(--accent)]" />
+          <span className="absolute top-0 right-0 h-1 w-1 border-t border-r border-[var(--accent)]" />
+          <span className="absolute bottom-0 left-0 h-1 w-1 border-b border-l border-[var(--accent)]" />
+          <span className="absolute bottom-0 right-0 h-1 w-1 border-b border-r border-[var(--accent)]" />
+          {name}
         </div>
       </div>
     </motion.div>
   );
 }
-```
 
----
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 4 — PROJECTOVERVIEW.TSX ANIMATION OVERHAUL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-### PART 6 — TopBar.tsx icon replacements (`components/TopBar.tsx`)
+File: components/projects/ProjectOverview.tsx
 
-Remove all raw `<svg>` blocks from TopBar. Replace with react-icons equivalents:
+4.1 — Add a "scanning" intro animation when the overview mounts.
+  At the top of the component, add a useEffect that plays a scan line across the panel.
+  Use framer-motion AnimatePresence.
 
-Find every inline `<svg>` and replace:
+  Add this at the top of ProjectOverview:
+  const [scanning, setScanning] = useState(true);
+  useEffect(() => { const t = setTimeout(() => setScanning(false), 800); return () => clearTimeout(t); }, []);
 
-```tsx
-// Add these imports at the top
-import {
-  VscLayoutSidebarLeft,
-  VscSparkle,
-  VscCode,
-  VscSearch,
-  VscTerminal,
-  VscChromeMaximize,
-  VscChromeClose,
-  VscSymbolMethod,
-} from "react-icons/vsc";
-import { TbLayoutSidebarLeftCollapse } from "react-icons/tb";
-```
-
-In the right-side controls section, replace the raw SVG window chrome buttons:
-
-```tsx
-// Maximize button — replace the svg block with:
-<VscChromeMaximize size={12} />
-
-// Close button — replace the svg block with:
-<VscChromeClose size={12} />
-
-// AI panel toggle svg — replace with:
-<VscLayoutSidebarLeft size={14} />
-
-// Terminal toggle svg — replace with:
-<VscTerminal size={14} />
-
-// Search icon inside the center search bar svg — replace with:
-<VscSearch size={13} className="opacity-60 group-hover:opacity-100 transition-opacity" />
-```
-
----
-
-### PART 7 — FileExplorer.tsx icon cleanup (`components/FileExplorer.tsx`)
-
-The current `FaHtml5`, `SiTypescript` etc. icon mix creates inconsistent stroke weights. Standardize to VSCode icons for files, keep color:
-
-```tsx
-// Replace the getFileIcon function entirely:
-import { VscFile, VscJson, VscCode } from "react-icons/vsc";
-import {
-  SiTypescript,
-  SiJavascript,
-  SiPython,
-  SiReact,
-  SiCss3,
-  SiHtml5,
-} from "react-icons/si";
-import { FaMarkdown } from "react-icons/fa";
-
-function getFileIcon(name: string) {
-  const ext = name.split(".").pop()?.toLowerCase() || "";
-  const size = 13;
-
-  if (ext === "html")
-    return (
-      <SiHtml5
-        size={size}
-        style={{ color: "var(--file-html)" }}
-        className="shrink-0"
+  Wrap the entire return in:
+  <AnimatePresence>
+    {scanning ? (
+      <motion.div
+        key="scan"
+        className="fixed inset-0 z-50 pointer-events-none"
+        initial={{ scaleY: 0, originY: 0 }}
+        animate={{ scaleY: 1 }}
+        exit={{ scaleY: 0, originY: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        style={{ background: "linear-gradient(180deg, transparent, var(--accent-muted), transparent)", height: "4px" }}
       />
-    );
-  if (ext === "json")
+    ) : null}
+  </AnimatePresence>
+
+4.2 — Replace "Core Capabilities" feature grid items with animated reveal cards.
+  Each VisualBadge should stagger in with:
+  - initial: opacity 0, y: 20, rotateX: -15deg
+  - animate: opacity 1, y: 0, rotateX: 0
+  - transition: spring with delay = index * 0.06
+
+  Add perspective to the container: style={{ perspective: "800px" }}
+
+4.3 — Add a live "status ticker" above the feature grid:
+  A horizontal scrolling text marquee showing:
+    "[ SYSTEM ONLINE ] — PROJECT LOADED — ARCHITECTURE MAPPED — STACK RESOLVED — READY"
+  
+  Implement as:
+  <div className="overflow-hidden border-y border-[var(--border-default)] py-1.5 mb-6">
+    <motion.div
+      animate={{ x: ["0%", "-50%"] }}
+      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      className="flex whitespace-nowrap gap-8 text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--accent)] opacity-60"
+    >
+      {Array.from({ length: 4 }).flatMap(() =>
+        ["SYSTEM ONLINE", "PROJECT LOADED", "ARCHITECTURE MAPPED", "STACK RESOLVED", "RUNTIME ACTIVE"].map((s, i) => (
+          <span key={`${s}-${i}`} className="flex items-center gap-3">
+            <span className="h-1 w-1 rounded-full bg-[var(--accent)] led-dot" />
+            {s}
+          </span>
+        ))
+      )}
+    </motion.div>
+  </div>
+
+4.4 — Topic Graph: replace flat badges with an animated node cloud.
+  Each topic badge should:
+  - Enter with a random x/y offset and fade+scale in
+  - On hover: glow border + scale 1.1 + show connection lines to neighboring badges
+  - Use CSS custom properties for stagger delay: style={{ "--delay": `${index * 40}ms` }}
+  - Animation: opacity 0 → 1, scale 0.3 → 1, with spring physics
+
+4.5 — Specifications sidebar: animate each SidebarKeyValue with a number counter for year values
+  and a typewriter effect for string values.
+  Wrap the sidebar in:
+  <motion.aside
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ delay: 0.3, duration: 0.5 }}
+    className="..."
+  >
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 5 — PROJECTARCHITECTURE.TSX OVERHAUL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+File: components/projects/ProjectArchitecture.tsx
+
+5.1 — Replace the static terminal command prefix with an animated typewriter:
+  Currently: <span className="font-bold opacity-80 animate-pulse">$ arch --inspect --verbose</span>
+  Replace with a TypewriterText component:
+
+  function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
+    const [displayed, setDisplayed] = useState("");
+    const [done, setDone] = useState(false);
+    useEffect(() => {
+      let i = 0;
+      const id = setTimeout(() => {
+        const interval = setInterval(() => {
+          setDisplayed(text.slice(0, ++i));
+          if (i >= text.length) { setDone(true); clearInterval(interval); }
+        }, 35);
+        return () => clearInterval(interval);
+      }, delay);
+      return () => clearTimeout(id);
+    }, [text, delay]);
     return (
-      <VscJson
-        size={size}
-        style={{ color: "var(--file-json)" }}
-        className="shrink-0"
-      />
+      <span className="font-mono text-[11px] text-[var(--info)]">
+        {displayed}
+        {!done && <span className="inline-block h-3 w-[2px] bg-[var(--accent)] animate-[blink_1s_step-end_infinite] ml-0.5" />}
+      </span>
     );
-  if (ext === "ts")
-    return (
-      <SiTypescript
-        size={size}
-        style={{ color: "var(--file-typescript)" }}
-        className="shrink-0"
-      />
-    );
-  if (ext === "js")
-    return (
-      <SiJavascript
-        size={size}
-        style={{ color: "var(--file-javascript)" }}
-        className="shrink-0"
-      />
-    );
-  if (ext === "py")
-    return (
-      <SiPython
-        size={size}
-        style={{ color: "var(--file-python)" }}
-        className="shrink-0"
-      />
-    );
-  if (ext === "tsx" || ext === "jsx")
-    return (
-      <SiReact
-        size={size}
-        style={{ color: "var(--file-react)" }}
-        className="shrink-0"
-      />
-    );
-  if (ext === "css")
-    return (
-      <SiCss3
-        size={size}
-        style={{ color: "var(--file-css)" }}
-        className="shrink-0"
-      />
-    );
-  if (ext === "md")
-    return (
-      <FaMarkdown
-        size={size}
-        style={{ color: "var(--file-markdown)" }}
-        className="shrink-0"
-      />
-    );
-  return <VscFile size={size} className="shrink-0 text-[var(--text-muted)]" />;
-}
-```
+  }
 
----
+  Use it: <TypewriterText text="$ arch --inspect --verbose" delay={200} />
 
-### PART 8 — StatusBar.tsx icon replacements (`components/StatusBar.tsx`)
+5.2 — Animate the 3-card grid (Logic Layer, Persistence, Discovery):
+  Replace the plain grid with a staggered 3D card reveal:
+  - Each card enters from y:40 with a rotateX(-10deg) and fades in
+  - On hover: border-left lights up with neon glow matching its accent color
+  - Add a subtle scanline pattern on each card background using the crt CSS class
 
-Replace raw SVGs with react-icons:
+5.3 — Data Schema Preview: add syntax highlighting animation.
+  When the schema pre block enters the viewport (use IntersectionObserver or framer-motion whileInView):
+  - Characters reveal left-to-right with a 2ms per character delay
+  - The accent dot (●) pulses with neon-pulse animation
+  - Add a "READONLY" watermark text in the corner with 3% opacity
 
-```tsx
-import {
-  VscSourceControl, VscClock, VscSparkle,
-  VscExtensions, VscWarning,
-} from "react-icons/vsc";
+  Implement the line-by-line reveal:
+  const lines = model.split('\n');
+  Use motion.div with staggerChildren where each line has:
+  initial={{ opacity: 0, x: -8 }}
+  whileInView={{ opacity: 1, x: 0 }}
+  viewport={{ once: true, margin: "-40px" }}
 
-// Replace the git branch svg with:
-<VscSourceControl size={11} />
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 6 — PROJECTCHANGELOG.TSX ANIMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// Replace the clock svg with:
-<VscClock size={11} />
-```
+File: components/projects/ProjectChangelog.tsx
 
----
+6.1 — Timeline connector: replace the static gradient line with an animated one.
+  The vertical line between releases should have a glowing particle that travels down it:
+  
+  Add after the timeline divider line:
+  <motion.div
+    className="absolute right-[-5px] w-[2px] bg-[var(--accent)]"
+    initial={{ height: 0, top: 8 }}
+    whileInView={{ height: "calc(100% + 32px)" }}
+    viewport={{ once: true }}
+    transition={{ duration: 1.2, ease: "easeInOut" }}
+  />
 
-### PART 9 — SidebarAI.tsx suggestion chips animation
+6.2 — Release cards: animated border-left reveal + content fade.
+  Each release card should:
+  - Slide in from left with x: -24px → 0
+  - Border-left color transitions from transparent → accent over 400ms after slide completes
+  - Version number (v1.x) has a glitch effect: add data-text={release.v} and className="glitch-text"
+    for 600ms on mount, then remove the class
 
-In the suggestion chips section already fixed to compact pills, add Framer Motion hover lift:
+6.3 — Version badge: make it count up from v0.0 to the target version.
+  On whileInView trigger, animate the displayed version number using a counter.
 
-```tsx
-// Wrap each suggestion chip button with motion:
-import { motion } from "framer-motion";
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 7 — TOPBAR.TSX + TERMINAL.TSX POLISH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// Replace the button with:
-<motion.button
-  key={suggestion}
-  type="button"
-  onClick={() => setInput(suggestion)}
-  whileHover={{ scale: 1.03, y: -1 }}
-  whileTap={{ scale: 0.97 }}
-  className="inline-flex items-center px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] border border-[var(--border-default)] bg-[var(--bg-base)] rounded-sm hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] transition-colors whitespace-nowrap"
->
-  {suggestion}
-</motion.button>;
-```
+7.1 — TopBar: make the center "cursorfolio" title a glitch-text element.
+  Replace:
+    <div className="... text-[var(--text-muted)]">cursorfolio</div>
+  With:
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className="... cursor-pointer"
+    >
+      <span className="glitch-text gradient-text text-[12px] font-bold" data-text="cursorfolio.dev">
+        cursorfolio.dev
+      </span>
+    </motion.div>
 
-Also add a pulsing accent dot next to the header:
+7.2 — TopBar: add a live clock in the status bar (right side, before the icon buttons):
+  function LiveClock() {
+    const [time, setTime] = useState("");
+    useEffect(() => {
+      const update = () => setTime(new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false }));
+      update();
+      const id = setInterval(update, 10000);
+      return () => clearInterval(id);
+    }, []);
+    return <span className="text-[10px] font-mono text-[var(--text-muted)] opacity-60 hidden lg:block">{time}</span>;
+  }
 
-```tsx
-// In the header div, after VscSparkle icon:
-<span
-  className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]"
-  style={{ animation: "glow-pulse 2.4s ease-in-out infinite" }}
-/>
-```
+7.3 — Terminal: add a boot animation when terminal first opens.
+  When terminalOpen goes from false → true, show a boot sequence in the terminal:
+  Lines appear one by one with 80ms gap:
+    "> Initializing workspace..."
+    "> Loading project registry..."
+    "> GitHub sync: OK"
+    "> Ready. Type 'help' for commands."
+  
+  Detect "first open" by checking entries.length === 1 and the boot entry has no command.
+  On first render, stagger the boot lines via setTimeout chains.
 
----
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 8 — PARTICLE BACKGROUND + GLOBAL AMBIENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-### PART 10 — EditorTabs.tsx active indicator animation
+Create a new file: components/ui/ParticleField.tsx
 
-The existing `motion.span` with `layoutId="active-tab-line"` at the top is correct. Add a subtle glow to the accent line on active tabs:
+This is a lightweight canvas-based particle system (no heavy libraries):
+- 60-80 dots floating slowly
+- Each dot: radius 1-2px, color var(--accent) at 6-15% opacity
+- Movement: each particle has vx, vy ±0.2px/frame, bounces off edges
+- Connections: if two particles are within 120px, draw a line between them at opacity proportional to distance
+- On mouse move (window listener): particles within 100px of cursor gently repel
+- Performance: use requestAnimationFrame, skip if document is hidden
 
-```tsx
-// Find the active top accent line span and update:
-{
-  isActive ? (
-    <motion.span
-      layoutId="active-tab-line"
-      className="absolute inset-x-0 top-0 h-[2px]"
-      style={{
-        background: "var(--accent)",
-        boxShadow: "0 0 8px 1px var(--accent-muted)",
-      }}
-    />
-  ) : null;
-}
-```
+Export as default. Add to AppShell.tsx as a fixed z-0 layer behind the grid:
+  <ParticleField className="fixed inset-0 z-0 pointer-events-none opacity-40" />
 
----
+Make it conditional: only render if theme is "aniket-dark" or "tokyo-night".
 
-### PART 11 — ProjectsTab sidebar list item hover
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 9 — SETTINGS PANEL (theme switcher visual upgrade)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-In `ProjectsTab.tsx`, add Framer Motion to the project list buttons:
+If a Settings panel component exists, upgrade the theme switcher to show:
+- A visual color swatch for each of the 7 themes
+- The active theme has a neon-border ring around its swatch
+- Hover shows a live preview of the accent color
+- Clicking triggers an animated theme transition:
+  1. A white flash div (opacity 0 → 0.15 → 0) over 300ms
+  2. Then setTheme fires
+  3. All CSS var transitions handle the color morph (already set to 180ms)
 
-```tsx
-// Wrap the project list button with motion
-import { motion } from "framer-motion"; // already imported
+If no Settings panel exists, skip this section.
 
-// Add to each project button in the sidebar:
-<motion.button
-  key={project.id}
-  whileHover={{ x: 2 }}
-  // ... rest of existing props
->
-```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IMPLEMENTATION ORDER:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
+  
+  After Section 1: run `npx tsc --noEmit` — must show 0 errors
+  After Section 3: test in browser that AppShell renders with correct colors
+  After Section 4-6: test that project panel animations run on first load without jank
+  Final: run `npm run build` — must succeed with 0 errors
 
----
-
-### Summary of all files changed
-
-| File                           | Change                                                                     |
-| ------------------------------ | -------------------------------------------------------------------------- |
-| `app/globals.css`              | Geist fonts, keyframes, gradient-text utility, glow-card, new color tokens |
-| `app/layout.tsx`               | Add GeistSans/GeistMono Next.js font variables                             |
-| `components/HomeTab.tsx`       | Full rewrite with animation, tech icons, gradient text                     |
-| `components/AboutTab.tsx`      | Full rewrite with react-icons, animated cards, color coding                |
-| `components/SkillsTab.tsx`     | Animated skill bars, icon category headers, card layout                    |
-| `components/ExperienceTab.tsx` | Timeline with react-icons nodes, animated entry cards                      |
-| `components/TopBar.tsx`        | Remove all raw SVGs → react-icons equivalents                              |
-| `components/FileExplorer.tsx`  | Replace mixed icon sources → standardized Si + Vsc icons                   |
-| `components/StatusBar.tsx`     | Remove raw SVGs → react-icons                                              |
-| `components/SidebarAI.tsx`     | Animated chips, glow-pulse header dot                                      |
-| `components/EditorTabs.tsx`    | Active tab line glow effect                                                |
-| `components/ProjectsTab.tsx`   | Framer Motion hover on sidebar list                                        |
-
-**Do not touch:** `store/useIDEStore.ts`, `data/content.ts`, `data/projects.ts`, `app/api/`, `utils/`, `supabase/`. All content, routing, and state logic must remain unchanged.
+CONSTRAINTS:
+  - Do NOT use any animation library other than framer-motion (already installed)
+  - Do NOT add new npm packages unless explicitly stated
+  - All canvas work (ParticleField) must be vanilla JS
+  - All animations must respect prefers-reduced-motion:
+    Add this once to globals.css:
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  - TypeScript strict mode: no `any` types
+  - All new components must be "use client" if they use hooks or browser APIs
