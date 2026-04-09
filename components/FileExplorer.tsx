@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { 
   VscChevronRight, VscChevronDown, 
   VscCollapseAll,
-  VscFile, VscJson
+  VscFile, VscJson, VscCode
 } from "react-icons/vsc";
 import { FaMarkdown } from "react-icons/fa";
 import {
@@ -24,14 +24,70 @@ function getFileIcon(name: string) {
   const ext = name.split(".").pop()?.toLowerCase() || "";
   const size = 13;
 
-  if (ext === "html") return <SiHtml5 size={size} style={{ color: "var(--file-html)" }} className="shrink-0" />;
-  if (ext === "json") return <VscJson size={size} style={{ color: "var(--file-json)" }} className="shrink-0" />;
-  if (ext === "ts") return <SiTypescript size={size} style={{ color: "var(--file-typescript)" }} className="shrink-0" />;
-  if (ext === "js") return <SiJavascript size={size} style={{ color: "var(--file-javascript)" }} className="shrink-0" />;
-  if (ext === "py") return <SiPython size={size} style={{ color: "var(--file-python)" }} className="shrink-0" />;
-  if (ext === "tsx" || ext === "jsx") return <SiReact size={size} style={{ color: "var(--file-react)" }} className="shrink-0" />;
-  if (ext === "css") return <SiCss size={size} style={{ color: "var(--file-css)" }} className="shrink-0" />;
-  if (ext === "md") return <FaMarkdown size={size} style={{ color: "var(--file-markdown)" }} className="shrink-0" />;
+  if (ext === "html")
+    return (
+      <SiHtml5
+        size={size}
+        style={{ color: "var(--file-html)" }}
+        className="shrink-0"
+      />
+    );
+  if (ext === "json")
+    return (
+      <VscJson
+        size={size}
+        style={{ color: "var(--file-json)" }}
+        className="shrink-0"
+      />
+    );
+  if (ext === "ts")
+    return (
+      <SiTypescript
+        size={size}
+        style={{ color: "var(--file-typescript)" }}
+        className="shrink-0"
+      />
+    );
+  if (ext === "js")
+    return (
+      <SiJavascript
+        size={size}
+        style={{ color: "var(--file-javascript)" }}
+        className="shrink-0"
+      />
+    );
+  if (ext === "py")
+    return (
+      <SiPython
+        size={size}
+        style={{ color: "var(--file-python)" }}
+        className="shrink-0"
+      />
+    );
+  if (ext === "tsx" || ext === "jsx")
+    return (
+      <SiReact
+        size={size}
+        style={{ color: "var(--file-react)" }}
+        className="shrink-0"
+      />
+    );
+  if (ext === "css")
+    return (
+      <SiCss
+        size={size}
+        style={{ color: "var(--file-css)" }}
+        className="shrink-0"
+      />
+    );
+  if (ext === "md")
+    return (
+      <FaMarkdown
+        size={size}
+        style={{ color: "var(--file-markdown)" }}
+        className="shrink-0"
+      />
+    );
   return <VscFile size={size} className="shrink-0 text-[var(--text-muted)]" />;
 }
 

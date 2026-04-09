@@ -1,30 +1,40 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { 
   FaDesktop, FaMobile, FaServer, FaDatabase, FaMicrochip,
   FaBolt, FaChartLine, FaLayerGroup, FaEye, FaWifi, FaUser,
   FaTerminal, FaPlay, FaCheck, FaPowerOff, FaBox, FaGear, FaShareNodes,
-  FaChevronRight, FaRegCircleQuestion
+  FaChevronRight, FaRegQuestionCircle
 } from "react-icons/fa6";
-import { ProjectShape, TechGroupItem, TechGroup } from "./ProjectData";
+import { VscSync } from "react-icons/vsc";
+import { TechGroupItem } from "./ProjectData";
 
 export const LABEL_CLASS =
   "border-b border-[var(--border-default)] pb-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]";
 
 export function SectionLabel({ label }: { label: string }) {
-  return <div className={`${LABEL_CLASS} mb-3`}>{label}</div>;
+  return (
+    <div className={`${LABEL_CLASS} mb-3 flex items-center gap-2`}>
+      <span className="gradient-text">{label}</span>
+    </div>
+  );
 }
 
 export function LoadingState() {
   return (
     <div className="flex h-full items-center justify-center bg-[var(--bg-base)] p-8 font-sans">
-      <div className="w-full max-w-[620px] overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-md">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-[620px] overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-md"
+      >
         <div className="border-b border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
           sync status
         </div>
         <div className="space-y-4 p-6">
           <div className="flex items-center gap-2 text-[12px] text-[var(--text-secondary)]">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--success)]" />
+            <VscSync className="animate-spin text-[var(--accent)]" size={14} />
             fetching project registry...
           </div>
           <div className="space-y-3">
@@ -34,7 +44,7 @@ export function LoadingState() {
             <div className="h-3 w-[54%] animate-pulse rounded-full bg-[var(--border-default)]" />
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -59,36 +69,51 @@ export function ProjectRowSkeleton({ index }: { index: number }) {
 
 export function TechPill({ item }: { item: TechGroupItem }) {
   return (
-    <div className="group flex items-center gap-2 rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-overlay)]">
+    <motion.div 
+      whileHover={{ scale: 1.02 }}
+      className="group flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-elevated)]"
+    >
       <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: item.c }} />
       <span className="font-semibold">{item.n}</span>
       <span className="text-[10px] text-[var(--text-muted)] font-mono">{item.v}</span>
-    </div>
+    </motion.div>
   );
 }
 
 export function StatCell({ label, value, icon }: { label: string; value: number | string; icon?: React.ReactNode }) {
   return (
-    <div className="group flex min-w-0 flex-1 flex-col gap-1.5 border-r border-[var(--border-default)] px-4 py-4 transition-all hover:bg-[var(--bg-muted)] last:border-r-0">
+    <motion.div 
+      whileHover={{ backgroundColor: "var(--bg-muted)" }}
+      className="group flex min-w-0 flex-1 flex-col gap-1.5 border-r border-[var(--border-default)] px-4 py-4 transition-colors last:border-r-0"
+    >
       <div className="flex items-center gap-2">
         {icon && <div className="text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors">{icon}</div>}
-        <span className="text-[14px] font-semibold tracking-tight text-[var(--text-primary)]">{value}</span>
+        <motion.span 
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-[14px] font-bold tracking-tight text-[var(--text-primary)]"
+        >
+          {value}
+        </motion.span>
       </div>
-      <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] transition-colors">
+      <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] transition-colors">
         {label}
       </span>
-    </div>
+    </motion.div>
   );
 }
 
 export function VisualBadge({ label, icon }: { label: string; icon: React.ReactNode }) {
   return (
-    <div className="group flex items-center gap-3 border border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-3 rounded-lg text-[11px] font-bold text-[var(--text-primary)] transition-all hover:border-[var(--accent)]/40 hover:bg-[var(--bg-overlay)] shadow-sm">
-      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--bg-elevated)] text-[var(--text-muted)] group-hover:text-[var(--accent)]">
+    <motion.div 
+      whileHover={{ y: -2, scale: 1.01 }}
+      className="glow-card group flex items-center gap-3 border border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-3 rounded-sm text-[11px] font-bold text-[var(--text-primary)] transition-all"
+    >
+      <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-[var(--bg-muted)] text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors">
         {icon}
       </div>
       <span className="truncate">{label}</span>
-    </div>
+    </motion.div>
   );
 }
 
@@ -112,16 +137,19 @@ export function IconMapper({ name, size = 20 }: { name: string; size?: number })
   if (n === "box") return <FaBox size={size} />;
   if (n === "settings") return <FaGear size={size} />;
   if (n === "share") return <FaShareNodes size={size} />;
-  return <FaRegCircleQuestion size={size} />;
+  return <FaRegQuestionCircle size={size} />;
 }
 
 export function FlowNode({ label, icon, isLast, protocol }: { label: string; icon: string; isLast?: boolean; protocol?: string }) {
   return (
     <div className="flex items-center gap-3">
       <div className="flex flex-col items-center gap-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[var(--accent)] shadow-sm transition-all hover:border-[var(--accent)]/50 hover:bg-[var(--bg-muted)]">
+        <motion.div 
+          whileHover={{ scale: 1.1 }}
+          className="flex h-10 w-10 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[var(--accent)] shadow-sm transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]"
+        >
           <IconMapper name={icon} />
-        </div>
+        </motion.div>
         <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-[var(--text-muted)]">{label}</span>
       </div>
       {!isLast && (
@@ -137,20 +165,21 @@ export function FlowNode({ label, icon, isLast, protocol }: { label: string; ico
   );
 }
 
-export function FlowDiagram({ project }: { project: ProjectShape }) {
+export function FlowDiagram({ project }: { project: any }) {
   const flow = project.visualFlow || [
     { label: "Input", icon: "box" },
     { label: "Process", icon: "settings" },
     { label: "Output", icon: "share" }
   ];
 
-  const protocols = project.highLevel?.includes("->")
-    ? project.highLevel.split("->").map(p => p.trim())
+  const highLevel = project.highLevel || "";
+  const protocols = highLevel.includes("->")
+    ? highLevel.split("->").map((p: string) => p.trim())
     : [];
 
   return (
     <div className="mt-3 flex flex-wrap items-center justify-center gap-4 rounded-sm border border-[var(--border-default)] bg-[var(--bg-base)] px-4 py-8 shadow-inner">
-      {flow.map((node, index) => (
+      {flow.map((node: any, index: number) => (
         <FlowNode
           key={`${project.id}-flow-${index}`}
           label={node.label}
@@ -238,12 +267,15 @@ export function TechIcon({ name, size = 20 }: { name: string; size?: number }) {
 
 export function TechBadge({ name }: { name: string }) {
   return (
-    <div className="group relative flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] backdrop-blur-sm transition-all hover:border-[var(--accent)]/50 hover:bg-[var(--bg-muted)] hover:shadow-[0_0_15px_var(--accent-subtle)]">
+    <motion.div 
+      whileHover={{ y: -3, scale: 1.05 }}
+      className="group relative flex h-10 w-10 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] backdrop-blur-sm transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)] hover:shadow-lg"
+    >
       <TechIcon name={name} size={22} />
-      <div className="absolute -top-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded border border-[var(--border-default)] bg-[var(--bg-overlay)] px-2 py-1 text-[9px] font-medium uppercase tracking-wider text-[var(--text-primary)] opacity-0 transition-opacity pointer-events-none group-hover:opacity-100">
+      <div className="absolute -top-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-sm border border-[var(--border-default)] bg-[var(--bg-overlay)] px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-[var(--text-primary)] opacity-0 transition-opacity pointer-events-none group-hover:opacity-100">
         {name}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -251,7 +283,7 @@ export function SidebarKeyValue({ label, value }: { label: string; value: string
   return (
     <div className="flex items-start justify-between gap-3 border-b border-[var(--border-default)] py-2 last:border-b-0">
       <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--text-muted)]">{label}</span>
-      <span className="text-right text-[11px] font-medium text-[var(--text-secondary)]">{value}</span>
+      <span className="text-right text-[11px] font-semibold text-[var(--text-secondary)]">{value}</span>
     </div>
   );
 }

@@ -3,8 +3,8 @@ import {
   VscSourceControl,
   VscSparkle,
   VscWarning,
+  VscHistory,
 } from "react-icons/vsc";
-import { FaRegClock } from "react-icons/fa6";
 
 export default function StatusBar() {
   return (
@@ -15,7 +15,7 @@ export default function StatusBar() {
           main*
         </span>
         <span className="cursor-pointer hover:bg-[var(--bg-muted)] px-1.5 py-0.5 rounded transition-colors flex items-center gap-1">
-          <FaRegClock size={10} />
+          <VscHistory size={11} />
           0
         </span>
       </div>

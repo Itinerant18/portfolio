@@ -18,15 +18,31 @@ import {
   highLevelOf, releasesOf 
 } from "./projects/ProjectData";
 import { 
-  LoadingState, ProjectRowSkeleton, StatCell, SectionLabel 
+  LoadingState, ProjectRowSkeleton, StatCell 
 } from "./projects/ProjectUI";
 import { ProjectOverview } from "./projects/ProjectOverview";
 import { ProjectArchitecture } from "./projects/ProjectArchitecture";
 import { ProjectChangelog } from "./projects/ProjectChangelog";
+import { VscRepo, VscLiveShare, VscCode, VscProject } from "react-icons/vsc";
 
 function openExternal(url: string) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -10 },
+  show: { opacity: 1, x: 0 },
+};
 
 export default function ProjectsTab() {
   const openFile = useIDEStore((state) => state.openFile);
@@ -154,7 +170,7 @@ export default function ProjectsTab() {
         <aside className="hidden md:flex h-full w-[268px] shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)]">
           <div className="shrink-0 border-b border-[var(--border-default)] px-4 py-3">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
+              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--text-muted)]">
                 Projects
               </span>
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
@@ -162,7 +178,7 @@ export default function ProjectsTab() {
                 Syncing
               </div>
             </div>
-            <div className="h-8 rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)]" />
+            <div className="h-8 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)]" />
           </div>
           <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto">
             {Array.from({ length: 9 }, (_, index) => (
@@ -182,9 +198,12 @@ export default function ProjectsTab() {
       <aside className="hidden md:flex h-full w-[280px] shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)]">
         <div className="shrink-0 border-b border-[var(--border-default)] px-4 py-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
-              Projects
-            </span>
+            <div className="flex items-center gap-2">
+              <VscProject className="text-[var(--accent)]" size={14} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--text-primary)]">
+                Projects
+              </span>
+            </div>
             <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
               Ready
@@ -194,11 +213,16 @@ export default function ProjectsTab() {
             type="text"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search projects..."
+            placeholder="Search registry..."
           />
         </div>
 
-        <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="ide-scrollbar min-h-0 flex-1 overflow-y-auto"
+        >
           {filteredProjects.map((project, index) => {
             const active = project.id === selectedProjectId;
             const lang = languageOf(project);
@@ -206,36 +230,42 @@ export default function ProjectsTab() {
             return (
               <motion.button
                 key={project.id}
-                whileHover={{ x: 2 }}
+                variants={itemVariants}
+                whileHover={{ x: 2, backgroundColor: "var(--bg-muted)" }}
                 type="button"
                 onClick={() => {
                   setSelectedProjectId(project.id);
                   setActiveTab("overview");
                 }}
-                className={`relative grid w-full grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-3 border-b border-[var(--border-default)] px-4 py-3.5 text-left transition-all ${
+                className={`relative grid w-full grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-3 border-b border-[var(--border-default)] px-4 py-3.5 text-left transition-colors ${
                   index === 0 ? "border-t border-[var(--border-default)]" : ""
                 } ${active
                     ? "bg-[var(--bg-muted)]"
-                    : "hover:bg-[var(--bg-muted)]/50"
+                    : "hover:bg-[var(--bg-muted)]/30"
                   }`}
               >
-                {active ? <span className="absolute left-0 top-0 h-full w-px bg-[var(--accent)]" /> : null}
+                {active && (
+                  <motion.span 
+                    layoutId="active-indicator"
+                    className="absolute left-0 top-0 h-full w-[2px] bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]" 
+                  />
+                )}
                 <div
-                  className="flex h-9 w-9 items-center justify-center rounded-md text-[12px] font-semibold text-white shadow-sm"
+                  className="flex h-9 w-9 items-center justify-center rounded-sm text-[12px] font-bold text-white shadow-sm"
                   style={{ backgroundColor: techColor(lang) }}
                 >
                   {getInitials(project.name)}
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate text-[12px] font-medium text-[var(--text-primary)]">
+                  <div className="truncate text-[12.5px] font-bold text-[var(--text-primary)]">
                     {project.name}
                   </div>
-                  <div className="truncate text-[10px] font-medium text-[var(--text-muted)]">
+                  <div className="truncate text-[10.5px] font-medium text-[var(--text-muted)]">
                     {project.shortDescription || "No description provided."}
                   </div>
                 </div>
                 {active && (
-                  <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]/80" />
+                  <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
                 )}
               </motion.button>
             );
@@ -243,73 +273,94 @@ export default function ProjectsTab() {
 
           {filteredProjects.length === 0 ? (
             <div className="px-6 py-12 text-center text-[12px] text-[var(--text-disabled)] italic font-medium">
-              No matching projects found.
+              No matching records in registry.
             </div>
           ) : null}
-        </div>
+        </motion.div>
       </aside>
 
       <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[var(--bg-base)]">
         <div className="shrink-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
-          <div className="px-6 py-7 md:px-10">
-            <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:gap-7">
+          <div className="px-6 py-8 md:px-10">
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              key={`hero-${selectedProject.id}`}
+              className="flex flex-col items-start gap-6 md:flex-row md:items-center md:gap-8"
+            >
               <div className="shrink-0 relative">
-                <div
-                  className="flex h-[72px] w-[72px] items-center justify-center rounded-xl text-[24px] font-semibold text-white shadow-sm"
-                  style={{ backgroundColor: techColor(detail.language) }}
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex h-[80px] w-[80px] items-center justify-center rounded-sm text-[28px] font-bold text-white shadow-xl"
+                  style={{ 
+                    backgroundColor: techColor(detail.language),
+                    boxShadow: `0 8px 24px -4px color-mix(in srgb, ${techColor(detail.language)} 40%, transparent)`
+                  }}
                 >
                   {getInitials(selectedProject.name)}
-                </div>
+                </motion.div>
+                <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[var(--bg-elevated)] bg-[var(--success)] animate-pulse" />
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  <span>{detail.category}</span>
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+                  <span className="text-[var(--accent)]">{detail.category}</span>
                   <span className="opacity-30">•</span>
                   <span>{detail.language}</span>
                   <span className="opacity-30">•</span>
                   <span>{detail.year}</span>
                 </div>
-                <h1 className="mt-2 text-[30px] font-semibold leading-none tracking-[-0.04em] text-[var(--text-primary)] md:text-[38px]">
-                  {selectedProject.name}
+                <h1 className="mt-2 text-[32px] font-bold leading-none tracking-tight text-[var(--text-primary)] md:text-[42px]">
+                  <span className="gradient-text">{selectedProject.name}</span>
                 </h1>
-                <p className="mt-3 max-w-[70ch] text-[14px] font-medium leading-relaxed text-[var(--text-secondary)]">{detail.tagline}</p>
+                <p className="mt-4 max-w-[75ch] text-[15px] font-medium leading-relaxed text-[var(--text-secondary)]">{detail.tagline}</p>
                 
-                <div className="mt-5 flex flex-wrap items-center gap-3">
+                <div className="mt-6 flex flex-wrap items-center gap-3">
                   <IDEButton
                     type="button"
                     onClick={() => openExternal(selectedProject.links.github)}
                     variant="primary"
+                    className="gap-2"
                   >
-                    Repository
+                    <VscRepo size={14} /> Repository
                   </IDEButton>
                   {selectedProject.links.demo && (
                     <IDEButton
                       type="button"
                       onClick={() => openExternal(selectedProject.links.demo!)}
                       variant="secondary"
+                      className="gap-2"
                     >
-                      Live Demo
+                      <VscLiveShare size={14} /> Live Demo
                     </IDEButton>
                   )}
                   <IDEButton
                     type="button"
                     onClick={() => openFile("data/projects.ts")}
                     variant="ghost"
+                    className="gap-2"
                   >
-                    Open Source
+                    <VscCode size={14} /> Source
                   </IDEButton>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-[var(--border-default)] border-t border-[var(--border-default)] bg-[var(--bg-muted)]/30">
+          
+          <motion.div 
+            initial="hidden"
+            animate="show"
+            variants={containerVariants}
+            key={`stats-${selectedProject.id}`}
+            className="grid grid-cols-2 md:grid-cols-5 divide-x divide-[var(--border-default)] border-t border-[var(--border-default)] bg-[var(--bg-muted)]/20"
+          >
             <StatCell label="Dependencies" value={detail.dependencies} />
             <StatCell label="Features" value={detail.features.length} />
             <StatCell label="Flow steps" value={detail.flows.length} />
             <StatCell label="Releases" value={detail.releases.length} />
             <StatCell label="Topics" value={detail.topics.length} />
-          </div>
+          </motion.div>
         </div>
 
         <div className="shrink-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-6 md:px-10">
@@ -323,7 +374,7 @@ export default function ProjectsTab() {
                 key={tabKey}
                 type="button"
                 onClick={() => setActiveTab(tabKey)}
-                className={`relative px-0 py-4 text-[11px] font-medium uppercase tracking-[0.12em] transition-all ${activeTab === tabKey
+                className={`relative px-0 py-4 text-[11px] font-bold uppercase tracking-[0.15em] transition-all ${activeTab === tabKey
                   ? "text-[var(--text-primary)]"
                   : "text-[var(--text-disabled)] hover:text-[var(--text-muted)]"
                   }`}
@@ -331,8 +382,8 @@ export default function ProjectsTab() {
                 {label}
                 {activeTab === tabKey && (
                   <motion.div 
-                    layoutId="activeTab" 
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--accent)]"
+                    layoutId="activeTabUnderline" 
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]"
                   />
                 )}
               </button>
@@ -344,10 +395,10 @@ export default function ProjectsTab() {
           <AnimatePresence mode="wait">
             <motion.div
               key={`${selectedProject.id}-${activeTab}`}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
               {activeTab === "overview" && (
                 <ProjectOverview project={selectedProject} detail={detail} />
