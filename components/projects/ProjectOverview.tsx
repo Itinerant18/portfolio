@@ -1,30 +1,27 @@
 "use client";
 
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { AnimatePresence, motion, useReducedMotion, Variants } from "framer-motion";
-import { FaArrowUpRightFromSquare, FaCheck, FaLock } from "react-icons/fa6";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { FaArrowUpRightFromSquare, FaLock } from "react-icons/fa6";
 import type { ProjectDetail, ProjectShape, TechGroup, TechGroupItem } from "./ProjectData";
 import { languageOf } from "./ProjectData";
-import { SectionLabel, VisualBadge, FlowDiagram, TechBadge, SidebarKeyValue } from "./ProjectUI";
+import { FlowDiagram, SectionLabel, SidebarKeyValue, TechBadge } from "./ProjectUI";
 
-/* ─── Live Preview iframe component ─── */
 function LivePreview({ url, projectName }: { url: string; projectName: string }) {
   const [loading, setLoading] = useState(true);
   const [errored, setErrored] = useState(false);
-
-  // Clean display URL (strip protocol)
   const displayUrl = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
   if (errored) {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="w-full overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)]"
       >
         <div className="flex items-center justify-center px-4 py-12 sm:py-16">
-          <div className="text-center space-y-2">
-            <div className="text-[var(--text-disabled)] text-xs font-bold uppercase tracking-wider">
+          <div className="space-y-2 text-center">
+            <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-disabled)]">
               Preview Unavailable
             </div>
             <a
@@ -43,52 +40,47 @@ function LivePreview({ url, projectName }: { url: string; projectName: string })
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full border border-[var(--border-default)] bg-[var(--bg-muted)] overflow-hidden shadow-2xl"
+      className="w-full overflow-hidden border border-[var(--border-default)] bg-[var(--bg-muted)] shadow-2xl"
     >
-      {/* Browser-like URL bar */}
-      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
-        {/* Traffic light dots */}
-        <div className="flex items-center gap-1.5 mr-1">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-          <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
-          <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+      <div className="flex items-center gap-2 border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5">
+        <div className="mr-1 flex items-center gap-1.5">
+          <div className="h-2.5 w-2.5 rounded-full bg-[var(--error)]" />
+          <div className="h-2.5 w-2.5 rounded-full bg-[var(--warning)]" />
+          <div className="h-2.5 w-2.5 rounded-full bg-[var(--success)]" />
         </div>
-        {/* URL display */}
-        <div className="flex-1 flex items-center gap-1.5 px-2.5 py-1 bg-[var(--bg-muted)] border border-[var(--border-default)] text-[10px] text-[var(--text-muted)] font-mono tracking-wide truncate">
+        <div className="flex flex-1 items-center gap-1.5 truncate border border-[var(--border-default)] bg-[var(--bg-muted)] px-2.5 py-1 font-mono text-[10px] tracking-wide text-[var(--text-muted)]">
           <FaLock size={10} className="shrink-0 opacity-50" />
           <span className="truncate font-semibold">{displayUrl}</span>
         </div>
-        {/* Open in new tab */}
         <a
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="shrink-0 p-1 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+          className="shrink-0 p-1 text-[var(--text-muted)] transition-colors hover:text-[var(--accent)]"
           title="Open in new tab"
         >
           <FaArrowUpRightFromSquare size={12} />
         </a>
       </div>
 
-      {/* iframe container */}
       <div className="relative aspect-[16/10] w-full min-h-[220px] sm:min-h-[320px] lg:min-h-[400px] xl:min-h-[480px]">
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg-muted)] z-10">
+        {loading ? (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--bg-muted)]">
             <div className="flex flex-col items-center gap-3">
-              <div className="h-6 w-6 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
-              <span className="text-[10px] font-bold text-[var(--text-disabled)] tracking-widest uppercase">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-disabled)]">
                 Synchronizing {projectName}
               </span>
             </div>
           </div>
-        )}
+        ) : null}
         <iframe
           src={url}
           title={`Live preview of ${projectName}`}
-          className="w-full h-full border-0"
+          className="h-full w-full border-0"
           sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
           loading="lazy"
           onLoad={() => setLoading(false)}
@@ -99,7 +91,6 @@ function LivePreview({ url, projectName }: { url: string; projectName: string })
   );
 }
 
-/* ─── Single gallery image with loading/error state ─── */
 function GalleryImage({
   src,
   alt,
@@ -114,7 +105,6 @@ function GalleryImage({
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
-  // Proxy GitHub-hosted images to bypass CORS
   const resolvedSrc = useMemo(() => {
     try {
       const parsed = new URL(src);
@@ -125,7 +115,7 @@ function GalleryImage({
         return `/api/proxy-image?url=${encodeURIComponent(src)}`;
       }
     } catch {
-      // not a valid URL
+      return src;
     }
     return src;
   }, [src]);
@@ -136,25 +126,23 @@ function GalleryImage({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.1 }}
-      className="group/img relative flex items-center justify-center overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] p-2 transition-all duration-300 hover:border-[var(--accent-muted)] hover:shadow-xl"
+      transition={{ delay: index * 0.08 }}
+      className="group/img relative flex items-center justify-center overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] p-2 transition-all duration-300 hover:border-[var(--accent-muted)]"
     >
-      {/* Loading skeleton */}
-      {!loaded && (
+      {!loaded ? (
         <div
           className="flex min-w-full items-center justify-center"
           style={{ minHeight: total === 1 ? 220 : 180 }}
         >
           <div className="flex flex-col items-center gap-2.5">
-            <div className="h-6 w-6 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
-            <span className="text-[10px] font-bold text-[var(--text-disabled)] tracking-widest uppercase">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-disabled)]">
               Loading
             </span>
           </div>
         </div>
-      )}
+      ) : null}
 
-      {/* Image */}
       <img
         src={resolvedSrc}
         alt={alt}
@@ -162,38 +150,19 @@ function GalleryImage({
         onLoad={() => setLoaded(true)}
         onError={() => setErrored(true)}
         style={!loaded ? { position: "absolute", opacity: 0 } : undefined}
-        className={`h-auto max-h-[520px] w-full rounded-[2px] object-contain transition-all duration-700 group-hover/img:scale-[1.02] sm:max-h-[600px] ${loaded ? "opacity-100" : "opacity-0"}`}
+        className={`h-auto w-full max-h-[520px] rounded-[2px] object-contain transition-all duration-700 group-hover/img:scale-[1.02] sm:max-h-[600px] ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
       />
 
-      {/* Gradient overlay */}
-      {loaded && (
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-base)]/40 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 pointer-events-none" />
-      )}
-
-      {/* Image index badge */}
-      {loaded && total > 1 && (
-        <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-sm bg-[var(--bg-base)]/80 backdrop-blur-sm border border-[var(--border-default)]/50 text-[9px] font-bold text-[var(--text-muted)] tracking-wider uppercase opacity-0 group-hover/img:opacity-100 transition-opacity duration-300">
+      {loaded && total > 1 ? (
+        <div className="absolute right-2.5 top-2.5 rounded-sm border border-[var(--border-default)]/50 bg-[var(--bg-base)]/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover/img:opacity-100">
           {index + 1} / {total}
         </div>
-      )}
+      ) : null}
     </motion.div>
   );
 }
-
-const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0 },
-};
 
 const statusTickerItems = [
   "SYSTEM ONLINE",
@@ -203,33 +172,38 @@ const statusTickerItems = [
   "RUNTIME ACTIVE",
 ] as const;
 
-function topicOffset(index: number) {
-  return {
-    x: ((index % 4) - 1.5) * 18,
-    y: (((index * 7) % 5) - 2) * 10,
-  };
-}
-
-/* ─── Main overview component ─── */
-export function ProjectOverview({ project, detail, allProjects = [] }: { project: ProjectShape; detail: ProjectDetail; allProjects?: ProjectShape[] }) {
-  const images: string[] = detail.previewImages ?? [];
-  const liveUrl: string | null = detail.liveUrl ?? null;
+export function ProjectOverview({
+  project,
+  detail,
+  allProjects = [],
+}: {
+  project: ProjectShape;
+  detail: ProjectDetail;
+  allProjects?: ProjectShape[];
+}) {
+  const images = detail.previewImages ?? [];
+  const liveUrl = detail.liveUrl ?? null;
   const shouldReduceMotion = useReducedMotion();
   const [scanning, setScanning] = useState(!shouldReduceMotion);
+  const [problemExpanded, setProblemExpanded] = useState(false);
 
   const relatedProjects = useMemo(() => {
     if (!allProjects.length) return [];
     return allProjects
       .filter((p) => p.id !== project.id)
       .map((p) => {
-        const matchingCount = p.techStack?.filter((t) => project.techStack?.includes(t)).length || 0;
+        const matchingCount =
+          p.techStack?.filter((t) => project.techStack?.includes(t)).length || 0;
         return { project: p, matchingCount };
       })
-      .filter((x) => x.matchingCount >= 2)
+      .filter((entry) => entry.matchingCount >= 2)
       .sort((a, b) => b.matchingCount - a.matchingCount)
-      .slice(0, 3)
-      .map((x) => x.project);
+      .slice(0, 2);
   }, [allProjects, project]);
+
+  useEffect(() => {
+    setProblemExpanded(false);
+  }, [project.id]);
 
   useEffect(() => {
     if (shouldReduceMotion) {
@@ -238,9 +212,11 @@ export function ProjectOverview({ project, detail, allProjects = [] }: { project
     }
 
     setScanning(true);
-    const timeoutId = window.setTimeout(() => setScanning(false), 800);
+    const timeoutId = window.setTimeout(() => setScanning(false), 360);
     return () => window.clearTimeout(timeoutId);
   }, [project.id, shouldReduceMotion]);
+
+  const showProblemToggle = detail.problem.length > 280;
 
   return (
     <>
@@ -248,70 +224,53 @@ export function ProjectOverview({ project, detail, allProjects = [] }: { project
         {scanning ? (
           <motion.div
             key="scan"
-            className="pointer-events-none fixed inset-0 z-50"
-            initial={{ scaleY: 0, originY: 0 }}
-            animate={{ scaleY: 1 }}
-            exit={{ scaleY: 0, originY: 1 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="pointer-events-none fixed inset-x-0 top-0 z-50 h-2"
+            initial={{ y: -8, opacity: 0 }}
+            animate={{ y: "100vh", opacity: [0, 0.35, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             style={{
               background:
-                "linear-gradient(180deg, transparent, var(--accent-muted), transparent)",
-              height: "4px",
+                "linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--accent-muted) 35%, transparent) 50%, transparent 100%)",
             }}
           />
         ) : null}
       </AnimatePresence>
 
-      <div className="flex flex-col gap-8 sm:gap-10">
-        {/* ──── Priority 1: Live Website Preview ──── */}
-        {liveUrl && (
-          <section>
-            <div className="mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <SectionLabel label="Live Preview" />
-              <span className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--success)] tracking-widest uppercase">
-                <span className="led-dot h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
-                Operational
-              </span>
-            </div>
-            <LivePreview url={liveUrl} projectName={project.name} />
-          </section>
-        )}
-
-        {/* ──── Priority 2: Static Image Gallery (only when no live URL) ──── */}
-        {!liveUrl && images.length > 0 && (
-          <section>
-            <div className="mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <SectionLabel label="Project Gallery" />
-              <span className="text-[10px] font-bold text-[var(--text-disabled)] tracking-widest uppercase">
-                {images.length} {images.length === 1 ? "snapshot" : "snapshots"}
-              </span>
-            </div>
-            <div className="overflow-hidden rounded-sm">
-              <div className="mx-auto grid w-full max-w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 overflow-hidden min-h-0">
-                {images.map((url, index) => (
-                  <GalleryImage
-                    key={`${project.id}-gallery-${index}`}
-                    src={url}
-                    alt={`${project.name} snapshot ${index + 1}`}
-                    index={index}
-                    total={images.length}
-                  />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ──── Main content grid ──── */}
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-10">
-          <div className="space-y-8 sm:space-y-10">
+      <div className="flex flex-col gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-8">
+          <div className="space-y-6 sm:space-y-8">
             <section>
-              <SectionLabel label="Core Capabilities" />
-              <div className="mb-6 overflow-hidden border-y border-[var(--border-default)] py-1.5">
+              <SectionLabel label="The Problem" />
+              <p
+                className={`text-[13px] leading-relaxed text-[var(--text-secondary)] ${
+                  problemExpanded ? "" : "line-clamp-4"
+                }`}
+              >
+                {detail.problem}
+              </p>
+              {showProblemToggle ? (
+                <button
+                  type="button"
+                  onClick={() => setProblemExpanded((value) => !value)}
+                  className="mt-2 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--accent)] transition-colors hover:text-[var(--accent-hover)]"
+                >
+                  {problemExpanded ? "Show less" : "Read more"}
+                </button>
+              ) : null}
+
+              <div className="mt-4 border-l-2 border-[var(--accent)] pl-4 text-[13px] italic leading-relaxed text-[var(--text-secondary)]">
+                {detail.why}
+              </div>
+            </section>
+
+            <section>
+              <SectionLabel label="Core Features" />
+              <div className="mb-4 overflow-hidden border-y border-[var(--border-default)] py-1.5">
                 <motion.div
                   animate={shouldReduceMotion ? { x: 0 } : { x: ["0%", "-50%"] }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  className="flex gap-8 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--accent)] opacity-60"
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  className="flex gap-8 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--accent)] opacity-65"
                 >
                   {Array.from({ length: 4 }, (_, groupIndex) =>
                     statusTickerItems.map((status, index) => (
@@ -319,181 +278,158 @@ export function ProjectOverview({ project, detail, allProjects = [] }: { project
                         key={`${groupIndex}-${status}-${index}`}
                         className="flex items-center gap-3"
                       >
-                        <span className="led-dot h-1 w-1 rounded-full bg-[var(--accent)]" />
+                        <span className="h-1 w-1 rounded-full bg-[var(--accent)]" />
                         {status}
                       </span>
                     )),
                   ).flat()}
                 </motion.div>
               </div>
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                animate="show"
-                className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3"
-                style={{ perspective: "800px" }}
-              >
+              <ul className="space-y-2">
                 {detail.features.slice(0, 6).map((feature: string, index: number) => (
-                  <motion.div
+                  <motion.li
                     key={`${project.id}-feature-${index}`}
-                    initial={
-                      shouldReduceMotion
-                        ? false
-                        : { opacity: 0, y: 20, rotateX: -15 }
-                    }
-                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 220,
-                      damping: 20,
-                      delay: index * 0.06,
-                    }}
-                    whileHover={shouldReduceMotion ? undefined : { y: -4, rotateX: 4 }}
-                    style={{ transformStyle: "preserve-3d" }}
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05, duration: 0.25 }}
+                    className="flex items-start gap-2"
                   >
-                    <VisualBadge
-                      label={feature.split(".")[0]}
-                      icon={<FaCheck size={12} />}
-                    />
+                    <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
+                    <span className="text-[12px] leading-relaxed text-[var(--text-secondary)]">
+                      {feature}
+                    </span>
+                  </motion.li>
+                ))}
+              </ul>
+            </section>
+
+            <section>
+              <SectionLabel label="Stack" />
+              <div className="space-y-4">
+                {detail.techGroups.map((group: TechGroup, groupIndex: number) => (
+                  <motion.div
+                    key={`${project.id}-group-${group.label}-${groupIndex}`}
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: groupIndex * 0.04 }}
+                  >
+                    <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                      {group.label}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {group.items.map((item: TechGroupItem, index: number) => (
+                        <TechBadge
+                          key={`${project.id}-tech-${group.label}-${index}`}
+                          name={item.n}
+                          size="sm"
+                        />
+                      ))}
+                    </div>
                   </motion.div>
                 ))}
-              </motion.div>
+              </div>
             </section>
 
             <section>
               <SectionLabel label="System Flow" />
-              <motion.div
-                initial={shouldReduceMotion ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <FlowDiagram project={project} />
-              </motion.div>
+              <FlowDiagram project={project} />
+              <p className="mt-2 text-[11px] font-mono leading-relaxed text-[var(--text-muted)]">
+                {detail.highLevel}
+              </p>
             </section>
 
             <section>
-              <SectionLabel label="Engine & Stack" />
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                animate="show"
-                className="mt-4 flex flex-wrap gap-3"
-              >
-                {detail.techGroups
-                  .flatMap((group: TechGroup) => group.items)
-                  .map((item: TechGroupItem, iIndex: number) => (
-                    <motion.div key={`${project.id}-tech-${iIndex}`} variants={itemVariants}>
-                      <TechBadge name={item.n} />
-                    </motion.div>
+              <SectionLabel label={liveUrl ? "Live Preview" : images.length > 0 ? "Gallery" : "Preview"} />
+              {liveUrl ? (
+                <LivePreview url={liveUrl} projectName={project.name} />
+              ) : images.length > 0 ? (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+                  {images.slice(0, 3).map((url, index) => (
+                    <GalleryImage
+                      key={`${project.id}-gallery-${index}`}
+                      src={url}
+                      alt={`${project.name} snapshot ${index + 1}`}
+                      index={index}
+                      total={Math.min(images.length, 3)}
+                    />
                   ))}
-              </motion.div>
+                </div>
+              ) : (
+                <div className="rounded-sm border border-dashed border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 text-[12px] text-[var(--text-muted)]">
+                  No preview available.
+                  <a
+                    href={project.links.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-1 font-semibold text-[var(--accent)] hover:text-[var(--accent-hover)]"
+                  >
+                    View repository
+                  </a>
+                </div>
+              )}
             </section>
           </div>
 
-          <div className="space-y-6 sm:space-y-8">
-            <motion.aside
-              initial={shouldReduceMotion ? false : { opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 shadow-sm sm:p-6"
-            >
+          <div className="space-y-6">
+            <aside className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4">
               <SectionLabel label="Specifications" />
-              <div className="mt-5 space-y-4">
+              <div className="mt-3 space-y-3">
                 {[
                   ["Category", detail.category],
                   ["Engine", detail.language],
                   ["Release", detail.year],
                   ["Backend", detail.backend.split(".")[0]],
-                  ["Storage", detail.storage.split(".")[0]],
                 ].map(([label, value], index) => (
                   <SidebarKeyValue
                     key={`${label}-${value}`}
                     label={label}
                     value={value}
-                    delay={index * 120}
+                    delay={index * 80}
                   />
                 ))}
               </div>
-            </motion.aside>
+            </aside>
 
-            <aside className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 shadow-sm sm:p-6">
-              <SectionLabel label="Topic Graph" />
-              <div className="relative mt-4 flex flex-wrap gap-2.5 sm:gap-3">
-                {detail.topics.slice(0, 12).map((topic: string, index: number) => {
-                  const offset = topicOffset(index);
-
-                  return (
-                    <motion.div
-                      key={`${project.id}-topic-${index}`}
-                      initial={
-                        shouldReduceMotion
-                          ? false
-                          : {
-                              opacity: 0,
-                              x: offset.x,
-                              y: offset.y,
-                              scale: 0.3,
-                            }
-                      }
-                      animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 220,
-                        damping: 18,
-                        delay: index * 0.04,
-                      }}
-                      whileHover={shouldReduceMotion ? undefined : { scale: 1.1 }}
-                      className="group/topic relative"
-                      style={
-                        {
-                          "--delay": `${index * 40}ms`,
-                          transitionDelay: "var(--delay)",
-                        } as CSSProperties
-                      }
-                    >
-                      <span className="absolute right-full top-1/2 h-px w-4 -translate-y-1/2 bg-gradient-to-r from-transparent to-[var(--accent-muted)] opacity-0 transition-opacity duration-300 group-hover/topic:opacity-100" />
-                      <span className="absolute left-full top-1/2 h-px w-4 -translate-y-1/2 bg-gradient-to-r from-[var(--accent-muted)] to-transparent opacity-0 transition-opacity duration-300 group-hover/topic:opacity-100" />
-                      <span
-                        className={`inline-flex cursor-default items-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-1.5 text-[10px] font-bold text-[var(--text-muted)] transition-all group-hover/topic:border-[var(--accent)] group-hover/topic:text-[var(--accent)] ${
-                          index % 3 === 0 ? "float-card" : ""
-                        }`}
-                      >
-                        #{topic}
-                      </span>
-                    </motion.div>
-                  );
-                })}
+            <aside className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4">
+              <SectionLabel label="Topic Tags" />
+              <div className="mt-3 flex flex-wrap gap-2">
+                {detail.topics.slice(0, 12).map((topic: string, index: number) => (
+                  <motion.span
+                    key={`${project.id}-topic-${index}`}
+                    whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
+                    className="inline-flex cursor-default items-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-1 text-[9px] font-bold text-[var(--text-muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                  >
+                    #{topic}
+                  </motion.span>
+                ))}
               </div>
             </aside>
 
-            {relatedProjects.length > 0 && (
-              <motion.aside
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 shadow-sm sm:p-6"
-              >
+            {relatedProjects.length > 0 ? (
+              <aside className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4">
                 <SectionLabel label="Related Projects" />
-                <div className="mt-4 flex flex-col gap-3">
-                  {relatedProjects.map((rp) => (
+                <div className="mt-3 space-y-2">
+                  {relatedProjects.map(({ project: related, matchingCount }) => (
                     <div
-                      key={rp.id}
-                      className="flex flex-col gap-1.5 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] p-3 hover:border-[var(--accent-muted)] transition-colors"
+                      key={related.id}
+                      className="flex items-center justify-between rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-2"
                     >
-                      <div className="text-[11px] font-bold text-[var(--text-primary)] tracking-wide">{rp.name}</div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono text-[var(--accent)] bg-[var(--accent-subtle)] px-1.5 py-0.5 rounded">
-                          {rp.techStack?.[0] || languageOf(rp)}
-                        </span>
-                        <span className="text-[9px] text-[var(--text-disabled)] uppercase tracking-wider">
-                          +{Math.max((rp.techStack?.length || 1) - 1, 0)} deps
+                      <div className="min-w-0">
+                        <div className="truncate text-[11px] font-semibold text-[var(--text-primary)]">
+                          {related.name}
+                        </div>
+                        <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                          {matchingCount} shared tech
                         </span>
                       </div>
+                      <span className="rounded-full border border-[var(--border-default)] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--text-secondary)]">
+                        {languageOf(related)}
+                      </span>
                     </div>
                   ))}
                 </div>
-              </motion.aside>
-            )}
+              </aside>
+            ) : null}
           </div>
         </div>
       </div>

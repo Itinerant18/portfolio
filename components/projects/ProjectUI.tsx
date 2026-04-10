@@ -15,28 +15,48 @@ const hexagonClipPath =
   "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
 
 export function SectionLabel({ label }: { label: string }) {
-  const shouldReduceMotion = useReducedMotion();
+  return (
+    <div className="mb-3 flex items-center gap-2">
+      <span className="h-px w-5 bg-[var(--border-active)]" />
+      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+        {label}
+      </span>
+      <div className="h-px flex-1 bg-[var(--border-default)]" />
+    </div>
+  );
+}
+
+export function CategoryBar({
+  label,
+  count,
+  maxCount,
+  color,
+}: {
+  label: string;
+  count: number;
+  maxCount: number;
+  color: string;
+}) {
+  const width = maxCount > 0 ? Math.max((count / maxCount) * 100, 8) : 0;
 
   return (
-    <div className="mb-3 flex items-center gap-3">
-      <div className="flex w-full items-center gap-2">
-        <span className="h-px w-6 bg-gradient-to-r from-[var(--accent)] to-transparent" />
-        <span
-          className="gradient-text text-[10px] font-bold uppercase tracking-[0.2em]"
-          data-text={label}
-        >
-          {label}
-        </span>
-        <div className="relative h-px flex-1 overflow-hidden bg-gradient-to-r from-[var(--accent-muted)] to-transparent">
-          {!shouldReduceMotion ? (
-            <motion.span
-              className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent"
-              animate={{ x: ["-100%", "320%"] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "linear" }}
-            />
-          ) : null}
-        </div>
+    <div className="grid grid-cols-[84px_minmax(0,1fr)_auto] items-center gap-3">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-secondary)]">
+        {label}
+      </span>
+      <div className="h-1 rounded-full bg-[var(--bg-muted)]">
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: `${width}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="h-full rounded-full"
+          style={{ backgroundColor: color }}
+        />
       </div>
+      <span className="rounded-full border border-[var(--border-default)] px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.08em] text-[var(--text-muted)]">
+        {count}
+      </span>
     </div>
   );
 }
@@ -238,18 +258,11 @@ export function FlowNode({ label, icon, isLast, protocol }: { label: string; ico
           <div className="relative flex w-8 items-center sm:w-12">
             <div className="h-px w-full border-t border-dashed border-[var(--accent-muted)]" />
             {!shouldReduceMotion ? (
-              <>
-                <motion.span
-                  className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--accent)]"
-                  animate={{ x: [0, 30, 42], opacity: [0, 1, 1, 0] }}
-                  transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
-                />
-                <motion.span
-                  className="absolute left-0 top-1/2 h-1 w-1 -translate-y-1/2 rounded-full bg-[var(--info)]"
-                  animate={{ x: [-4, 24, 36], opacity: [0, 0.8, 0] }}
-                  transition={{ duration: 1.2, repeat: Infinity, ease: "linear", delay: 0.35 }}
-                />
-              </>
+              <motion.span
+                className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--accent)]"
+                animate={{ x: [0, 30, 42], opacity: [0, 1, 1, 0] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+              />
             ) : null}
           </div>
         </div>
@@ -360,14 +373,15 @@ export function TechIcon({ name, size = 20 }: { name: string; size?: number }) {
   );
 }
 
-export function TechBadge({ name }: { name: string }) {
+export function TechBadge({ name, size = "md" }: { name: string; size?: "sm" | "md" }) {
   const shouldReduceMotion = useReducedMotion();
+  const compact = size === "sm";
 
   return (
     <motion.div
-      whileHover={shouldReduceMotion ? undefined : { y: -6, scale: 1.12 }}
+      whileHover={shouldReduceMotion ? undefined : { y: compact ? -2 : -6, scale: 1.08 }}
       whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-      className="group relative flex h-11 w-11 items-center justify-center sm:h-12 sm:w-12"
+      className={`group relative flex items-center justify-center ${compact ? "h-9 w-9" : "h-11 w-11 sm:h-12 sm:w-12"}`}
     >
       <div
         className="absolute inset-[-4px] rounded-full border border-[var(--accent-muted)] opacity-0 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
@@ -375,10 +389,14 @@ export function TechBadge({ name }: { name: string }) {
           animation: shouldReduceMotion ? undefined : "spin-slow 4s linear infinite",
         }}
       />
-      <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-sm transition-all duration-300 group-hover:border-[var(--accent)] sm:h-10 sm:w-10">
-        <TechIcon name={name} size={22} />
+      <div
+        className={`flex items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-sm transition-all duration-300 group-hover:border-[var(--accent)] ${compact ? "h-8 w-8" : "h-9 w-9 sm:h-10 sm:w-10"}`}
+      >
+        <TechIcon name={name} size={compact ? 16 : 22} />
       </div>
-      <div className="pointer-events-none absolute -top-10 left-1/2 z-50 hidden -translate-x-1/2 whitespace-nowrap sm:block">
+      <div
+        className={`pointer-events-none absolute left-1/2 z-50 hidden -translate-x-1/2 whitespace-nowrap sm:block ${compact ? "-top-9" : "-top-10"}`}
+      >
         <div className="relative rounded-sm border border-[var(--accent-muted)] bg-[var(--bg-overlay)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[var(--accent)] opacity-0 transition-all duration-200 group-hover:opacity-100">
           <span className="absolute left-0 top-0 h-1 w-1 border-l border-t border-[var(--accent)]" />
           <span className="absolute right-0 top-0 h-1 w-1 border-r border-t border-[var(--accent)]" />
