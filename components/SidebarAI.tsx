@@ -26,6 +26,7 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
   const clearChat = useIDEStore((state) => state.clearChat);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
+  const [flash, setFlash] = useState(false);
   const suggestions = [
     "Summarize the strongest projects",
     "What stack does Aniket use most?",
@@ -50,9 +51,13 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
   }, []);
 
   function handleNewChat() {
-    clearChat();
-    setInput("");
-    setPending(false);
+    setFlash(true);
+    setTimeout(() => {
+      clearChat();
+      setInput("");
+      setPending(false);
+      setFlash(false);
+    }, 300);
   }
 
   function handleSend() {
@@ -97,7 +102,11 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
       <div ref={scrollRef} className="flex-1 overflow-y-auto ide-scrollbar px-2 py-3 flex flex-col gap-4">
         
         {/* Chat History */}
-        <div className="flex flex-col gap-4">
+        <motion.div 
+          animate={{ opacity: flash ? [1, 0, 1] : 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col gap-4"
+        >
           {chatMessages.length === 1 && !pending ? (
             <div className="flex flex-col gap-3">
               <div className="text-[12px] text-[var(--text-muted)]">
@@ -120,34 +129,52 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
             </div>
           ) : null}
 
-          {chatMessages.map((message) => (
-            <div key={message.id} className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <div className={`h-1.5 w-1.5 rounded-full ${message.role === 'assistant' ? 'bg-[var(--accent)]' : 'bg-[var(--info)]'}`} />
-                <span className="text-[11px] font-medium uppercase tracking-widest text-[var(--text-muted)]">
-                  {message.role === "assistant" ? "Assistant" : "You"}
-                </span>
+          {chatMessages.map((message) => {
+            const isAsst = message.role === "assistant";
+            return (
+              <div key={message.id} className={`flex flex-col gap-2 ${isAsst ? "items-start" : "items-end"}`}>
+                {isAsst ? (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center p-1 rounded-sm bg-[var(--accent)]/10 text-[var(--accent)]">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"/></svg>
+                    </div>
+                    <span className="text-[11px] font-medium uppercase tracking-widest text-[var(--text-muted)]">Assistant</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-medium uppercase tracking-widest text-[var(--text-muted)]">You</span>
+                    <div className="flex items-center justify-center p-1 rounded-sm bg-[var(--info)]/10 text-[var(--info)]">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                    </div>
+                  </div>
+                )}
+                <div className={`text-[13px] leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap p-3 ${
+                  isAsst 
+                    ? "rounded-r-md rounded-bl-md border-l-2 border-[var(--accent)] bg-[var(--accent)]/[0.05]" 
+                    : "rounded-l-md rounded-br-md bg-[var(--bg-elevated)] border border-[var(--border-default)]"
+                }`}>
+                  {message.content}
+                </div>
               </div>
-              <div className="text-[13px] leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap pl-3.5 border-l border-[var(--border-default)] ml-0.5">
-                {message.content}
-              </div>
-            </div>
-          ))}
+            );
+          })}
           
           {pending && (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 items-start">
               <div className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+                <div className="flex items-center justify-center p-1 rounded-sm bg-[var(--accent)]/10 text-[var(--accent)] animate-pulse">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"/></svg>
+                </div>
                 <span className="text-[11px] font-medium uppercase tracking-widest text-[var(--text-muted)]">Assistant</span>
               </div>
-              <div className="flex items-center gap-1.5 pl-3.5">
+              <div className="flex items-center gap-1.5 p-3 rounded-r-md rounded-bl-md border-l-2 border-[var(--accent)] bg-[var(--accent)]/[0.05]">
                  <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                  <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                  <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
 
       {/* Input Section */}

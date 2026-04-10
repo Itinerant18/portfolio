@@ -182,7 +182,7 @@ export function FlowNode({ label, icon, isLast, protocol }: { label: string; ico
           initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.5, rotate: -10 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="relative flex h-11 w-11 items-center justify-center transition-shadow duration-300 group-hover:shadow-[var(--glow-accent)] sm:h-12 sm:w-12"
+          className="relative flex h-11 w-11 items-center justify-center transition-shadow duration-300 sm:h-12 sm:w-12"
         >
           <div
             className="absolute inset-0 border border-[var(--accent-muted)] bg-[linear-gradient(135deg,var(--bg-elevated),var(--bg-overlay))]"
@@ -210,7 +210,7 @@ export function FlowNode({ label, icon, isLast, protocol }: { label: string; ico
                 "radial-gradient(circle at center, var(--accent-muted), transparent 70%)",
             }}
           />
-          <span className="relative z-10 text-[var(--accent)] drop-shadow-[0_0_10px_var(--accent)]">
+          <span className="relative z-10 text-[var(--accent)]">
             <IconMapper name={icon} size={18} />
           </span>
         </motion.div>
@@ -240,12 +240,12 @@ export function FlowNode({ label, icon, isLast, protocol }: { label: string; ico
             {!shouldReduceMotion ? (
               <>
                 <motion.span
-                  className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--accent)] shadow-[var(--glow-accent)]"
+                  className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--accent)]"
                   animate={{ x: [0, 30, 42], opacity: [0, 1, 1, 0] }}
                   transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
                 />
                 <motion.span
-                  className="absolute left-0 top-1/2 h-1 w-1 -translate-y-1/2 rounded-full bg-[var(--info)] shadow-[var(--glow-info)]"
+                  className="absolute left-0 top-1/2 h-1 w-1 -translate-y-1/2 rounded-full bg-[var(--info)]"
                   animate={{ x: [-4, 24, 36], opacity: [0, 0.8, 0] }}
                   transition={{ duration: 1.2, repeat: Infinity, ease: "linear", delay: 0.35 }}
                 />
@@ -375,7 +375,7 @@ export function TechBadge({ name }: { name: string }) {
           animation: shouldReduceMotion ? undefined : "spin-slow 4s linear infinite",
         }}
       />
-      <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-sm transition-all duration-300 group-hover:border-[var(--accent)] group-hover:shadow-[var(--glow-accent)] sm:h-10 sm:w-10">
+      <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-sm transition-all duration-300 group-hover:border-[var(--accent)] sm:h-10 sm:w-10">
         <TechIcon name={name} size={22} />
       </div>
       <div className="pointer-events-none absolute -top-10 left-1/2 z-50 hidden -translate-x-1/2 whitespace-nowrap sm:block">

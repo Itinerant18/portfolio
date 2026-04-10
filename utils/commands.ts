@@ -2,7 +2,9 @@ import {
   contactDetails,
   portfolioProfile,
   portfolioProjects,
+  skillMatrix,
 } from "@/data/content";
+import type { ThemeMode } from "@/store/useIDEStore";
 import { portfolioFiles, type IDEFile } from "@/data/files";
 
 export interface CommandDescriptor {
@@ -23,6 +25,7 @@ export interface CommandContext {
 
 export interface TerminalContext {
   openFile: (path: string) => void;
+  setTheme?: (theme: ThemeMode) => void;
 }
 
 export interface TerminalResult {
@@ -153,6 +156,10 @@ export function executeTerminalCommand(
         "projects           list featured projects",
         "clear              clear terminal output",
         "open <filename>    open a file in the editor",
+        "theme <name>       switch editor theme",
+        "stats              show portfolio statistics",
+        "whoami             show current user identity",
+        "skills             list technical skills",
       ],
     };
   }
@@ -173,6 +180,55 @@ export function executeTerminalCommand(
         (project) => `${project.name} (${project.year}) ${project.summary}`,
       ),
     };
+  }
+
+  if (normalized === "whoami") {
+    return { lines: [`${portfolioProfile.name} - ${portfolioProfile.role}`] };
+  }
+
+  if (normalized === "contact") {
+    return { lines: [`Email: ${contactDetails.email}`, `GitHub: ${contactDetails.github}`, `LinkedIn: ${contactDetails.linkedin}`] };
+  }
+
+  if (normalized === "skills") {
+    return {
+      lines: [
+        `Languages: ${skillMatrix.languages.join(", ")}`,
+        `Frontend: ${skillMatrix.frontend.join(", ")}`,
+        `Backend: ${skillMatrix.backend.join(", ")}`,
+        `AI & Data: ${skillMatrix.aiAndData.join(", ")}`,
+      ]
+    };
+  }
+
+  if (normalized === "stats") {
+    const techCount = portfolioProjects.reduce((acc, p) => acc + p.stack.length, 0);
+    return {
+      lines: [
+        "[Success] System stats fetched successfully:",
+        `Projects count: ${portfolioProjects.length}`,
+        `Tech count: ${techCount}`,
+        `Current Year: ${new Date().getFullYear()}`,
+      ]
+    };
+  }
+
+  if (normalized === "theme") {
+    const requested = args[0]?.toLowerCase();
+    const validThemes = ["aniket-dark", "synthwave", "light", "dracula", "rose-pine", "tokyo-night", "catppuccin", "nord", "gruvbox"];
+    
+    if (!requested) {
+      return { lines: ["Usage: theme <name>", `Available: ${validThemes.join(", ")}`] };
+    }
+    
+    if (!validThemes.includes(requested)) {
+      return { lines: [`Error: Unknown theme '${requested}'`] };
+    }
+    
+    if (context.setTheme) {
+      context.setTheme(requested as any);
+      return { lines: [`[Success] Theme changed to ${requested}`] };
+    }
   }
 
   if (normalized === "open") {

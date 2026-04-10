@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion, Variants } from "framer-motion";
 import { FaArrowUpRightFromSquare, FaCheck, FaLock } from "react-icons/fa6";
 import type { ProjectDetail, ProjectShape, TechGroup, TechGroupItem } from "./ProjectData";
+import { languageOf } from "./ProjectData";
 import { SectionLabel, VisualBadge, FlowDiagram, TechBadge, SidebarKeyValue } from "./ProjectUI";
 
 /* ─── Live Preview iframe component ─── */
@@ -210,11 +211,25 @@ function topicOffset(index: number) {
 }
 
 /* ─── Main overview component ─── */
-export function ProjectOverview({ project, detail }: { project: ProjectShape; detail: ProjectDetail }) {
+export function ProjectOverview({ project, detail, allProjects = [] }: { project: ProjectShape; detail: ProjectDetail; allProjects?: ProjectShape[] }) {
   const images: string[] = detail.previewImages ?? [];
   const liveUrl: string | null = detail.liveUrl ?? null;
   const shouldReduceMotion = useReducedMotion();
   const [scanning, setScanning] = useState(!shouldReduceMotion);
+
+  const relatedProjects = useMemo(() => {
+    if (!allProjects.length) return [];
+    return allProjects
+      .filter((p) => p.id !== project.id)
+      .map((p) => {
+        const matchingCount = p.techStack?.filter((t) => project.techStack?.includes(t)).length || 0;
+        return { project: p, matchingCount };
+      })
+      .filter((x) => x.matchingCount >= 2)
+      .sort((a, b) => b.matchingCount - a.matchingCount)
+      .slice(0, 3)
+      .map((x) => x.project);
+  }, [allProjects, project]);
 
   useEffect(() => {
     if (shouldReduceMotion) {
@@ -272,7 +287,7 @@ export function ProjectOverview({ project, detail }: { project: ProjectShape; de
               </span>
             </div>
             <div className="overflow-hidden rounded-sm">
-              <div className="mx-auto grid w-full max-w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+              <div className="mx-auto grid w-full max-w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 overflow-hidden min-h-0">
                 {images.map((url, index) => (
                   <GalleryImage
                     key={`${project.id}-gallery-${index}`}
@@ -439,7 +454,7 @@ export function ProjectOverview({ project, detail }: { project: ProjectShape; de
                       <span className="absolute right-full top-1/2 h-px w-4 -translate-y-1/2 bg-gradient-to-r from-transparent to-[var(--accent-muted)] opacity-0 transition-opacity duration-300 group-hover/topic:opacity-100" />
                       <span className="absolute left-full top-1/2 h-px w-4 -translate-y-1/2 bg-gradient-to-r from-[var(--accent-muted)] to-transparent opacity-0 transition-opacity duration-300 group-hover/topic:opacity-100" />
                       <span
-                        className={`inline-flex cursor-default items-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-1.5 text-[10px] font-bold text-[var(--text-muted)] transition-all group-hover/topic:border-[var(--accent)] group-hover/topic:text-[var(--accent)] group-hover/topic:shadow-[var(--glow-accent)] ${
+                        className={`inline-flex cursor-default items-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-1.5 text-[10px] font-bold text-[var(--text-muted)] transition-all group-hover/topic:border-[var(--accent)] group-hover/topic:text-[var(--accent)] ${
                           index % 3 === 0 ? "float-card" : ""
                         }`}
                       >
@@ -450,6 +465,35 @@ export function ProjectOverview({ project, detail }: { project: ProjectShape; de
                 })}
               </div>
             </aside>
+
+            {relatedProjects.length > 0 && (
+              <motion.aside
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 shadow-sm sm:p-6"
+              >
+                <SectionLabel label="Related Projects" />
+                <div className="mt-4 flex flex-col gap-3">
+                  {relatedProjects.map((rp) => (
+                    <div
+                      key={rp.id}
+                      className="flex flex-col gap-1.5 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] p-3 hover:border-[var(--accent-muted)] transition-colors"
+                    >
+                      <div className="text-[11px] font-bold text-[var(--text-primary)] tracking-wide">{rp.name}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono text-[var(--accent)] bg-[var(--accent-subtle)] px-1.5 py-0.5 rounded">
+                          {rp.techStack?.[0] || languageOf(rp)}
+                        </span>
+                        <span className="text-[9px] text-[var(--text-disabled)] uppercase tracking-wider">
+                          +{Math.max((rp.techStack?.length || 1) - 1, 0)} deps
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.aside>
+            )}
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 export interface IDEFile {
   name: string;
   path: string;
-  language: "css" | "tsx" | "ts" | "json";
+  language: "css" | "tsx" | "ts" | "json" | "md";
   content: string;
 }
 
@@ -238,6 +238,32 @@ export const Hero = () => {
   linkedin: "aniket-karmakar";
   phone: "7602676448";
 }`,
+  },
+  {
+    name: "README.md",
+    path: "README.md",
+    language: "md",
+    content: `# Aniket Karmakar
+
+> Systems Architect | AI/ML Engineer | Full-Stack Developer
+
+Junior Executive Engineer — R&D @ Security Engineers Pvt. Ltd.
+Kolkata, India 🇮🇳
+
+## Focus Areas
+- Enterprise RAG & LLM pipelines
+- Full-stack · Next.js + Spring Boot
+- Industrial IoT · ThingsBoard
+- AI-native product development
+
+## Currently Building
+- Dexter Tech Support AI (RAG · Sarvam-M)
+- SWatch360 Flutter mobile client
+
+## Leveling Up
+- System Design & Distributed Systems
+- Kafka · CQRS · Kubernetes
+- Multi-Agent AI · LLM Fine-tuning`,
   },
 ];
 

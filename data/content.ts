@@ -29,7 +29,7 @@ export const portfolioProfile = {
     linkedin: "linkedin.com/in/aniket-karmakar",
     email: "aniketkarmakar018@gmail.com",
     phone: "7602676448",
-    website: "cursorfolio.dev",
+    website: "aniket.site",
   },
 } as const;
 
@@ -322,13 +322,47 @@ export const starterMessages = [
   },
 ] as const;
 
+// BUG FIX #7: Added agentId parameter so agent selection actually affects the response.
 export function buildAIResponse(
   prompt: string,
   activeFileName?: string,
-  _agentId?: string,
+  agentId: "default" | "projects" | "systems" = "default",
 ) {
   const normalized = prompt.toLowerCase();
 
+  // Systems agent: architecture, tooling, DX questions
+  if (agentId === "systems") {
+    if (normalized.includes("stack") || normalized.includes("technology") || normalized.includes("tool")) {
+      const allSkills = [
+        ...skillMatrix.languages,
+        ...skillMatrix.frontend,
+        ...skillMatrix.backend,
+        ...skillMatrix.aiAndData,
+        ...skillMatrix.tooling,
+      ];
+      return `Systems view: ${allSkills.join(", ")}. The architecture philosophy is thin server + rich client, with typed APIs at the boundary.`;
+    }
+    if (normalized.includes("ai") || normalized.includes("model") || normalized.includes("llm")) {
+      return `AI tooling stack: ${skillMatrix.aiAndData.join(", ")}. I lean toward streaming UI patterns, typed prompt systems, and RAG retrieval surfaces over black-box integrations.`;
+    }
+    return `Systems agent active. Ask about architecture decisions, DX tooling, performance patterns, or tech stack choices.`;
+  }
+
+  // Projects agent: delivery, impact, timelines
+  if (agentId === "projects") {
+    if (normalized.includes("project") || normalized.includes("ship") || normalized.includes("deliver")) {
+      return portfolioProjects
+        .map((p) => `${p.name} (${p.year}) — ${p.role}: ${p.impact[0]}`)
+        .join(" | ");
+    }
+    if (normalized.includes("impact") || normalized.includes("result") || normalized.includes("outcome")) {
+      const allImpacts = portfolioProjects.flatMap((p) => p.impact);
+      return `Key outcomes: ${allImpacts.slice(0, 3).join(" ")}`;
+    }
+    return `Projects agent active — covering FAS-Control (2025), Dexter Bot (2026), and Pookies AI Zone (2024). Ask about delivery timelines, stack choices, or impact metrics.`;
+  }
+
+  // Default agent: general portfolio questions
   if (normalized.includes("project")) {
     return `Featured work: ${portfolioProjects
       .map((project) => `${project.name} (${project.year})`)

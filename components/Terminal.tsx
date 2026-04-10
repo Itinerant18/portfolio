@@ -15,7 +15,12 @@ interface TerminalEntry {
 }
 
 const bootSequence = [
-  "> Initializing workspace...",
+  "   ╔══════════════════════════════════════╗",
+  "   ║ CURSOR IDE PORTFOLIO v4.0.0          ║",
+  "   ║ Aniket Karmakar — Bengaluru          ║",
+  "   ║ Stack: Next.js · TypeScript · AI     ║",
+  "   ╚══════════════════════════════════════╝",
+  "",
   "> Loading project registry...",
   "> GitHub sync: OK",
   "> Ready. Type 'help' for commands.",
@@ -48,6 +53,7 @@ export default function Terminal() {
   const terminalResetKey = useIDEStore((state) => state.terminalResetKey);
   const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
   const resetTerminal = useIDEStore((state) => state.resetTerminal);
+  const setTheme = useIDEStore((state) => state.setTheme);
   
   const [activeTab, setActiveTab] = useState<TabKey>("Terminal");
   const [entries, setEntries] = useState<TerminalEntry[]>(initialEntries);
@@ -83,7 +89,7 @@ export default function Terminal() {
               : entry,
           ),
         );
-      }, index * 80);
+      }, index * 60);
 
       bootTimeoutsRef.current.push(timeoutId);
     });
@@ -139,7 +145,7 @@ export default function Terminal() {
     setHistoryIndex(-1);
     setInput("");
 
-    const result = executeTerminalCommand(trimmed, { openFile });
+    const result = executeTerminalCommand(trimmed, { openFile, setTheme });
 
     if (result.clear) {
       setEntries([]);
@@ -281,15 +287,15 @@ export default function Terminal() {
               <div key={entry.id} className="mb-1 last:mb-0">
                 {entry.command ? (
                   <div className="flex items-center gap-2 leading-relaxed text-[var(--text-secondary)]">
-                    <span className="font-medium">{prompt}</span>
-                    <span className="text-[var(--text-primary)]">{entry.command}</span>
+                    <span className="font-medium text-[var(--accent)]">{prompt}</span>
+                    <span className="text-[var(--accent)]">{entry.command}</span>
                   </div>
                 ) : null}
 
                 {entry.lines.map((line, index) => (
                   <div
                     key={`${entry.id}-${index}`}
-                    className="pl-[18px] leading-relaxed text-[var(--text-muted)]"
+                    className={`pl-[18px] leading-relaxed ${line.includes("Error") || line.includes("Unknown") || line.includes("not found") ? "text-[var(--error)]" : line.includes("Success") || line.includes("OK") || line.includes("Ready") ? "text-[var(--success)]" : "text-[var(--text-muted)]"}`}
                     style={{ transitionDelay: `${index * 30}ms` }}
                   >
                     {line}

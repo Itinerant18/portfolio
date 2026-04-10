@@ -7,12 +7,15 @@ import SidebarAI from "@/components/SidebarAI";
 import Terminal from "@/components/Terminal";
 import TopBar from "@/components/TopBar";
 import StatusBar from "@/components/StatusBar";
-import ParticleField from "@/components/ui/ParticleField";
+import VantaBackground from "@/components/ui/VantaBackground";
+import LenisProvider from "@/components/ui/LenisProvider";
 import { useIDEStore } from "@/store/useIDEStore";
 import { AnimatePresence, motion } from "framer-motion";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { VscFiles, VscSearch, VscSourceControl, VscExtensions, VscSparkle, VscTerminal, VscClose } from "react-icons/vsc";
+import { FaGithub, FaLinkedin, FaEnvelope, FaInstagram, FaYoutube } from "react-icons/fa";
+import { SiLeetcode } from "react-icons/si";
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const hasHydrated = useIDEStore((state) => state.hasHydrated);
@@ -38,6 +41,25 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const toggleMode = useIDEStore((state) => state.toggleMode);
   const [isMounted, setIsMounted] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [showSocials, setShowSocials] = useState(false);
+
+  const downloadResume = () => {
+    const link = document.createElement("a");
+    link.href = "/Aniket_resume_updated.pdf";
+    link.download = "Aniket_Karmakar_Resume.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const socialLinks = [
+    { icon: FaGithub, label: "GitHub", href: "https://github.com/Itinerant18", color: "#e6edf3" },
+    { icon: FaLinkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/itinerant018", color: "#0a66c2" },
+    { icon: FaEnvelope, label: "Email", href: "mailto:itinerant018@gmail.com", color: "#ea4335" },
+    { icon: FaInstagram, label: "Instagram", href: "https://instagram.com/itinerant018", color: "#e4405f" },
+    { icon: FaYoutube, label: "YouTube", href: "https://youtube.com/@itinerant018", color: "#ff0000" },
+    { icon: SiLeetcode, label: "LeetCode", href: "https://leetcode.com/itinerant018", color: "#f89f1b" },
+  ];
   const mobileNavItems = [
     {
       key: "ai",
@@ -184,14 +206,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
     terminalOpen ? "180px" : "0px",
     "22px",
   ].join(" ");
-  const showParticleField = theme === "aniket-dark" || theme === "tokyo-night";
 
   if (!isMounted || !hasHydrated) {
     return (
       <div className="relative h-screen overflow-hidden">
-        {showParticleField ? (
-          <ParticleField className="pointer-events-none fixed inset-0 z-0 opacity-40" />
-        ) : null}
+        <VantaBackground />
         <div
           className="relative z-10 grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]"
           style={{ gridTemplateRows: "32px minmax(0, 1fr) 22px" }}
@@ -206,9 +225,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <>
-      {showParticleField ? (
-        <ParticleField className="pointer-events-none fixed inset-0 z-0 opacity-40" />
-      ) : null}
+      <LenisProvider />
+      <VantaBackground />
       <div
         className="relative z-10 grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
         style={{
@@ -288,15 +306,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   <VscSearch size={16} />
                 </button>
                 <button
-                  onClick={() => {}}
-                  title="Source Control"
-                  className="p-1 rounded-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all"
+                  onClick={() => setShowSocials(!showSocials)}
+                  title="Source Control — Social Links"
+                  className={`p-1 rounded-sm transition-all ${showSocials ? "bg-[var(--accent)]/15 text-[var(--accent)]" : "text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"}`}
                 >
                   <VscSourceControl size={16} />
                 </button>
                 <button
-                  onClick={() => {}}
-                  title="Extensions"
+                  onClick={downloadResume}
+                  title="Extensions — Download Resume"
                   className="p-1 rounded-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all"
                 >
                   <VscExtensions size={16} />
@@ -311,6 +329,29 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 </button>
               </div>
             </div>
+
+            {/* Social Links Panel — shown when Source Control is active */}
+            {showSocials && (
+              <div className="border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-3 shrink-0">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)] mb-2.5 px-0.5">
+                  Connect
+                </div>
+                <div className="flex flex-col gap-1">
+                  {socialLinks.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2.5 rounded-sm px-2 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+                    >
+                      <link.icon size={14} style={{ color: link.color }} />
+                      <span>{link.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* File Explorer */}
             <div className="flex-1 min-h-0 overflow-auto">
               <FileExplorer />

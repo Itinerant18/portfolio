@@ -6,12 +6,14 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 export type ThemeMode =
   | "aniket-dark"
+  | "synthwave"
+  | "dracula"
+  | "light"
   | "rose-pine"
   | "tokyo-night"
   | "catppuccin"
   | "nord"
-  | "gruvbox"
-  | "light";
+  | "gruvbox";
 export type PaletteMode = "commands" | "files";
 export type IDEMode = "editor" | "agent";
 
@@ -70,6 +72,8 @@ interface IDEState {
 
 const themeOrder: ThemeMode[] = [
   "aniket-dark",
+  "synthwave",
+  "dracula",
   "light",
   "rose-pine",
   "tokyo-night",
@@ -177,13 +181,19 @@ export const useIDEStore = create<IDEState>()(
         })),
       toggleTheme: () =>
         set((state) => {
-          const currentIndex = themeOrder.indexOf(state.theme);
-          const nextIndex =
-            currentIndex >= 0 ? (currentIndex + 1) % themeOrder.length : 0;
-
-          return {
-            theme: themeOrder[nextIndex],
-          };
+          const THEME_CYCLE: ThemeMode[] = [
+            "aniket-dark",
+            "synthwave",
+            "dracula",
+            "light",
+            "rose-pine",
+            "tokyo-night",
+            "catppuccin",
+            "nord",
+            "gruvbox",
+          ];
+          const idx = THEME_CYCLE.indexOf(state.theme);
+          return { theme: THEME_CYCLE[(idx + 1) % THEME_CYCLE.length] };
         }),
       setTheme: (theme) => set({ theme }),
       toggleSettings: () => set((state) => ({ settingsOpen: !state.settingsOpen })),
@@ -248,3 +258,4 @@ export const useIDEStore = create<IDEState>()(
     },
   ),
 );
+

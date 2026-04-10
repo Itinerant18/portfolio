@@ -23,7 +23,20 @@ import {
 import { ProjectOverview } from "./projects/ProjectOverview";
 import { ProjectArchitecture } from "./projects/ProjectArchitecture";
 import { ProjectChangelog } from "./projects/ProjectChangelog";
+import { ProjectReadme } from "./projects/ProjectReadme";
+import { ProjectInsights } from "./projects/ProjectInsights";
+import { FiEye, FiBook, FiCpu, FiActivity, FiLayers, FiClock, FiPlay } from "react-icons/fi";
 import { VscRepo, VscLiveShare, VscCode, VscProject } from "react-icons/vsc";
+import { calcHealth } from "@/utils/projectHealth";
+
+const TABS: { key: TabKey; label: string; icon: any }[] = [
+  { key: "overview", label: "Overview", icon: FiEye },
+  { key: "readme", label: "README", icon: FiBook },
+  { key: "architecture", label: "Arch", icon: FiCpu },
+  { key: "insights", label: "Insights", icon: FiActivity },
+  { key: "radar", label: "Stack", icon: FiLayers },
+  { key: "changelog", label: "Changelog", icon: FiClock },
+];
 
 function openExternal(url: string) {
   window.open(url, "_blank", "noopener,noreferrer");
@@ -226,6 +239,7 @@ export default function ProjectsTab() {
           {filteredProjects.map((project, index) => {
             const active = project.id === selectedProjectId;
             const lang = languageOf(project);
+            const health = calcHealth(project);
 
             return (
               <motion.button
@@ -247,7 +261,7 @@ export default function ProjectsTab() {
                 {active && (
                   <motion.span 
                     layoutId="active-indicator"
-                    className="absolute left-0 top-0 h-full w-[2px] bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]" 
+                    className="absolute left-0 top-0 h-full w-[2px] bg-[var(--accent)]" 
                   />
                 )}
                 <div
@@ -257,8 +271,14 @@ export default function ProjectsTab() {
                   {getInitials(project.name)}
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate text-[12.5px] font-bold text-[var(--text-primary)]">
-                    {project.name}
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <div className="truncate text-[12.5px] font-bold text-[var(--text-primary)]">
+                      {project.name}
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1 px-1.5 py-0.5 rounded-full border text-[8px] font-bold uppercase tracking-widest" style={{ borderColor: health.color, color: health.color }}>
+                      <div className="h-1 w-1 rounded-full led-dot" style={{ background: health.color }} />
+                      {health.label}
+                    </div>
                   </div>
                   <div className="truncate text-[10.5px] font-medium text-[var(--text-muted)]">
                     {project.shortDescription || "No description provided."}
@@ -309,18 +329,18 @@ export default function ProjectsTab() {
                   {filteredProjects.map((project) => {
                     const active = project.id === selectedProjectId;
                     const projectLanguage = languageOf(project);
+                    const health = calcHealth(project);
 
                     return (
-                      <button
+                      <div
                         key={`mobile-${project.id}`}
-                        type="button"
                         onClick={() => {
                           setSelectedProjectId(project.id);
                           setActiveTab("overview");
                         }}
-                        className={`w-[240px] shrink-0 rounded-sm border px-4 py-3 text-left transition-all sm:w-[280px] ${
+                        className={`w-[240px] shrink-0 cursor-pointer rounded-sm border px-4 py-3 text-left transition-all sm:w-[280px] ${
                           active
-                            ? "border-[var(--accent)] bg-[var(--bg-muted)] shadow-[var(--glow-accent)]"
+                            ? "border-[var(--accent)] bg-[var(--bg-muted)]"
                             : "border-[var(--border-default)] bg-[var(--bg-base)] hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]/40"
                         }`}
                       >
@@ -343,13 +363,30 @@ export default function ProjectsTab() {
                             <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)]" />
                           ) : null}
                         </div>
-                        <div className="mt-3 flex flex-wrap items-center gap-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
-                          <span className="rounded-full border border-[var(--border-default)] px-2 py-1">
-                            {categoryOf(project)}
-                          </span>
-                          <span>{projectLanguage}</span>
+                        <div className="mt-3 flex flex-col gap-3">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex flex-wrap items-center gap-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                              <span className="rounded-full border border-[var(--border-default)] px-2 py-1">
+                                {categoryOf(project)}
+                              </span>
+                              <span>{projectLanguage}</span>
+                            </div>
+                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full border text-[9px] font-bold uppercase tracking-widest" style={{ borderColor: health.color, color: health.color }}>
+                              <div className="h-1.5 w-1.5 rounded-full led-dot" style={{ background: health.color }} />
+                              {health.label}
+                            </div>
+                          </div>
+                          <div className="flex items-center pt-2 border-t border-[var(--border-default)]">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(`${project.name}: ${project.shortDescription}`); }}
+                              className="text-[9px] font-mono uppercase tracking-wider text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+                              title="Copy one-liner pitch"
+                            >
+                              [ copy pitch ]
+                            </button>
+                          </div>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -409,16 +446,6 @@ export default function ProjectsTab() {
                   >
                     <VscRepo size={14} /> Repository
                   </IDEButton>
-                  {selectedProject.links.demo && (
-                    <IDEButton
-                      type="button"
-                      onClick={() => openExternal(selectedProject.links.demo!)}
-                      variant="secondary"
-                      className="w-full gap-2 sm:w-auto"
-                    >
-                      <VscLiveShare size={14} /> Live Demo
-                    </IDEButton>
-                  )}
                   <IDEButton
                     type="button"
                     onClick={() => openFile("data/projects.ts")}
@@ -450,27 +477,24 @@ export default function ProjectsTab() {
         <div className="shrink-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
           <div className="mx-auto w-full max-w-[1200px]">
             <div className="ide-scrollbar overflow-x-auto px-4 sm:px-6 lg:px-8 xl:px-10">
-              <div className="flex min-w-max items-center gap-6 sm:gap-8">
-                {([
-                  ["overview", "Overview"],
-                  ["architecture", "Architecture"],
-                  ["changelog", "Changelog"],
-                ] as Array<[TabKey, string]>).map(([tabKey, label]) => (
+              <div className="flex min-w-max items-center gap-6 sm:gap-8 overflow-x-auto scrollbar-hide">
+                {TABS.map(({ key, label, icon: Icon }) => (
                   <button
-                    key={tabKey}
+                    key={key}
                     type="button"
-                    onClick={() => setActiveTab(tabKey)}
-                    className={`relative whitespace-nowrap px-0 py-4 text-[10px] font-bold uppercase tracking-[0.15em] transition-all sm:text-[11px] ${
-                      activeTab === tabKey
-                        ? "text-[var(--text-primary)]"
-                        : "text-[var(--text-disabled)] hover:text-[var(--text-muted)]"
+                    onClick={() => setActiveTab(key)}
+                    className={`relative flex items-center gap-2 whitespace-nowrap px-0 py-4 text-[10px] font-bold uppercase tracking-[0.15em] transition-all sm:text-[11px] ${
+                      activeTab === key
+                        ? "gradient-text"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                     }`}
                   >
+                    <Icon size={12} className={activeTab === key ? "text-[var(--accent)]" : ""} />
                     {label}
-                    {activeTab === tabKey && (
+                    {activeTab === key && (
                       <motion.div 
                         layoutId="activeTabUnderline" 
-                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]"
+                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--accent)]"
                       />
                     )}
                   </button>
@@ -491,11 +515,19 @@ export default function ProjectsTab() {
               className="mx-auto w-full max-w-[1200px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 xl:px-10"
             >
               {activeTab === "overview" && (
-                <ProjectOverview project={selectedProject} detail={detail} />
+                <ProjectOverview project={selectedProject} detail={detail} allProjects={projects} />
+              )}
+
+              {activeTab === "readme" && (
+                <ProjectReadme project={selectedProject} />
               )}
 
               {activeTab === "architecture" && (
                 <ProjectArchitecture project={selectedProject} detail={detail} />
+              )}
+
+              {(activeTab === "insights" || activeTab === "radar") && (
+                <ProjectInsights project={selectedProject} />
               )}
 
               {activeTab === "changelog" && (

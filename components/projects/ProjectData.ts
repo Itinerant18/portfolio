@@ -3,7 +3,7 @@ import {
   projectCategories,
 } from "@/data/projects";
 
-export type TabKey = "overview" | "architecture" | "changelog";
+export type TabKey = "overview" | "architecture" | "readme" | "insights" | "radar" | "changelog" | "video";
 export type LoadState = "loading" | "ready" | "fallback";
 export type TechGroupItem = { n: string; v: string; c: string };
 export type TechGroup = { label: string; items: TechGroupItem[] };

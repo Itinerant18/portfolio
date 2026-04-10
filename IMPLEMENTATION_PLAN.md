@@ -1,584 +1,1351 @@
-You are working on a Next.js 15 portfolio codebase (Cursor IDE theme) for Aniket Karmakar.
-The stack is: Next.js 15, React 19, TypeScript, Tailwind v4, Framer Motion 12, Zustand 5, Geist fonts.
+You are upgrading the Cursor IDE portfolio (Next.js 15, Tailwind v4, Framer Motion 12)
+for Aniket Karmakar. This is a VISUAL-ONLY upgrade — no data logic changes.
 
-Your task is to implement ALL of the following in sequence. Do not skip any section.
-After each section, verify TypeScript compiles with zero errors before moving on.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 1 — BUG FIXES (do these first, they block everything else)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-FIX 1.1 — utils/commands.ts
-  Change the shortcut for id="toggle-theme" from "Ctrl+K" to "Ctrl+Shift+T".
-  Ctrl+K is already bound to openCommandPalette in AppShell — this is a live conflict.
-
-FIX 1.2 — AppShell.tsx CSS variable references
-  Replace ALL occurrences of:
-    var(--bg-main)   → var(--bg-base)
-    var(--border)    → var(--border-default)
-    var(--text)      → var(--text-primary)
-    var(--bg-panel)  → var(--bg-surface)
-    var(--bg-hover)  → var(--bg-muted)
-    var(--bg-overlay) → var(--bg-overlay)  [this one exists, keep]
-    var(--accent-soft) → var(--accent-subtle)
-  These undefined vars are why the IDE shell renders with no background or borders.
-
-FIX 1.3 — store/useIDEStore.ts toggleTheme
-  The toggleTheme action currently only cycles aniket-dark ↔ light.
-  Replace it with a full cycle through all 7 themes in order:
-    aniket-dark → light → rose-pine → tokyo-night → catppuccin → nord → gruvbox → aniket-dark
-
-FIX 1.4 — data/content.ts vs outputs/content.ts identity conflict
-  The file outputs/content.ts contains a fictional persona "Nyla Verma".
-  This file is used by SidebarAI and Terminal as a fallback.
-  Replace the portfolioProfile in outputs/content.ts with Aniket's actual data from data/content.ts.
-  Keep the outputs/ file structure intact (it's the older version used by some components).
-  The name, role, email, github, linkedin, summary must all match data/content.ts exactly.
-
-FIX 1.5 — ProjectOverview.tsx gallery grid
-  The images grid:
-    grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
-  Add a max-w and ensure it never overflows on mobile. Change to:
-    grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4
-  and wrap the grid div with: overflow-hidden rounded-sm
+Implement every section in order. Run `npx tsc --noEmit` after EACH section.
+Target: zero TypeScript errors, zero console warnings, zero layout shift.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 2 — COLOR SYSTEM + TYPOGRAPHY OVERHAUL
+SECTION A — EXTENDED COLOR SYSTEM (app/globals.css)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Edit app/globals.css.
+Replace the entire :root block with this expanded token set:
 
-2.1 — Add these new CSS variables inside :root (aniket-dark theme):
-  /* Chromatic aberration colors */
-  --chroma-r: rgba(160, 94, 248, 0.08);
-  --chroma-g: rgba(34, 141, 242, 0.06);
-  /* Neon glow intensities */
-  --glow-accent: 0 0 8px rgba(160, 94, 248, 0.4), 0 0 24px rgba(160, 94, 248, 0.15);
-  --glow-info:   0 0 8px rgba(34, 141, 242, 0.4),  0 0 24px rgba(34, 141, 242, 0.12);
-  --glow-success: 0 0 8px rgba(27, 71, 33, 0.5);
-  /* Futuristic typography */
-  --font-display: "Geist Mono", "JetBrains Mono", monospace;
-  --tracking-display: -0.05em;
-  --tracking-code: 0.02em;
+:root {
+/_ ── ANIKET DARK (default) ── _/
+--neutral-0: #0b0b0b;
+--neutral-25: #0f0f0f;
+--neutral-50: #141414;
+--neutral-75: #1a1a1a;
+--neutral-100: #1f1f1f;
+--neutral-200: #252525;
+--neutral-300: #2e2e2e;
+--neutral-400: #3a3a3a;
+--neutral-500: #6e6e6e;
+--neutral-600: #a0a0a0;
+--neutral-700: #cccccc;
+--neutral-800: #f0f0f0;
 
-2.2 — Add these @keyframes AFTER existing ones:
+/_ ── PRIMARY ACCENT RAMP (violet) ── _/
+--violet-50: rgba(160,94,248,0.06);
+--violet-100: rgba(160,94,248,0.12);
+--violet-200: rgba(160,94,248,0.20);
+--violet-300: #8b5cf6;
+--violet-400: #A05EF8;
+--violet-500: #b785f9;
+--violet-600: #c4a0fb;
+--violet-glow: 0 0 8px rgba(160,94,248,0.5), 0 0 24px rgba(160,94,248,0.2), 0 0 48px rgba(160,94,248,0.08);
+--violet-glow-lg: 0 0 20px rgba(160,94,248,0.7), 0 0 60px rgba(160,94,248,0.3);
 
-@keyframes crt-scanline {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 4px; }
+/_ ── SECONDARY ACCENT RAMP (cyan/electric blue) ── _/
+--cyan-50: rgba(34,211,238,0.06);
+--cyan-100: rgba(34,211,238,0.12);
+--cyan-200: rgba(34,211,238,0.20);
+--cyan-400: #22d3ee;
+--cyan-500: #38bdf8;
+--cyan-glow: 0 0 8px rgba(34,211,238,0.5), 0 0 24px rgba(34,211,238,0.15);
+
+/_ ── TERTIARY ACCENT (electric green for IoT/status) ── _/
+--green-400: #4ade80;
+--green-dim: #1a3a28;
+--green-glow: 0 0 8px rgba(74,222,128,0.5);
+
+/_ ── SEMANTIC COLORS ── _/
+--amber-400: #fbbf24;
+--rose-400: #fb7185;
+--orange-400: #fb923c;
+
+/_ ── SURFACES ── _/
+--bg-base: var(--neutral-0);
+--bg-surface: var(--neutral-25);
+--bg-elevated: var(--neutral-50);
+--bg-overlay: var(--neutral-75);
+--bg-muted: var(--neutral-100);
+--bg-glass: rgba(255,255,255,0.02);
+--bg-glass-hover: rgba(255,255,255,0.04);
+
+/_ ── BORDERS ── _/
+--border-default: var(--neutral-200);
+--border-hover: var(--neutral-300);
+--border-active: var(--accent);
+--border-glow: rgba(160,94,248,0.35);
+
+/_ ── TEXT ── _/
+--text-primary: #f0f0f0;
+--text-secondary: #a0a0a0;
+--text-muted: #6e6e6e;
+--text-disabled: #3a3a3a;
+--text-accent: var(--violet-500);
+
+/_ ── ACCENT ALIASES ── _/
+--accent: var(--violet-400);
+--accent-hover: var(--violet-500);
+--accent-muted: var(--violet-100);
+--accent-subtle: var(--violet-50);
+--accent-glow: var(--violet-glow);
+--info: var(--cyan-400);
+--info-glow: var(--cyan-glow);
+--success: var(--green-400);
+--success-dim: var(--green-dim);
+--warning: var(--amber-400);
+--danger: var(--rose-400);
+
+/_ ── NOISE/GRAIN ── _/
+--noise-opacity: 0.035;
+--noise-url: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+
+/_ ── TYPOGRAPHY ── _/
+--font-sans: var(--font-geist-sans), "Inter", system-ui, sans-serif;
+--font-mono: var(--font-geist-mono), "JetBrains Mono", "Fira Code", monospace;
+--font-display: var(--font-geist-mono), monospace;
+
+/_ ── TYPE SCALE (Geist Mono based) ── _/
+--text-2xs: 9px;
+--text-xs: 10px;
+--text-sm: 11px;
+--text-base: 12px;
+--text-md: 13px;
+--text-lg: 14px;
+--text-xl: 18px;
+--text-2xl: 24px;
+--text-3xl: 36px;
+--text-4xl: 56px;
+--text-display: 72px;
+
+--tracking-tighter: -0.05em;
+--tracking-tight: -0.03em;
+--tracking-normal: 0;
+--tracking-wide: 0.08em;
+--tracking-wider: 0.15em;
+--tracking-widest: 0.25em;
+--tracking-ultra: 0.35em;
+
+--leading-none: 1;
+--leading-tight: 1.1;
+--leading-snug: 1.3;
+--leading-normal: 1.5;
+
+/_ ── MOTION ── _/
+--dur-instant: 60ms;
+--dur-fast: 120ms;
+--dur-base: 200ms;
+--dur-slow: 400ms;
+--dur-slower: 700ms;
+--ease-snap: cubic-bezier(0.22, 1, 0.36, 1);
+--ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+--ease-in-expo: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+--ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+
+/_ ── RADII ── _/
+--radius-xs: 2px;
+--radius-sm: 3px;
+--radius-md: 4px;
+--radius-lg: 6px;
+--radius-xl: 8px;
+--radius-pill: 999px;
+
+/_ ── SHADOWS ── _/
+--shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+--shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+--shadow-lg: 0 20px 48px rgba(0,0,0,0.5);
+--shadow-inner: inset 0 1px 0 rgba(255,255,255,0.04);
+
+/_ ── BRAND COLORS (unchanged) ── _/
+--brand-github: var(--text-primary);
+--brand-linkedin: #0077b5;
+--brand-email: #22d3ee;
+
+/_ ── FILE TYPE COLORS ── _/
+--file-ts: #3178c6;
+--file-tsx: #61dafb;
+--file-js: #f7df1e;
+--file-py: #3572a5;
+--file-json: #cbcb41;
+--file-css: #1572b6;
+--file-md: #519aba;
+--file-html: #e34f26;
+
+/_ ── SYNTAX ── _/
+--syntax-comment: #4a5568;
+--syntax-keyword: #c678dd;
+--syntax-string: #98c379;
+--syntax-number: #d19a66;
+--syntax-function: #61afef;
+--syntax-class: #e5c07b;
+--syntax-property: #e06c75;
+--syntax-punctuation: #abb2bf;
+--syntax-operator: #56b6c2;
 }
 
-@keyframes glitch-clip {
-  0%, 100% { clip-path: inset(0 0 98% 0); transform: translate(-2px, 0); }
-  20% { clip-path: inset(20% 0 60% 0); transform: translate(2px, 0); }
-  40% { clip-path: inset(50% 0 30% 0); transform: translate(-1px, 0); }
-  60% { clip-path: inset(80% 0 5% 0); transform: translate(1px, 0); }
-  80% { clip-path: inset(10% 0 85% 0); transform: translate(-2px, 0); }
+/_ ─────────────────────────────────────────
+7 ADDITIONAL THEMES — add below existing
+───────────────────────────────────────── _/
+
+[data-theme="aurora"] {
+--bg-base: #050a14;
+--bg-surface: #070d1c;
+--bg-elevated: #0a1428;
+--bg-overlay: #0d1a32;
+--bg-muted: #101e38;
+--border-default: #0f2040;
+--border-hover: #163060;
+--text-primary: #e2f0ff;
+--text-secondary: #8ab4e0;
+--text-muted: #3d6080;
+--accent: #00d4ff;
+--accent-hover: #38e8ff;
+--accent-muted: rgba(0,212,255,0.12);
+--accent-subtle: rgba(0,212,255,0.06);
+--accent-glow: 0 0 8px rgba(0,212,255,0.6), 0 0 24px rgba(0,212,255,0.2);
+--info: #8b5cf6;
+--info-glow: 0 0 8px rgba(139,92,246,0.5);
+--success: #ec4899;
+--violet-400: #00d4ff;
+--cyan-400: #8b5cf6;
 }
 
-@keyframes glitch-clip-2 {
-  0%, 100% { clip-path: inset(95% 0 0% 0); transform: translate(2px, 0); }
-  20% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 0); }
-  40% { clip-path: inset(70% 0 15% 0); transform: translate(1px, 0); }
-  60% { clip-path: inset(5% 0 88% 0); transform: translate(-1px, 0); }
-  80% { clip-path: inset(60% 0 30% 0); transform: translate(2px, 0); }
+[data-theme="void"] {
+--bg-base: #08060f;
+--bg-surface: #0d0a18;
+--bg-elevated: #110f1f;
+--bg-overlay: #161326;
+--bg-muted: #1a1730;
+--border-default: #1e1a38;
+--border-hover: #2a2550;
+--text-primary: #ede9fe;
+--text-secondary: #9d8fc4;
+--text-muted: #4d4570;
+--accent: #a855f7;
+--accent-hover: #c084fc;
+--accent-muted: rgba(168,85,247,0.14);
+--accent-subtle: rgba(168,85,247,0.07);
+--accent-glow: 0 0 8px rgba(168,85,247,0.6), 0 0 30px rgba(168,85,247,0.25);
+--info: #ec4899;
+--success: #6366f1;
+--violet-400: #a855f7;
+--cyan-400: #ec4899;
 }
 
-@keyframes typewriter {
-  from { width: 0; }
-  to { width: 100%; }
+[data-theme="cyber"] {
+--bg-base: #000d0d;
+--bg-surface: #001414;
+--bg-elevated: #001a1a;
+--bg-overlay: #002020;
+--bg-muted: #002828;
+--border-default: #003333;
+--border-hover: #004444;
+--text-primary: #ccffee;
+--text-secondary: #66ccaa;
+--text-muted: #338866;
+--accent: #00ff9f;
+--accent-hover: #33ffb5;
+--accent-muted: rgba(0,255,159,0.12);
+--accent-subtle: rgba(0,255,159,0.06);
+--accent-glow: 0 0 8px rgba(0,255,159,0.7), 0 0 24px rgba(0,255,159,0.3), 0 0 60px rgba(0,255,159,0.1);
+--info: #00ccff;
+--success: #00ff9f;
+--warning: #ffff00;
+--violet-400: #00ff9f;
+--cyan-400: #00ccff;
 }
 
-@keyframes cursor-blink {
-  0%, 100% { border-right-color: var(--accent); }
-  50% { border-right-color: transparent; }
+[data-theme="sunset"] {
+--bg-base: #0d0508;
+--bg-surface: #130609;
+--bg-elevated: #190810;
+--bg-overlay: #1f0a14;
+--bg-muted: #260c18;
+--border-default: #2d0f1c;
+--border-hover: #3d1428;
+--text-primary: #ffe4e4;
+--text-secondary: #cc9999;
+--text-muted: #884444;
+--accent: #ff6b6b;
+--accent-hover: #ff8888;
+--accent-muted: rgba(255,107,107,0.14);
+--accent-subtle: rgba(255,107,107,0.07);
+--accent-glow: 0 0 8px rgba(255,107,107,0.6), 0 0 24px rgba(255,107,107,0.25);
+--info: #ffa07a;
+--success: #ffdf00;
+--violet-400: #ff6b6b;
+--cyan-400: #ffa07a;
 }
 
-@keyframes neon-pulse {
-  0%, 100% { box-shadow: var(--glow-accent); }
-  50% { box-shadow: 0 0 16px rgba(160, 94, 248, 0.6), 0 0 40px rgba(160, 94, 248, 0.2); }
+[data-theme="glacier"] {
+--bg-base: #04080d;
+--bg-surface: #060c14;
+--bg-elevated: #08101c;
+--bg-overlay: #0a1424;
+--bg-muted: #0d1a2e;
+--border-default: #101f36;
+--border-hover: #162840;
+--text-primary: #e0f2fe;
+--text-secondary: #7bb8d8;
+--text-muted: #3a6880;
+--accent: #38bdf8;
+--accent-hover: #60ceff;
+--accent-muted: rgba(56,189,248,0.12);
+--accent-subtle: rgba(56,189,248,0.06);
+--accent-glow: 0 0 8px rgba(56,189,248,0.55), 0 0 24px rgba(56,189,248,0.2);
+--info: #818cf8;
+--success: #6366f1;
+--violet-400: #38bdf8;
+--cyan-400: #818cf8;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-8px) rotate(0.5deg); }
-  66% { transform: translateY(-4px) rotate(-0.5deg); }
+[data-theme="bloom"] {
+--bg-base: #0a050d;
+--bg-surface: #0f0614;
+--bg-elevated: #14081a;
+--bg-overlay: #190b20;
+--bg-muted: #1e0e28;
+--border-default: #240f30;
+--border-hover: #30143e;
+--text-primary: #fce7f3;
+--text-secondary: #d499bb;
+--text-muted: #6e3a55;
+--accent: #f472b6;
+--accent-hover: #f799cc;
+--accent-muted: rgba(244,114,182,0.14);
+--accent-subtle: rgba(244,114,182,0.07);
+--accent-glow: 0 0 8px rgba(244,114,182,0.6), 0 0 24px rgba(244,114,182,0.25);
+--info: #c084fc;
+--success: #818cf8;
+--violet-400: #f472b6;
+--cyan-400: #c084fc;
 }
 
-@keyframes reveal-up {
-  from { opacity: 0; transform: translateY(32px) skewY(1deg); }
-  to { opacity: 1; transform: translateY(0) skewY(0deg); }
+/_ Keep existing: rose-pine, tokyo-night, catppuccin, nord, gruvbox, light _/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION B — GEN Z TYPOGRAPHY SYSTEM (app/globals.css continued)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Add these utility classes after the existing @keyframes:
+
+/_ ─── TYPE UTILITIES ─── _/
+
+/_ Variable-weight clash — large bold + thin suffix _/
+.type-clash-heavy {
+font-family: var(--font-display);
+font-size: clamp(28px, 5vw, 48px);
+font-weight: 900;
+letter-spacing: var(--tracking-tighter);
+line-height: var(--leading-none);
+color: var(--text-primary);
+}
+.type-clash-light {
+font-family: var(--font-display);
+font-size: clamp(28px, 5vw, 48px);
+font-weight: 100;
+letter-spacing: var(--tracking-wide);
+line-height: var(--leading-none);
+opacity: 0.35;
 }
 
-@keyframes reveal-chars {
-  from { opacity: 0; transform: translateY(100%); }
-  to { opacity: 1; transform: translateY(0); }
+/_ Oversized label stack _/
+.type-oversize-label {
+font-family: var(--font-mono);
+font-size: var(--text-2xs);
+font-weight: 700;
+letter-spacing: var(--tracking-ultra);
+text-transform: uppercase;
+color: var(--text-muted);
+}
+.type-oversize-value {
+font-family: var(--font-display);
+font-size: clamp(20px, 3.5vw, 32px);
+font-weight: 800;
+letter-spacing: var(--tracking-tighter);
+line-height: var(--leading-tight);
+color: var(--text-primary);
 }
 
-@keyframes counter-up {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+/_ Truncated ghost background text _/
+.type-ghost-bg {
+font-family: var(--font-display);
+font-size: clamp(48px, 8vw, 80px);
+font-weight: 900;
+letter-spacing: var(--tracking-tighter);
+line-height: 1;
+color: var(--text-primary);
+opacity: 0.04;
+overflow: hidden;
+white-space: nowrap;
+pointer-events: none;
+user-select: none;
+position: absolute;
+top: 0; left: 0;
+width: 100%;
 }
 
-@keyframes led-blink {
-  0%, 90%, 100% { opacity: 1; }
-  95% { opacity: 0.3; }
+/_ Code badge (inline tech pill) _/
+.type-code-badge {
+font-family: var(--font-mono);
+font-size: var(--text-2xs);
+font-weight: 700;
+letter-spacing: var(--tracking-wider);
+text-transform: uppercase;
+padding: 3px 8px;
+border-radius: var(--radius-sm);
+background: var(--accent-subtle);
+color: var(--accent);
+border: 1px solid var(--accent-muted);
+display: inline-flex;
+align-items: center;
+gap: 5px;
+line-height: 1;
+}
+.type-code-badge::before {
+content: '';
+width: 4px; height: 4px;
+border-radius: 50%;
+background: currentColor;
+opacity: 0.7;
+flex-shrink: 0;
 }
 
-2.3 — Add utility classes after @keyframes:
-
-.glitch-text {
-  position: relative;
-}
-.glitch-text::before,
-.glitch-text::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  background: inherit;
-}
-.glitch-text::before {
-  color: var(--cyan-400);
-  animation: glitch-clip 3.5s infinite linear;
-  animation-delay: 0.5s;
-}
-.glitch-text::after {
-  color: var(--violet-400);
-  animation: glitch-clip-2 3.5s infinite linear;
-  animation-delay: 1s;
+/_ Gradient headline _/
+.type-gradient {
+font-family: var(--font-display);
+font-weight: 800;
+letter-spacing: var(--tracking-tighter);
+background: linear-gradient(
+135deg,
+var(--accent) 0%,
+var(--info) 40%,
+var(--accent-hover) 100%
+);
+background-size: 200% 200%;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+animation: gradient-shift 4s ease infinite;
 }
 
-.typewriter-text {
-  overflow: hidden;
-  white-space: nowrap;
-  border-right: 2px solid var(--accent);
-  animation: typewriter 2s steps(40, end) both, cursor-blink 1s step-end infinite;
+/_ Mono stat display _/
+.type-stat-number {
+font-family: var(--font-mono);
+font-size: clamp(18px, 3vw, 28px);
+font-weight: 700;
+letter-spacing: var(--tracking-tight);
+color: var(--text-primary);
+font-variant-numeric: tabular-nums;
+}
+.type-stat-label {
+font-family: var(--font-mono);
+font-size: var(--text-2xs);
+font-weight: 700;
+letter-spacing: var(--tracking-widest);
+text-transform: uppercase;
+color: var(--text-muted);
+margin-top: 2px;
 }
 
-.neon-border {
-  border-color: var(--accent);
-  box-shadow: var(--glow-accent);
-  transition: box-shadow 300ms ease;
-}
-.neon-border:hover {
-  box-shadow: 0 0 20px rgba(160, 94, 248, 0.7), 0 0 60px rgba(160, 94, 248, 0.25);
-}
-
-.led-dot {
-  animation: led-blink 4s ease-in-out infinite;
+/_ HUD label _/
+.type-hud {
+font-family: var(--font-mono);
+font-size: var(--text-2xs);
+font-weight: 700;
+letter-spacing: var(--tracking-widest);
+text-transform: uppercase;
+color: var(--accent);
+opacity: 0.8;
 }
 
-.float-card {
-  animation: float 6s ease-in-out infinite;
+/_ Section heading — underline accent _/
+.type-section {
+font-family: var(--font-mono);
+font-size: var(--text-sm);
+font-weight: 700;
+letter-spacing: var(--tracking-wider);
+text-transform: uppercase;
+color: var(--text-secondary);
+position: relative;
+padding-bottom: 8px;
+}
+.type-section::after {
+content: '';
+position: absolute;
+bottom: 0; left: 0;
+width: 24px; height: 1px;
+background: var(--accent);
+box-shadow: var(--accent-glow);
 }
 
-.reveal-text > span {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
+/_ Stacked identity block _/
+.type-identity {
+display: flex;
+flex-direction: column;
+gap: 2px;
 }
-.reveal-text > span > span {
-  display: inline-block;
-  animation: reveal-chars 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+.type-identity-name {
+font-family: var(--font-display);
+font-size: clamp(14px, 2.5vw, 20px);
+font-weight: 800;
+letter-spacing: var(--tracking-tight);
+color: var(--text-primary);
+line-height: 1;
+}
+.type-identity-role {
+font-family: var(--font-mono);
+font-size: var(--text-xs);
+font-weight: 700;
+letter-spacing: var(--tracking-wider);
+text-transform: uppercase;
+color: var(--accent);
+}
+.type-identity-loc {
+font-family: var(--font-mono);
+font-size: var(--text-2xs);
+font-weight: 400;
+letter-spacing: var(--tracking-wide);
+color: var(--text-muted);
+text-transform: uppercase;
 }
 
-.crt-overlay::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 1px,
-    rgba(0,0,0,0.03) 1px,
-    rgba(0,0,0,0.03) 2px
-  );
-  z-index: 9999;
-  animation: crt-scanline 0.1s linear infinite;
+/_ Noise grain overlay _/
+.noise-overlay::before {
+content: '';
+position: fixed;
+inset: 0;
+pointer-events: none;
+z-index: 9998;
+background-image: var(--noise-url);
+background-repeat: repeat;
+background-size: 256px 256px;
+opacity: var(--noise-opacity);
+mix-blend-mode: overlay;
+}
+
+/_ Scrollbar neon _/
+.neon-scrollbar {
+scrollbar-width: thin;
+scrollbar-color: rgba(160,94,248,0.25) transparent;
+}
+.neon-scrollbar::-webkit-scrollbar { width: 3px; height: 3px; }
+.neon-scrollbar::-webkit-scrollbar-thumb {
+background: var(--accent);
+border-radius: var(--radius-pill);
+box-shadow: var(--accent-glow);
+}
+.neon-scrollbar::-webkit-scrollbar-track { background: transparent; }
+
+/_ LED status dot _/
+.led-status {
+width: 6px; height: 6px;
+border-radius: 50%;
+background: var(--success);
+box-shadow: var(--green-glow);
+animation: led-blink 4s ease-in-out infinite;
+flex-shrink: 0;
+}
+
+/_ Ambient cursor glow (applied to body via JS) _/
+.cursor-glow-active::after {
+content: '';
+position: fixed;
+width: 400px; height: 400px;
+border-radius: 50%;
+background: radial-gradient(circle, var(--accent-subtle) 0%, transparent 70%);
+pointer-events: none;
+z-index: 9997;
+transform: translate(-50%, -50%);
+transition: left 0.1s linear, top 0.1s linear;
+left: var(--cursor-x, -200px);
+top: var(--cursor-y, -200px);
 }
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 3 — PROJECTUI.TSX DEEP REWORK
+SECTION C — UPDATE THEME STORE (store/useIDEStore.ts)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-File: components/projects/ProjectUI.tsx
+C.1 — Expand ThemeMode type to include all 13 themes:
+export type ThemeMode =
+| "aniket-dark"
+| "aurora"
+| "void"
+| "cyber"
+| "sunset"
+| "glacier"
+| "bloom"
+| "rose-pine"
+| "tokyo-night"
+| "catppuccin"
+| "nord"
+| "gruvbox"
+| "light";
 
-3.1 — Replace SectionLabel component:
-  Old version just renders a div with text.
-  New version: animated gradient text with a scanning underline effect.
+C.2 — Replace toggleTheme to cycle through all 13:
+const THEME_CYCLE: ThemeMode[] = [
+"aniket-dark","aurora","void","cyber","sunset","glacier","bloom",
+"rose-pine","tokyo-night","catppuccin","nord","gruvbox","light"
+];
+toggleTheme: () =>
+set((state) => {
+const idx = THEME_CYCLE.indexOf(state.theme);
+return { theme: THEME_CYCLE[(idx + 1) % THEME_CYCLE.length] };
+}),
 
-export function SectionLabel({ label }: { label: string }) {
-  return (
-    <div className="mb-3 flex items-center gap-3">
-      <div className="flex items-center gap-2">
-        <span className="h-px w-6 bg-gradient-to-r from-[var(--accent)] to-transparent" />
-        <span
-          className="gradient-text text-[10px] font-bold uppercase tracking-[0.2em]"
-          data-text={label}
-        >
-          {label}
-        </span>
-        <span className="h-px flex-1 bg-gradient-to-r from-[var(--accent-muted)] to-transparent" />
+C.3 — Add theme metadata export (new file: data/themes.ts):
+Create src/data/themes.ts with:
+
+export interface ThemeMeta {
+id: string;
+name: string;
+accent: string;
+bg: string;
+surface: string;
+description: string;
+vibe: string;
+}
+
+export const THEME_META: ThemeMeta[] = [
+{ id:"aniket-dark", name:"Aniket Dark", accent:"#A05EF8", bg:"#0b0b0b", surface:"#141414", description:"The default. Deep violet on pure black.", vibe:"focused" },
+{ id:"aurora", name:"Aurora", accent:"#00d4ff", bg:"#050a14", surface:"#0a1428", description:"Cyan-purple gradient. Night sky energy.", vibe:"electric" },
+{ id:"void", name:"Void", accent:"#a855f7", bg:"#08060f", surface:"#110f1f", description:"Deep purple. Minimal. Cosmic.", vibe:"calm" },
+{ id:"cyber", name:"Cyber", accent:"#00ff9f", bg:"#000d0d", surface:"#001a1a", description:"Neon green on pitch black. Hacker mode.", vibe:"intense" },
+{ id:"sunset", name:"Sunset", accent:"#ff6b6b", bg:"#0d0508", surface:"#190810", description:"Warm coral red. Late evening warmth.", vibe:"warm" },
+{ id:"glacier", name:"Glacier", accent:"#38bdf8", bg:"#04080d", surface:"#08101c", description:"Sky blue. Clean. Arctic clarity.", vibe:"cool" },
+{ id:"bloom", name:"Bloom", accent:"#f472b6", bg:"#0a050d", surface:"#14081a", description:"Hot pink. Bold. Unapologetically Y2K.", vibe:"bold" },
+{ id:"rose-pine", name:"Rosé Pine", accent:"#ebbcba", bg:"#191724", surface:"#1f1d2e", description:"Muted rose. Aesthetic. Cottagecore IDE.", vibe:"soft" },
+{ id:"tokyo-night", name:"Tokyo Night", accent:"#7aa2f7", bg:"#1a1b26", surface:"#16161e", description:"Classic blue-purple. Proven favorite.", vibe:"classic" },
+{ id:"catppuccin", name:"Catppuccin", accent:"#cba6f7", bg:"#1e1e2e", surface:"#181825", description:"Mocha palette. Pastel perfection.", vibe:"pastel" },
+{ id:"nord", name:"Nord", accent:"#88c0d0", bg:"#2e3440", surface:"#3b4252", description:"Scandinavian. Clean. Professional.", vibe:"neutral" },
+{ id:"gruvbox", name:"Gruvbox", accent:"#fabd2f", bg:"#282828", surface:"#1d2021", description:"Retro amber. Warm and earthy.", vibe:"retro" },
+{ id:"light", name:"Light", accent:"#A05EF8", bg:"#ffffff", surface:"#f3f3f3", description:"Bright mode. High contrast.", vibe:"minimal" },
+];
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION D — THEME SWITCHER PANEL (new component)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Create: components/ui/ThemeSwitcher.tsx
+
+"use client";
+import { motion, AnimatePresence } from "framer-motion";
+import { useIDEStore } from "@/store/useIDEStore";
+import { THEME_META } from "@/data/themes";
+import { useState } from "react";
+
+export default function ThemeSwitcher() {
+const { theme, setTheme } = useIDEStore();
+const [hovered, setHovered] = useState<string | null>(null);
+
+function handleThemeChange(id: string) {
+// Flash transition
+const flash = document.createElement("div");
+Object.assign(flash.style, {
+position: "fixed", inset: "0", background: "rgba(255,255,255,0.06)",
+zIndex: "99999", pointerEvents: "none", transition: "opacity 300ms ease"
+});
+document.body.appendChild(flash);
+requestAnimationFrame(() => {
+flash.style.opacity = "0";
+setTimeout(() => flash.remove(), 320);
+});
+setTheme(id as any);
+}
+
+return (
+<div style={{ padding: "12px", borderBottom: "1px solid var(--border-default)" }}>
+{/_ Section label _/}
+<div style={{
+        fontFamily: "var(--font-mono)", fontSize: "9px", fontWeight: 700,
+        letterSpacing: "0.2em", textTransform: "uppercase",
+        color: "var(--text-muted)", marginBottom: "10px",
+        display: "flex", alignItems: "center", gap: "8px"
+      }}>
+<span style={{ width: "16px", height: "1px", background: "var(--accent)", display: "inline-block" }} />
+THEME
+<span style={{ flex: 1, height: "1px", background: "var(--border-default)", display: "inline-block" }} />
+</div>
+
+      {/* Grid of swatches */}
+      <div style={{
+        display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "4px", marginBottom: "8px"
+      }}>
+        {THEME_META.map((t) => (
+          <motion.button
+            key={t.id}
+            type="button"
+            title={t.name}
+            whileHover={{ y: -3, scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => handleThemeChange(t.id)}
+            onHoverStart={() => setHovered(t.id)}
+            onHoverEnd={() => setHovered(null)}
+            style={{
+              height: "28px", borderRadius: "4px",
+              background: t.accent,
+              border: theme === t.id
+                ? `2px solid ${t.accent}`
+                : "2px solid transparent",
+              outline: theme === t.id ? `1px solid rgba(255,255,255,0.3)` : "none",
+              outlineOffset: "2px",
+              cursor: "pointer",
+              boxShadow: theme === t.id
+                ? `0 0 10px ${t.accent}66, 0 0 20px ${t.accent}33`
+                : "none",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            {/* Inner darker center */}
+            <div style={{
+              position: "absolute", inset: "4px", borderRadius: "2px",
+              background: t.bg, opacity: 0.6
+            }} />
+          </motion.button>
+        ))}
       </div>
-    </div>
-  );
-}
 
-3.2 — Replace FlowNode component with a futuristic holographic node:
-  Each node should have:
-  - A hexagon-clip SVG background
-  - Neon border pulse on hover
-  - A protocol label that types in on mount
-  - The connector arrow becomes a data-stream dashed line with moving dots
-
-export function FlowNode({ label, icon, isLast, protocol }: { label: string; icon: string; isLast?: boolean; protocol?: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex flex-col items-center gap-2">
+      {/* Active theme info */}
+      <AnimatePresence mode="wait">
         <motion.div
-          whileHover={{ scale: 1.15, rotate: 3 }}
-          whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="relative flex h-12 w-12 items-center justify-center"
-          style={{
-            clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
-            background: "linear-gradient(135deg, var(--bg-elevated), var(--bg-overlay))",
-            border: "1px solid var(--accent-muted)",
-          }}
-        >
-          {/* Neon inner glow */}
-          <div
-            className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            style={{ background: "radial-gradient(circle at center, var(--accent-muted), transparent 70%)" }}
-          />
-          <span className="relative z-10 text-[var(--accent)]">
-            <IconMapper name={icon} size={18} />
-          </span>
-        </motion.div>
-        <motion.span
+          key={hovered || theme}
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-[9px] font-bold uppercase tracking-[0.15em] text-[var(--accent)]"
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.15 }}
+          style={{ display: "flex", alignItems: "center", gap: "6px" }}
         >
-          {label}
-        </motion.span>
-      </div>
-      {!isLast && (
-        <div className="mb-5 flex flex-col items-center gap-1">
-          {protocol && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="text-[7px] font-bold uppercase tracking-widest text-[var(--text-muted)]"
-            >
-              {protocol}
-            </motion.span>
-          )}
-          <div className="relative flex items-center">
-            {/* Animated data stream */}
-            <svg width="48" height="8" viewBox="0 0 48 8">
-              <line x1="0" y1="4" x2="48" y2="4" stroke="var(--accent-muted)" strokeWidth="1" strokeDasharray="4 3" />
-              <circle r="2" fill="var(--accent)" opacity="0.8">
-                <animateMotion dur="1.2s" repeatCount="indefinite" path="M0,4 L48,4"/>
-              </circle>
-            </svg>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-3.3 — Replace TechBadge with an orbital icon card:
-  On hover, a faint orbit ring appears and the icon scales up.
-  Tooltip becomes a futuristic HUD-style pop.
-
-export function TechBadge({ name }: { name: string }) {
-  return (
-    <motion.div
-      whileHover={{ y: -6, scale: 1.12 }}
-      whileTap={{ scale: 0.95 }}
-      className="group relative flex h-12 w-12 items-center justify-center"
-    >
-      {/* Orbit ring on hover */}
-      <div className="absolute inset-[-4px] rounded-full border border-[var(--accent-muted)] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110"
-        style={{ animation: "spin-slow 4s linear infinite" }}
-      />
-      <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-sm transition-all duration-300 group-hover:border-[var(--accent)] group-hover:shadow-[var(--glow-accent)]">
-        <TechIcon name={name} size={22} />
-      </div>
-      {/* HUD tooltip */}
-      <div className="pointer-events-none absolute -top-10 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap">
-        <div className="relative rounded-sm border border-[var(--accent-muted)] bg-[var(--bg-overlay)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[var(--accent)] opacity-0 transition-all duration-200 group-hover:opacity-100">
-          {/* HUD corners */}
-          <span className="absolute top-0 left-0 h-1 w-1 border-t border-l border-[var(--accent)]" />
-          <span className="absolute top-0 right-0 h-1 w-1 border-t border-r border-[var(--accent)]" />
-          <span className="absolute bottom-0 left-0 h-1 w-1 border-b border-l border-[var(--accent)]" />
-          <span className="absolute bottom-0 right-0 h-1 w-1 border-b border-r border-[var(--accent)]" />
-          {name}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 4 — PROJECTOVERVIEW.TSX ANIMATION OVERHAUL
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-File: components/projects/ProjectOverview.tsx
-
-4.1 — Add a "scanning" intro animation when the overview mounts.
-  At the top of the component, add a useEffect that plays a scan line across the panel.
-  Use framer-motion AnimatePresence.
-
-  Add this at the top of ProjectOverview:
-  const [scanning, setScanning] = useState(true);
-  useEffect(() => { const t = setTimeout(() => setScanning(false), 800); return () => clearTimeout(t); }, []);
-
-  Wrap the entire return in:
-  <AnimatePresence>
-    {scanning ? (
-      <motion.div
-        key="scan"
-        className="fixed inset-0 z-50 pointer-events-none"
-        initial={{ scaleY: 0, originY: 0 }}
-        animate={{ scaleY: 1 }}
-        exit={{ scaleY: 0, originY: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        style={{ background: "linear-gradient(180deg, transparent, var(--accent-muted), transparent)", height: "4px" }}
-      />
-    ) : null}
-  </AnimatePresence>
-
-4.2 — Replace "Core Capabilities" feature grid items with animated reveal cards.
-  Each VisualBadge should stagger in with:
-  - initial: opacity 0, y: 20, rotateX: -15deg
-  - animate: opacity 1, y: 0, rotateX: 0
-  - transition: spring with delay = index * 0.06
-
-  Add perspective to the container: style={{ perspective: "800px" }}
-
-4.3 — Add a live "status ticker" above the feature grid:
-  A horizontal scrolling text marquee showing:
-    "[ SYSTEM ONLINE ] — PROJECT LOADED — ARCHITECTURE MAPPED — STACK RESOLVED — READY"
-  
-  Implement as:
-  <div className="overflow-hidden border-y border-[var(--border-default)] py-1.5 mb-6">
-    <motion.div
-      animate={{ x: ["0%", "-50%"] }}
-      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-      className="flex whitespace-nowrap gap-8 text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--accent)] opacity-60"
-    >
-      {Array.from({ length: 4 }).flatMap(() =>
-        ["SYSTEM ONLINE", "PROJECT LOADED", "ARCHITECTURE MAPPED", "STACK RESOLVED", "RUNTIME ACTIVE"].map((s, i) => (
-          <span key={`${s}-${i}`} className="flex items-center gap-3">
-            <span className="h-1 w-1 rounded-full bg-[var(--accent)] led-dot" />
-            {s}
+          <div style={{
+            width: "8px", height: "8px", borderRadius: "2px",
+            background: THEME_META.find(t => t.id === (hovered || theme))?.accent ?? "var(--accent)",
+            boxShadow: `0 0 6px ${THEME_META.find(t => t.id === (hovered || theme))?.accent ?? "var(--accent)"}88`
+          }} />
+          <span style={{
+            fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 700,
+            color: "var(--text-secondary)", letterSpacing: "0.05em"
+          }}>
+            {THEME_META.find(t => t.id === (hovered || theme))?.name}
           </span>
-        ))
-      )}
-    </motion.div>
-  </div>
+          <span style={{
+            fontFamily: "var(--font-mono)", fontSize: "9px",
+            color: "var(--text-muted)", letterSpacing: "0.05em",
+            textTransform: "uppercase"
+          }}>
+            · {THEME_META.find(t => t.id === (hovered || theme))?.vibe}
+          </span>
+        </motion.div>
+      </AnimatePresence>
+    </div>
 
-4.4 — Topic Graph: replace flat badges with an animated node cloud.
-  Each topic badge should:
-  - Enter with a random x/y offset and fade+scale in
-  - On hover: glow border + scale 1.1 + show connection lines to neighboring badges
-  - Use CSS custom properties for stagger delay: style={{ "--delay": `${index * 40}ms` }}
-  - Animation: opacity 0 → 1, scale 0.3 → 1, with spring physics
+);
+}
 
-4.5 — Specifications sidebar: animate each SidebarKeyValue with a number counter for year values
-  and a typewriter effect for string values.
-  Wrap the sidebar in:
-  <motion.aside
-    initial={{ opacity: 0, x: 20 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ delay: 0.3, duration: 0.5 }}
-    className="..."
-  >
+Wire ThemeSwitcher into the top of FileExplorer.tsx (add as first child inside the outer div,
+above the EXPLORER header row). Import it at the top.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 5 — PROJECTARCHITECTURE.TSX OVERHAUL
+SECTION E — AMBIENT CURSOR ORB (components/ui/CursorOrb.tsx)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-File: components/projects/ProjectArchitecture.tsx
+Create: components/ui/CursorOrb.tsx
 
-5.1 — Replace the static terminal command prefix with an animated typewriter:
-  Currently: <span className="font-bold opacity-80 animate-pulse">$ arch --inspect --verbose</span>
-  Replace with a TypewriterText component:
+"use client";
+import { useEffect, useRef } from "react";
+import { useIDEStore } from "@/store/useIDEStore";
 
-  function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
-    const [displayed, setDisplayed] = useState("");
-    const [done, setDone] = useState(false);
-    useEffect(() => {
-      let i = 0;
-      const id = setTimeout(() => {
-        const interval = setInterval(() => {
-          setDisplayed(text.slice(0, ++i));
-          if (i >= text.length) { setDone(true); clearInterval(interval); }
-        }, 35);
-        return () => clearInterval(interval);
-      }, delay);
-      return () => clearTimeout(id);
-    }, [text, delay]);
-    return (
-      <span className="font-mono text-[11px] text-[var(--info)]">
-        {displayed}
-        {!done && <span className="inline-block h-3 w-[2px] bg-[var(--accent)] animate-[blink_1s_step-end_infinite] ml-0.5" />}
-      </span>
-    );
-  }
+export default function CursorOrb() {
+const orbRef = useRef<HTMLDivElement>(null);
+const theme = useIDEStore((s) => s.theme);
 
-  Use it: <TypewriterText text="$ arch --inspect --verbose" delay={200} />
+// Disable for light theme and reduced motion
+const disabled = theme === "light";
 
-5.2 — Animate the 3-card grid (Logic Layer, Persistence, Discovery):
-  Replace the plain grid with a staggered 3D card reveal:
-  - Each card enters from y:40 with a rotateX(-10deg) and fades in
-  - On hover: border-left lights up with neon glow matching its accent color
-  - Add a subtle scanline pattern on each card background using the crt CSS class
+useEffect(() => {
+if (disabled) return;
+const orb = orbRef.current;
+if (!orb) return;
 
-5.3 — Data Schema Preview: add syntax highlighting animation.
-  When the schema pre block enters the viewport (use IntersectionObserver or framer-motion whileInView):
-  - Characters reveal left-to-right with a 2ms per character delay
-  - The accent dot (●) pulses with neon-pulse animation
-  - Add a "READONLY" watermark text in the corner with 3% opacity
+    let raf = 0;
+    let tx = -400, ty = -400;
+    let cx = -400, cy = -400;
 
-  Implement the line-by-line reveal:
-  const lines = model.split('\n');
-  Use motion.div with staggerChildren where each line has:
-  initial={{ opacity: 0, x: -8 }}
-  whileInView={{ opacity: 1, x: 0 }}
-  viewport={{ once: true, margin: "-40px" }}
+    function move(e: MouseEvent) { tx = e.clientX; ty = e.clientY; }
+    function loop() {
+      cx += (tx - cx) * 0.06;
+      cy += (ty - cy) * 0.06;
+      orb.style.left = `${cx}px`;
+      orb.style.top = `${cy}px`;
+      raf = requestAnimationFrame(loop);
+    }
+
+    window.addEventListener("mousemove", move, { passive: true });
+    raf = requestAnimationFrame(loop);
+    return () => {
+      window.removeEventListener("mousemove", move);
+      cancelAnimationFrame(raf);
+    };
+
+}, [disabled]);
+
+if (disabled) return null;
+
+return (
+<div
+ref={orbRef}
+aria-hidden
+style={{
+        position: "fixed",
+        width: "500px", height: "500px",
+        borderRadius: "50%",
+        background: "radial-gradient(circle, var(--accent-subtle) 0%, transparent 65%)",
+        transform: "translate(-50%, -50%)",
+        pointerEvents: "none",
+        zIndex: 0,
+        transition: "opacity 0.5s ease",
+      }}
+/>
+);
+}
+
+Add <CursorOrb /> to AppShell.tsx — place it as the very first child inside the <>
+fragment, before the grid div. Import it.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 6 — PROJECTCHANGELOG.TSX ANIMATION
+SECTION F — STATS COUNTER BAR (new component)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-File: components/projects/ProjectChangelog.tsx
+Create: components/ui/StatsBar.tsx
 
-6.1 — Timeline connector: replace the static gradient line with an animated one.
-  The vertical line between releases should have a glowing particle that travels down it:
-  
-  Add after the timeline divider line:
-  <motion.div
-    className="absolute right-[-5px] w-[2px] bg-[var(--accent)]"
-    initial={{ height: 0, top: 8 }}
-    whileInView={{ height: "calc(100% + 32px)" }}
-    viewport={{ once: true }}
-    transition={{ duration: 1.2, ease: "easeInOut" }}
+"use client";
+import { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
+
+interface Stat { label: string; value: number; suffix?: string; prefix?: string; }
+
+const STATS: Stat[] = [
+{ label: "repos", value: 36 },
+{ label: "languages", value: 7 },
+{ label: "projects shipped", value: 11 },
+{ label: "stars", value: 14 },
+{ label: "commits", value: 340, suffix: "+" },
+{ label: "years coding", value: 3, suffix: "+" },
+];
+
+function useCountUp(target: number, duration = 1200) {
+const [count, setCount] = useState(0);
+const started = useRef(false);
+
+function start() {
+if (started.current) return;
+started.current = true;
+const startTime = Date.now();
+const step = () => {
+const elapsed = Date.now() - startTime;
+const progress = Math.min(elapsed / duration, 1);
+const eased = 1 - Math.pow(1 - progress, 3);
+setCount(Math.round(eased \* target));
+if (progress < 1) requestAnimationFrame(step);
+};
+requestAnimationFrame(step);
+}
+
+return { count, start };
+}
+
+function StatItem({ stat, delay }: { stat: Stat; delay: number }) {
+const { count, start } = useCountUp(stat.value, 1000 + delay \* 100);
+
+return (
+<motion.div
+initial={{ opacity: 0, y: 12 }}
+whileInView={{ opacity: 1, y: 0 }}
+viewport={{ once: true }}
+transition={{ delay: delay * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+onViewportEnter={start}
+style={{
+        display: "flex", flexDirection: "column", gap: "2px",
+        padding: "10px 16px",
+        borderRight: "1px solid var(--border-default)",
+        flexShrink: 0,
+      }} >
+<div style={{
+        fontFamily: "var(--font-mono)", fontSize: "18px", fontWeight: 800,
+        letterSpacing: "-0.03em", color: "var(--text-primary)",
+        fontVariantNumeric: "tabular-nums",
+        lineHeight: 1,
+      }}>
+{stat.prefix ?? ""}{count}{stat.suffix ?? ""}
+</div>
+<div style={{
+        fontFamily: "var(--font-mono)", fontSize: "9px", fontWeight: 700,
+        letterSpacing: "0.18em", textTransform: "uppercase",
+        color: "var(--text-muted)",
+      }}>
+{stat.label}
+</div>
+</motion.div>
+);
+}
+
+export default function StatsBar() {
+return (
+<div style={{
+      display: "flex", overflowX: "auto", overflowY: "hidden",
+      borderBottom: "1px solid var(--border-default)",
+      scrollbarWidth: "none",
+    }}>
+<style>{`.stats-bar::-webkit-scrollbar{display:none}`}</style>
+<div className="stats-bar" style={{ display: "flex", alignItems: "stretch" }}>
+{STATS.map((s, i) => <StatItem key={s.label} stat={s} delay={i} />)}
+</div>
+{/_ Live badge _/}
+<div style={{
+        marginLeft: "auto", display: "flex", alignItems: "center", gap: "6px",
+        padding: "0 16px", flexShrink: 0,
+        borderLeft: "1px solid var(--border-default)",
+      }}>
+<div style={{
+          width: "5px", height: "5px", borderRadius: "50%",
+          background: "var(--success)",
+          boxShadow: "var(--green-glow)",
+          animation: "led-blink 3s ease-in-out infinite",
+        }} />
+<span style={{
+          fontFamily: "var(--font-mono)", fontSize: "9px", fontWeight: 700,
+          letterSpacing: "0.15em", textTransform: "uppercase",
+          color: "var(--text-muted)",
+        }}>LIVE</span>
+</div>
+</div>
+);
+}
+
+Add StatsBar to CodeEditor.tsx or the main editor panel — place it below the EditorTabs
+and above the main content area. Import it. If CodeEditor.tsx doesn't exist,
+add it to the top of the main <main> element in AppShell.tsx.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION G — NOISE GRAIN LAYER (app/layout.tsx)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+G.1 — Add the noise overlay SVG as an inline element in layout.tsx.
+Inside <body>, before <AppShell>, add:
+
+  <div
+    aria-hidden="true"
+    style={{
+      position: "fixed",
+      inset: 0,
+      pointerEvents: "none",
+      zIndex: 9998,
+      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+      backgroundRepeat: "repeat",
+      backgroundSize: "256px 256px",
+      opacity: 0.03,
+      mixBlendMode: "overlay",
+    }}
   />
 
-6.2 — Release cards: animated border-left reveal + content fade.
-  Each release card should:
-  - Slide in from left with x: -24px → 0
-  - Border-left color transitions from transparent → accent over 400ms after slide completes
-  - Version number (v1.x) has a glitch effect: add data-text={release.v} and className="glitch-text"
-    for 600ms on mount, then remove the class
-
-6.3 — Version badge: make it count up from v0.0 to the target version.
-  On whileInView trigger, animate the displayed version number using a counter.
+G.2 — Add noise-overlay class to html element in layout.tsx for CSS approach.
+Change:
+<html lang="en" data-theme="aniket-dark" ...>
+To:
+<html lang="en" data-theme="aniket-dark" className={`${GeistSans.variable} ${GeistMono.variable} noise-overlay`}>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 7 — TOPBAR.TSX + TERMINAL.TSX POLISH
+SECTION H — SKILL RADAR CHART (components/ui/SkillRadar.tsx)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-7.1 — TopBar: make the center "cursorfolio" title a glitch-text element.
-  Replace:
-    <div className="... text-[var(--text-muted)]">cursorfolio</div>
-  With:
-    <motion.div
-      whileHover={{ scale: 1.05 }}
-      className="... cursor-pointer"
-    >
-      <span className="glitch-text gradient-text text-[12px] font-bold" data-text="cursorfolio.dev">
-        cursorfolio.dev
-      </span>
-    </motion.div>
+Create: components/ui/SkillRadar.tsx
 
-7.2 — TopBar: add a live clock in the status bar (right side, before the icon buttons):
-  function LiveClock() {
-    const [time, setTime] = useState("");
-    useEffect(() => {
-      const update = () => setTime(new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false }));
-      update();
-      const id = setInterval(update, 10000);
-      return () => clearInterval(id);
-    }, []);
-    return <span className="text-[10px] font-mono text-[var(--text-muted)] opacity-60 hidden lg:block">{time}</span>;
-  }
+"use client";
+import { motion } from "framer-motion";
 
-7.3 — Terminal: add a boot animation when terminal first opens.
-  When terminalOpen goes from false → true, show a boot sequence in the terminal:
-  Lines appear one by one with 80ms gap:
-    "> Initializing workspace..."
-    "> Loading project registry..."
-    "> GitHub sync: OK"
-    "> Ready. Type 'help' for commands."
-  
-  Detect "first open" by checking entries.length === 1 and the boot entry has no command.
-  On first render, stagger the boot lines via setTimeout chains.
+interface Skill { label: string; value: number; color: string; }
+
+const SKILLS: Skill[] = [
+{ label: "Frontend", value: 88, color: "#A05EF8" },
+{ label: "Backend", value: 72, color: "#228DF2" },
+{ label: "AI / ML", value: 76, color: "#c084fc" },
+{ label: "IoT", value: 80, color: "#4ade80" },
+{ label: "Mobile", value: 70, color: "#fbbf24" },
+{ label: "Cloud", value: 65, color: "#38bdf8" },
+];
+
+function polarToXY(angle: number, r: number, cx: number, cy: number) {
+const rad = (angle - 90) _ (Math.PI / 180);
+return { x: cx + r _ Math.cos(rad), y: cy + r \* Math.sin(rad) };
+}
+
+export default function SkillRadar({ size = 200 }: { size?: number }) {
+const cx = size / 2, cy = size / 2;
+const maxR = size \* 0.38;
+const n = SKILLS.length;
+
+// Grid rings
+const rings = [0.25, 0.5, 0.75, 1];
+const axes = SKILLS.map((\_, i) => polarToXY((360 / n) \* i, maxR, cx, cy));
+
+// Skill polygon points
+const skillPoints = SKILLS.map((s, i) => {
+const r = (s.value / 100) _ maxR;
+return polarToXY((360 / n) _ i, r, cx, cy);
+});
+
+const polyStr = skillPoints.map(p => `${p.x},${p.y}`).join(" ");
+
+return (
+<div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+<svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: "visible" }}>
+{/_ Grid rings _/}
+{rings.map((r, i) => (
+<polygon
+key={i}
+points={SKILLS.map((\_, si) => {
+const pt = polarToXY((360 / n) _ si, maxR _ r, cx, cy);
+return `${pt.x},${pt.y}`;
+}).join(" ")}
+fill="none"
+stroke="var(--border-default)"
+strokeWidth="0.5"
+opacity={0.6}
+/>
+))}
+
+        {/* Axis lines */}
+        {axes.map((pt, i) => (
+          <line
+            key={i}
+            x1={cx} y1={cy} x2={pt.x} y2={pt.y}
+            stroke="var(--border-default)" strokeWidth="0.5" opacity={0.4}
+          />
+        ))}
+
+        {/* Skill area */}
+        <motion.polygon
+          points={polyStr}
+          fill="var(--accent)"
+          fillOpacity={0.12}
+          stroke="var(--accent)"
+          strokeWidth="1.5"
+          initial={{ scale: 0, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformOrigin: `${cx}px ${cy}px` }}
+        />
+
+        {/* Skill dots + labels */}
+        {skillPoints.map((pt, i) => {
+          const ax = axes[i];
+          const labelPt = polarToXY((360 / n) * i, maxR + 14, cx, cy);
+          return (
+            <g key={i}>
+              <motion.circle
+                cx={pt.x} cy={pt.y} r={3}
+                fill={SKILLS[i].color}
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.3 }}
+                style={{ transformOrigin: `${pt.x}px ${pt.y}px`, filter: `drop-shadow(0 0 4px ${SKILLS[i].color})` }}
+              />
+              <text
+                x={labelPt.x} y={labelPt.y}
+                textAnchor="middle" dominantBaseline="central"
+                style={{
+                  fontFamily: "var(--font-mono)", fontSize: "8px", fontWeight: 700,
+                  letterSpacing: "0.1em", textTransform: "uppercase",
+                  fill: "var(--text-muted)",
+                }}
+              >
+                {SKILLS[i].label}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* Legend */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "center" }}>
+        {SKILLS.map(s => (
+          <div key={s.label} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <div style={{ width: "6px", height: "6px", borderRadius: "1px", background: s.color }} />
+            <span style={{
+              fontFamily: "var(--font-mono)", fontSize: "9px",
+              color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase"
+            }}>
+              {s.label} {s.value}%
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+);
+}
+
+Add SkillRadar to the SidebarAI.tsx below the agents section,
+wrapped in a collapsible section with a toggle button labeled "SKILL MATRIX".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 8 — PARTICLE BACKGROUND + GLOBAL AMBIENCE
+SECTION I — LIVE ACTIVITY FEED (components/ui/ActivityFeed.tsx)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Create a new file: components/ui/ParticleField.tsx
+Create: components/ui/ActivityFeed.tsx
 
-This is a lightweight canvas-based particle system (no heavy libraries):
-- 60-80 dots floating slowly
-- Each dot: radius 1-2px, color var(--accent) at 6-15% opacity
-- Movement: each particle has vx, vy ±0.2px/frame, bounces off edges
-- Connections: if two particles are within 120px, draw a line between them at opacity proportional to distance
-- On mouse move (window listener): particles within 100px of cursor gently repel
-- Performance: use requestAnimationFrame, skip if document is hidden
+"use client";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
-Export as default. Add to AppShell.tsx as a fixed z-0 layer behind the grid:
-  <ParticleField className="fixed inset-0 z-0 pointer-events-none opacity-40" />
+const FEED_ITEMS = [
+{ type: "push", repo: "portfolio", time: "2m ago", msg: "feat: add theme switcher panel" },
+{ type: "create", repo: "Swacth360_bot", time: "1h ago", msg: "chore: update RAG pipeline config" },
+{ type: "push", repo: "FAS-Control", time: "3h ago", msg: "fix: QR decode edge case on Android" },
+{ type: "star", repo: "ml-predicter", time: "5h ago", msg: "Repository starred" },
+{ type: "push", repo: "SWatch360", time: "1d ago", msg: "feat: ThingsBoard dashboard integration" },
+{ type: "create", repo: "portfolio", time: "2d ago", msg: "Initial commit — cursor IDE theme" },
+];
 
-Make it conditional: only render if theme is "aniket-dark" or "tokyo-night".
+const TYPE_COLOR: Record<string, string> = {
+push: "var(--accent)", create: "var(--success)", star: "var(--warning)", merge: "var(--info)"
+};
+const TYPE_ICON: Record<string, string> = {
+push: "↑", create: "+", star: "★", merge: "⌥"
+};
+
+export default function ActivityFeed() {
+const [visible, setVisible] = useState(3);
+
+return (
+<div style={{ padding: "12px", borderTop: "1px solid var(--border-default)" }}>
+<div style={{
+        fontFamily: "var(--font-mono)", fontSize: "9px", fontWeight: 700,
+        letterSpacing: "0.2em", textTransform: "uppercase",
+        color: "var(--text-muted)", marginBottom: "8px",
+        display: "flex", alignItems: "center", gap: "8px"
+      }}>
+<div style={{
+          width: "5px", height: "5px", borderRadius: "50%",
+          background: "var(--success)", boxShadow: "var(--green-glow)",
+          animation: "led-blink 3s ease-in-out infinite",
+          flexShrink: 0,
+        }} />
+ACTIVITY
+</div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+        <AnimatePresence>
+          {FEED_ITEMS.slice(0, visible).map((item, i) => (
+            <motion.div
+              key={item.msg}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.04, duration: 0.25 }}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "16px 1fr auto",
+                gap: "6px",
+                padding: "5px 6px",
+                borderRadius: "3px",
+                alignItems: "flex-start",
+                cursor: "pointer",
+                transition: "background 0.15s",
+              }}
+              whileHover={{ backgroundColor: "var(--bg-muted)" }}
+            >
+              <span style={{
+                fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 700,
+                color: TYPE_COLOR[item.type] ?? "var(--accent)",
+                lineHeight: 1.4, textAlign: "center",
+              }}>
+                {TYPE_ICON[item.type]}
+              </span>
+              <div>
+                <div style={{
+                  fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 700,
+                  color: "var(--text-secondary)", letterSpacing: "0.02em",
+                  marginBottom: "1px", lineHeight: 1.3,
+                }}>
+                  {item.repo}
+                </div>
+                <div style={{
+                  fontFamily: "var(--font-mono)", fontSize: "9px",
+                  color: "var(--text-muted)", lineHeight: 1.4,
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                }}>
+                  {item.msg}
+                </div>
+              </div>
+              <span style={{
+                fontFamily: "var(--font-mono)", fontSize: "9px",
+                color: "var(--text-disabled)", flexShrink: 0, lineHeight: 1.4,
+              }}>
+                {item.time}
+              </span>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {visible < FEED_ITEMS.length && (
+        <button
+          type="button"
+          onClick={() => setVisible(FEED_ITEMS.length)}
+          style={{
+            marginTop: "6px", width: "100%", padding: "4px",
+            fontFamily: "var(--font-mono)", fontSize: "9px", fontWeight: 700,
+            letterSpacing: "0.1em", textTransform: "uppercase",
+            color: "var(--text-muted)", background: "none", border: "none",
+            borderTop: "1px solid var(--border-default)", cursor: "pointer",
+            transition: "color 0.15s",
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--accent)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
+        >
+          show {FEED_ITEMS.length - visible} more
+        </button>
+      )}
+    </div>
+
+);
+}
+
+Add <ActivityFeed /> inside SidebarAI.tsx below the chat session area.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 9 — SETTINGS PANEL (theme switcher visual upgrade)
+SECTION J — FOCUS MODE (store/useIDEStore.ts + AppShell)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-If a Settings panel component exists, upgrade the theme switcher to show:
-- A visual color swatch for each of the 7 themes
-- The active theme has a neon-border ring around its swatch
-- Hover shows a live preview of the accent color
-- Clicking triggers an animated theme transition:
-  1. A white flash div (opacity 0 → 0.15 → 0) over 300ms
-  2. Then setTheme fires
-  3. All CSS var transitions handle the color morph (already set to 180ms)
+J.1 — Add focusMode to IDEState in store/useIDEStore.ts:
+focusMode: boolean;
+toggleFocusMode: () => void;
 
-If no Settings panel exists, skip this section.
+In the create block:
+focusMode: false,
+toggleFocusMode: () => set((state) => ({ focusMode: !state.focusMode })),
+
+J.2 — Add keyboard shortcut in AppShell.tsx:
+Pull toggleFocusMode from store.
+In handleKeyDown:
+if (isModifier && event.shiftKey && event.key.toLowerCase() === "f") {
+event.preventDefault();
+toggleFocusMode();
+}
+
+J.3 — Apply focus mode to AppShell grid:
+Pull focusMode from store.
+Add to the main grid div:
+style={{
+...existing styles,
+"--sidebar-opacity": focusMode ? "0.15" : "1",
+"--sidebar-pointer": focusMode ? "none" : "auto",
+} as React.CSSProperties}
+
+Add to the two aside elements:
+style={{ opacity: "var(--sidebar-opacity)", pointerEvents: "var(--sidebar-pointer)" as any, transition: "opacity 400ms ease" }}
+
+J.4 — Add focus mode toggle to TopBar as a small button:
+<IconButton title="Focus mode (Ctrl+Shift+F)" onClick={toggleFocusMode} active={focusMode}>
+{/_ Diamond icon _/}
+<svg width="14" height="14" viewBox="0 0 24 24" fill={focusMode ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" aria-hidden="true">
+<polygon points="12 2 22 12 12 22 2 12"/>
+</svg>
+</IconButton>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-IMPLEMENTATION ORDER:
+SECTION K — TOPBAR IDENTITY UPGRADE (components/TopBar.tsx)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
-  
-  After Section 1: run `npx tsc --noEmit` — must show 0 errors
-  After Section 3: test in browser that AppShell renders with correct colors
-  After Section 4-6: test that project panel animations run on first load without jank
-  Final: run `npm run build` — must succeed with 0 errors
 
-CONSTRAINTS:
-  - Do NOT use any animation library other than framer-motion (already installed)
-  - Do NOT add new npm packages unless explicitly stated
-  - All canvas work (ParticleField) must be vanilla JS
-  - All animations must respect prefers-reduced-motion:
-    Add this once to globals.css:
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-  - TypeScript strict mode: no `any` types
-  - All new components must be "use client" if they use hooks or browser APIs
+Replace the center title div with a full identity block:
+
+<div style={{
+  position: "absolute", left: "50%", transform: "translateX(-50%)",
+  display: "flex", alignItems: "center", gap: "8px", pointerEvents: "none"
+}}>
+  {/* Ghost text behind */}
+  <div style={{ position: "relative" }}>
+    {/* Accent dot */}
+    <span style={{
+      width: "5px", height: "5px", borderRadius: "50%",
+      background: "var(--accent)",
+      boxShadow: "var(--accent-glow)",
+      display: "inline-block",
+      animation: "led-blink 4s ease-in-out infinite",
+      flexShrink: 0,
+    }} />
+  </div>
+  {/* Name + role */}
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0px" }}>
+    <span style={{
+      fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 800,
+      letterSpacing: "-0.02em", color: "var(--text-primary)", lineHeight: 1,
+    }}>
+      ANIKET KARMAKAR
+    </span>
+    <span style={{
+      fontFamily: "var(--font-mono)", fontSize: "8px", fontWeight: 700,
+      letterSpacing: "0.15em", textTransform: "uppercase",
+      color: "var(--accent)", lineHeight: 1, opacity: 0.8,
+    }}>
+      R&amp;D · SEPLE · Bengaluru
+    </span>
+  </div>
+</div>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION L — ACCESSIBILITY + MOTION SAFETY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Add to app/globals.css AFTER all other rules:
+
+@media (prefers-reduced-motion: reduce) {
+_, _::before, \*::after {
+animation-duration: 0.01ms !important;
+animation-iteration-count: 1 !important;
+transition-duration: 0.01ms !important;
+}
+.cursor-glow-active::after { display: none; }
+.noise-overlay::before { display: none; }
+}
+
+@media (prefers-contrast: high) {
+:root {
+--accent-muted: rgba(160, 94, 248, 0.3);
+--accent-subtle: rgba(160, 94, 248, 0.15);
+--border-default: #444444;
+--text-muted: #999999;
+}
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FINAL CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+After all sections:
+
+[ ] npx tsc --noEmit → 0 errors
+[ ] npm run build → succeeds
+[ ] npm run dev → open in browser
+
+Visual checks:
+[ ] All 13 themes switch correctly via Ctrl+Shift+T cycling
+[ ] ThemeSwitcher panel shows 13 swatches, active one glows
+[ ] CursorOrb follows mouse smoothly (not jerky)
+[ ] StatsBar counter animates on first scroll into view
+[ ] ActivityFeed shows in SidebarAI with live dot
+[ ] SkillRadar animates in SidebarAI
+[ ] Focus mode dims sidebars on Ctrl+Shift+F
+[ ] Noise grain is barely visible (0.03 opacity)
+[ ] No layout shift on theme change
+[ ] No text clipping in TopBar identity block on narrow screens
+[ ] Mobile: test at 375px width — all panels accessible
+
+Performance:
+[ ] No CSS animations running on non-visible elements
+[ ] CursorOrb uses requestAnimationFrame (not setInterval)
+[ ] StatsBar counter uses rAF, not setInterval
+[ ] Noise layer uses CSS background-image (SVG data URI), not canvas
+
+CONSTRAINTS (do not violate):
+
+- Zero new npm packages
+- All components are "use client" if they use hooks
+- TypeScript strict mode — no `any`
+- Framer Motion only for complex animations (CSS for simple ones)
+- Canvas only for ParticleField (from previous prompt)
+- prefers-reduced-motion must disable all animations

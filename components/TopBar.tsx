@@ -2,9 +2,10 @@
 
 import { contactDetails } from "@/data/content";
 import { defaultFilePath } from "@/data/files";
-import { useIDEStore } from "@/store/useIDEStore";
+import { useIDEStore, type ThemeMode } from "@/store/useIDEStore";
 import { motion } from "framer-motion";
 import { FaGear } from "react-icons/fa6";
+import { GlitchHeading } from "@/components/ui/AnimatedText";
 import {
   VscChromeClose,
   VscChromeMaximize,
@@ -69,27 +70,45 @@ function WindowButton({
 }
 
 function LiveClock() {
-  const [time, setTime] = useState("");
+  const [t, setT] = useState(() => new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }));
+  useEffect(() => { const id = setInterval(() => setT(new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })), 1000); return () => clearInterval(id); }, []);
+  return <span className="font-mono text-[10px] text-[var(--text-muted)] tabular-nums hidden lg:block">{t}</span>;
+}
 
-  useEffect(() => {
-    const update = () =>
-      setTime(
-        new Date().toLocaleTimeString("en-IN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }),
-      );
+const THEMES = [
+  { id: "aniket-dark", color: "#3b82f6" },
+  { id: "synthwave", color: "#f9a8d4" },
+  { id: "dracula", color: "#bd93f9" },
+  { id: "light", color: "#2563eb" },
+  { id: "rose-pine", color: "#ebbcba" },
+  { id: "tokyo-night", color: "#7aa2f7" },
+  { id: "catppuccin", color: "#cba6f7" },
+  { id: "nord", color: "#88c0d0" },
+  { id: "gruvbox", color: "#fabd2f" },
+] as const;
 
-    update();
-    const intervalId = window.setInterval(update, 10000);
-    return () => window.clearInterval(intervalId);
-  }, []);
+function ThemeSelector() {
+  const currentTheme = useIDEStore((state) => state.theme);
+  const setTheme = useIDEStore((state) => state.setTheme);
 
   return (
-    <span className="hidden text-[10px] font-mono text-[var(--text-muted)] opacity-60 lg:block">
-      {time}
-    </span>
+    <div className="hidden lg:flex items-center gap-1.5 px-3 border-r border-[var(--border-default)] mr-1 h-4">
+      {THEMES.map((t) => {
+        const isActive = currentTheme === t.id;
+        return (
+          <button
+            key={t.id}
+            onClick={() => setTheme(t.id as ThemeMode)}
+            title={`Theme: ${t.id}`}
+            className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${isActive ? "scale-[1.3] z-10" : "opacity-40 hover:opacity-100 hover:scale-110"}`}
+            style={{ 
+              backgroundColor: t.color,
+              ...(isActive ? { boxShadow: `0 0 0 1px var(--bg-base), 0 0 0 2px ${t.color}, 0 0 8px ${t.color}` } : {})
+            }}
+          />
+        );
+      })}
+    </div>
   );
 }
 
@@ -357,12 +376,9 @@ export default function TopBar() {
               whileHover={{ scale: 1.05 }}
               className="min-w-0 cursor-pointer"
             >
-              <span
-                className="glitch-text gradient-text text-[12px] font-bold"
-                data-text="cursorfolio.dev"
-              >
-                cursorfolio.dev
-              </span>
+              <GlitchHeading className="gradient-text text-[13px] font-bold font-display cursor-pointer" data-text="aniket.site">
+                aniket.site
+              </GlitchHeading>
             </motion.div>
             <span className="ml-auto flex items-center gap-1 opacity-30 group-hover:opacity-50 shrink-0">
               <span className="rounded border border-[var(--border-default)] px-1 py-[1px] text-[9px] font-bold leading-none">CTRL</span>
@@ -376,12 +392,9 @@ export default function TopBar() {
             whileHover={{ scale: 1.05 }}
             className="cursor-pointer"
           >
-            <span
-              className="glitch-text gradient-text text-[12px] font-bold"
-              data-text="cursorfolio.dev"
-            >
-              cursorfolio.dev
-            </span>
+            <GlitchHeading className="gradient-text text-[13px] font-bold font-display cursor-pointer" data-text="aniket.site">
+              aniket.site
+            </GlitchHeading>
           </motion.div>
         </div>
       )}
@@ -406,7 +419,7 @@ export default function TopBar() {
                 onClick={toggleSidebar}
                 title="Toggle Sidebar"
                 className={`w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${sidebarOpen
-                  ? "bg-[#2d2d2d] text-[var(--text-primary)] shadow-[0_0_8px_rgba(0,0,0,0.4)] border border-[#404040]"
+                  ? "bg-[#2d2d2d] text-[var(--text-primary)] border border-[#404040]"
                   : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
                   }`}
               >
@@ -416,7 +429,7 @@ export default function TopBar() {
                 onClick={toggleTerminal}
                 title="Toggle Terminal"
                 className={`w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${terminalOpen
-                  ? "bg-[#2d2d2d] text-[var(--text-primary)] shadow-[0_0_8px_rgba(0,0,0,0.4)] border border-[#404040]"
+                  ? "bg-[#2d2d2d] text-[var(--text-primary)] border border-[#404040]"
                   : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
                   }`}
               >
@@ -426,7 +439,7 @@ export default function TopBar() {
                 onClick={toggleAIPanel}
                 title="Toggle AI Panel"
                 className={`w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${aiPanelOpen
-                  ? "bg-[#2d2d2d] text-[var(--text-primary)] shadow-[0_0_10px_rgba(59,130,246,0.15)] border border-[#444444]"
+                  ? "bg-[#2d2d2d] text-[var(--text-primary)] border border-[#444444]"
                   : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
                   }`}
               >
@@ -446,6 +459,8 @@ export default function TopBar() {
             <span>Agent</span>
           </button>
         )}
+
+
 
         <div className="mr-2">
           <LiveClock />

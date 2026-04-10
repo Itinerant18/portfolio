@@ -121,7 +121,7 @@ export function ProjectChangelog({ releases }: { releases: ReleaseEntry[] }) {
                   />
                   {!shouldReduceMotion ? (
                     <motion.span
-                      className="absolute right-[-9px] top-8 h-2.5 w-2.5 rounded-full bg-[var(--accent)] shadow-[var(--glow-accent)]"
+                      className="absolute right-[-9px] top-8 h-2.5 w-2.5 rounded-full bg-[var(--accent)]"
                       initial={{ opacity: 0 }}
                       whileInView={{ opacity: [1, 1, 0], y: ["0px", "calc(100% + 24px)"] }}
                       viewport={{ once: true }}
@@ -130,7 +130,7 @@ export function ProjectChangelog({ releases }: { releases: ReleaseEntry[] }) {
                   ) : null}
                 </>
               ) : null}
-              <div className="absolute right-[-5px] top-[18px] h-2.5 w-2.5 rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)] z-10 shadow-[0_0_8px_var(--accent)]" />
+              <div className="absolute right-[-5px] top-[18px] h-2.5 w-2.5 rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)] z-10" />
             </div>
             
             <motion.div
