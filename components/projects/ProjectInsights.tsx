@@ -225,12 +225,12 @@ export function ProjectInsights({ project }: { project: ProjectShape }) {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div>
+      <section className="grid grid-cols-1 gap-8 lg:grid-cols-2 min-w-0">
+        <div className="min-w-0 overflow-hidden">
           <SectionLabel label="Stack Proficiency" />
-          <div className="mt-4 h-64 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3">
+          <div className="mt-4 h-64 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 overflow-hidden min-w-0 w-full">
             {proficiencyData.length >= 3 ? (
-              <ResponsiveContainer>
+              <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={proficiencyData}>
                   <PolarGrid stroke="var(--border-default)" />
                   <PolarAngleAxis
@@ -273,10 +273,10 @@ export function ProjectInsights({ project }: { project: ProjectShape }) {
           </div>
         </div>
 
-        <div>
+        <div className="min-w-0 overflow-hidden">
           <SectionLabel label="Language Breakdown" />
-          <div className="mt-4 flex h-64 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3">
-            <ResponsiveContainer>
+          <div className="mt-4 flex h-64 items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 overflow-hidden min-w-0 w-full">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={languageData} cx="50%" cy="50%" outerRadius={90} dataKey="value" strokeWidth={0}>
                   {languageData.map((entry, index) => (

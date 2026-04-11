@@ -74,49 +74,6 @@ function LiveClock() {
   return <span className="type-mono-sm text-[var(--text-muted)] tabular-nums hidden lg:block">{t}</span>;
 }
 
-const THEMES = [
-  { id: "aniket-dark", color: "#3b82f6" },
-  { id: "synthwave", color: "#f9a8d4" },
-  { id: "dracula", color: "#bd93f9" },
-  { id: "light", color: "#2563eb" },
-  {
-    id: "cursor-warm",
-    color: "#f54e00",
-    swatch: "linear-gradient(135deg, #f2f1ed 0%, #f2f1ed 68%, #f54e00 68%, #f54e00 100%)",
-  },
-  { id: "rose-pine", color: "#ebbcba" },
-  { id: "tokyo-night", color: "#7aa2f7" },
-  { id: "catppuccin", color: "#cba6f7" },
-  { id: "nord", color: "#88c0d0" },
-  { id: "gruvbox", color: "#fabd2f" },
-] as const;
-
-function ThemeSelector() {
-  const currentTheme = useIDEStore((state) => state.theme);
-  const setTheme = useIDEStore((state) => state.setTheme);
-
-  return (
-    <div className="hidden lg:flex items-center gap-1.5 px-3 border-r border-[var(--border-default)] mr-1 h-4">
-      {THEMES.map((t) => {
-        const isActive = currentTheme === t.id;
-        return (
-          <button
-            key={t.id}
-            onClick={() => setTheme(t.id as ThemeMode)}
-            title={`Theme: ${t.id}`}
-            className={`h-3 w-4 rounded-[4px] border transition-all duration-300 ${
-              isActive
-                ? "scale-[1.08] border-[var(--text-primary)]"
-                : "border-[var(--border-default)] opacity-60 hover:opacity-100 hover:border-[var(--border-hover)]"
-            }`}
-            style={{ background: "swatch" in t ? t.swatch : t.color }}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
 export default function TopBar() {
   const currentMode = useIDEStore((state) => state.currentMode);
   const activeFile = useIDEStore((state) => state.activeFile);
@@ -401,7 +358,7 @@ export default function TopBar() {
               whileHover={{ scale: 1.05 }}
               className="min-w-0 cursor-pointer"
             >
-              <span className="gradient-text cursor-pointer type-section max-[900px]:type-title-sm leading-none">
+              <span className="gradient-text cursor-pointer type-ui leading-none">
                 Aniket.site
               </span>
             </motion.div>
@@ -417,10 +374,9 @@ export default function TopBar() {
             whileHover={{ scale: 1.05 }}
             className="cursor-pointer"
           >
-            <span className="gradient-text cursor-pointer type-section max-[900px]:type-title-sm leading-none">
+            <span className="gradient-text cursor-pointer type-ui leading-none">
               Aniket.site
-            </span>
-          </motion.div>
+            </span>          </motion.div>
         </div>
       )}
 
@@ -486,8 +442,6 @@ export default function TopBar() {
         )}
 
 
-
-        <ThemeSelector />
 
         <div className="mr-2">
           <LiveClock />

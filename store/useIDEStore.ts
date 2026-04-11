@@ -115,7 +115,7 @@ export const useIDEStore = create<IDEState>()(
       terminalOpen: true,
       terminalResetKey: 0,
       currentMode: "editor",
-      theme: "aniket-dark",
+      theme: "gruvbox",
       settingsOpen: false,
       commandPaletteOpen: false,
       paletteMode: "commands",

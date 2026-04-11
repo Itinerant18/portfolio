@@ -243,9 +243,9 @@ export function ProjectOverview({
       </AnimatePresence>
 
       <div className="bg-[var(--bg-base)] flex flex-col gap-6 sm:gap-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10">
-          <div className="space-y-6 sm:space-y-8">
-            <section>
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-10">
+          <div className="space-y-6 sm:space-y-8 min-w-0">
+            <section className="min-w-0">
               <SectionLabel label="The Problem" />
               <p
                 className={`type-body text-[var(--text-secondary)] ${
@@ -269,12 +269,13 @@ export function ProjectOverview({
               </div>
             </section>
 
-            <section className="design-surface p-4">
+            <section className="design-surface p-4 min-w-0 overflow-hidden">
               <SectionLabel label="Core Features" />
               <div className="mb-4 overflow-hidden border-y border-[var(--border-default)] py-1.5">
                 <motion.div
                   animate={shouldReduceMotion ? { x: 0 } : { x: ["0%", "-50%"] }}
                   transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  style={{ width: "max-content" }}
                   className="flex gap-8 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--accent)] opacity-65"
                 >
                   {Array.from({ length: 4 }, (_, groupIndex) =>
@@ -305,7 +306,7 @@ export function ProjectOverview({
               </div>
             </section>
 
-            <section className="design-surface p-4">
+            <section className="design-surface p-4 min-w-0 overflow-hidden">
               <SectionLabel label="Stack" />
               <div className="space-y-4">
                 {detail.techGroups.map((group: TechGroup, groupIndex: number) => (
@@ -314,11 +315,12 @@ export function ProjectOverview({
                     initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: groupIndex * 0.04 }}
+                    className="min-w-0"
                   >
                     <div className="type-sys-micro mb-2 text-[var(--text-muted)]">
                       {group.label}
                     </div>
-                    <div className={`flex flex-wrap gap-2 ${isMobile && !showAllTech ? "max-h-[88px] overflow-hidden" : ""}`}>
+                    <div className={`flex flex-wrap gap-2 w-full min-w-0 ${isMobile && !showAllTech ? "max-h-[88px] overflow-hidden" : ""}`}>
                       {(isMobile && !showAllTech ? group.items.slice(0, 6) : group.items).map((item: TechGroupItem, index: number) => (
                         <TechBadge
                           key={`${project.id}-tech-${group.label}-${index}`}
@@ -341,7 +343,7 @@ export function ProjectOverview({
               </div>
             </section>
 
-            <section className="design-surface p-4">
+            <section className="design-surface p-4 min-w-0 overflow-hidden">
               <SectionLabel label="System Flow" />
               <FlowDiagram project={project} />
               <p className="type-mono-sm mt-2 text-[var(--text-muted)]">
@@ -349,12 +351,12 @@ export function ProjectOverview({
               </p>
             </section>
 
-            <section>
+            <section className="min-w-0 overflow-hidden">
               <SectionLabel label={liveUrl ? "Live Preview" : images.length > 0 ? "Gallery" : "Preview"} />
               {!isMobile && liveUrl ? (
                 <LivePreview url={liveUrl} projectName={project.name} />
               ) : images.length > 0 ? (
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 overflow-hidden">
                   {images.slice(0, 3).map((url, index) => (
                     <GalleryImage
                       key={`${project.id}-gallery-${index}`}

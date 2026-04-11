@@ -61,7 +61,7 @@ export default function HomeTab() {
         <motion.div variants={item}>
           <div className="type-sys-micro inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[var(--text-muted)]">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-pulse" />
-            Available for new opportunities · Noida / Remote
+            Available for new opportunities · Anywhere / Remote
           </div>
         </motion.div>
 
@@ -132,7 +132,7 @@ export default function HomeTab() {
             { value: "8.6", label: "CGPA", color: "var(--success)" },
             { value: "36+", label: "PROJECTS", color: "var(--accent)" },
             { value: "4+", label: "INTERNSHIPS", color: "var(--info)" },
-            { value: "2+", label: "YEARS EXP", color: "var(--warning)" },
+            { value: "1+", label: "YEARS EXP", color: "var(--warning)" },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}

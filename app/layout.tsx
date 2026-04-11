@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      data-theme="aniket-dark"
+      data-theme="gruvbox"
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body>

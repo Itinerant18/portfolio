@@ -39,7 +39,7 @@ export function ProjectReadme({ project }: { project: ProjectShape }) {
     <motion.article 
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }} 
-      className="prose prose-invert max-w-none"
+      className="prose prose-invert max-w-none min-w-0 overflow-hidden"
       style={{
         "--tw-prose-body": "var(--text-secondary)",
         "--tw-prose-headings": "var(--text-primary)",
@@ -48,7 +48,7 @@ export function ProjectReadme({ project }: { project: ProjectShape }) {
       } as React.CSSProperties}
     >
       <SectionLabel label="README.md" />
-      <div className="mt-6 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 md:p-10">
+      <div className="mt-6 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 md:p-8 overflow-hidden min-w-0">
         <ReactMarkdown 
           remarkPlugins={[remarkGfm]}
           components={{
@@ -77,14 +77,16 @@ export function ProjectReadme({ project }: { project: ProjectShape }) {
                     <SyntaxHighlighter
                       language={match[1]}
                       PreTag="div"
-                      customStyle={{ margin: 0, background: "var(--bg-base)", padding: "1.25rem" }}
+                      customStyle={{ margin: 0, background: "var(--bg-base)", padding: "1.25rem", overflowX: "auto" }}
+                      wrapLines={true}
+                      wrapLongLines={true}
                     >
                       {String(children).replace(/\n$/, "")}
                     </SyntaxHighlighter>
                   </div>
                 );
               }
-              return <code className="type-mono-sm rounded px-1.5 py-0.5 text-[var(--accent)] bg-[var(--accent-subtle)]">{children}</code>;
+              return <code className="type-mono-sm rounded px-1.5 py-0.5 text-[var(--accent)] bg-[var(--accent-subtle)] break-words">{children}</code>;
             },
             img: ({ src, alt }: any) => (
               <img src={`/api/proxy-image?url=${encodeURIComponent(src as string || "")}`} alt={alt as string} className="rounded-sm border border-[var(--border-default)] max-w-full my-4" />
@@ -96,7 +98,7 @@ export function ProjectReadme({ project }: { project: ProjectShape }) {
               <blockquote className="border-l-4 border-[var(--accent)] bg-[var(--accent-subtle)] pl-4 py-2 my-4 italic text-[var(--text-secondary)] rounded-r-sm">{children}</blockquote>
             ),
             table: ({ children }) => (
-              <div className="overflow-x-auto my-4">
+              <div className="overflow-x-auto my-4 max-w-full">
                 <table className="w-full text-[12px] border-collapse">{children}</table>
               </div>
             ),

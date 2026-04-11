@@ -1292,3 +1292,36 @@ kbd {
     letter-spacing: var(--tracking-22);
   }
 }
+
+/* ── Global overflow guard for project panels ── */
+.content-max {
+  max-width: min(1200px, 100%);
+  overflow-x: hidden;
+}
+
+.design-surface,
+.design-surface-ambient,
+.design-row {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Force all pre and code blocks to wrap inside content areas */
+.content-max pre,
+.content-max code {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+/* Allow syntax highlighting blocks to scroll internally but not cause parent overflow */
+.content-max .syntax-block {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* recharts ResponsiveContainer fix */
+.recharts-wrapper {
+  max-width: 100% !important;
+}

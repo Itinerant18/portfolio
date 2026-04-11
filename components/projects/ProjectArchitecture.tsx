@@ -20,22 +20,22 @@ export function ProjectArchitecture({
   const maxCategoryCount = Math.max(...categoryRows.map((row) => row.count), 1);
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-8">
-      <section>
+    <div className="flex flex-col gap-6 sm:gap-8 min-w-0 overflow-hidden">
+      <section className="min-w-0">
         <SectionLabel label="High Level Description" />
         <p className="type-body mt-2 text-[var(--text-secondary)]">
           {detail.architecture}
         </p>
       </section>
 
-      <section>
+      <section className="min-w-0 overflow-hidden">
         <SectionLabel label="Flow Nodes" />
         <div className="mx-auto w-full">
           <FlowDiagram project={project} />
         </div>
       </section>
 
-      <section>
+      <section className="min-w-0">
         <SectionLabel label="System Layers" />
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           {[
@@ -66,9 +66,9 @@ export function ProjectArchitecture({
         </div>
       </section>
 
-      <section>
+      <section className="min-w-0">
         <SectionLabel label="Tech Category Breakdown" />
-        <div className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4">
+        <div className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 overflow-hidden min-w-0">
           <div className="space-y-3">
             {categoryRows.map((row) => (
               <CategoryBar
@@ -83,7 +83,7 @@ export function ProjectArchitecture({
         </div>
       </section>
 
-      <section>
+      <section className="min-w-0">
         <SectionLabel label="Data Schema" />
         <div className="space-y-4">
           {detail.dataModels.slice(0, 2).map((model: string, modelIndex: number) => (
@@ -97,14 +97,14 @@ export function ProjectArchitecture({
               <div className="type-sys-micro border-b border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-2 text-[var(--text-secondary)]">
                 Schema Definition {modelIndex + 1}
               </div>
-              <div className="type-mono-sm ide-scrollbar overflow-x-auto bg-[var(--bg-base)] p-4 text-[var(--info)]">
+              <div className="type-mono-sm ide-scrollbar overflow-hidden bg-[var(--bg-base)] p-4 text-[var(--info)]">
                 {model.split("\n").map((line, lineIndex) => (
                   <motion.div
                     key={`${project.id}-schema-${modelIndex}-${lineIndex}`}
                     initial={shouldReduceMotion ? false : { opacity: 0, x: -6 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: lineIndex * 0.1, duration: 0.18 }}
-                    className="whitespace-pre"
+                    className="whitespace-pre-wrap break-words"
                   >
                     {line}
                   </motion.div>

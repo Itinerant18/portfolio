@@ -16,6 +16,8 @@ import {
 
 const THEMES: { color: string; id: ThemeMode; label: string; tones: [string, string, string] }[] = [
   { id: "aniket-dark", label: "Aniket Dark", color: "#A05EF8", tones: ["#0b0b0b", "#1c1c1c", "#A05EF8"] },
+  { id: "synthwave", label: "Synthwave", color: "#ff6ac1", tones: ["#0d0221", "#1e0a46", "#ff6ac1"] },
+  { id: "dracula", label: "Dracula", color: "#bd93f9", tones: ["#181920", "#282a36", "#bd93f9"] },
   { id: "light", label: "Light", color: "#A05EF8", tones: ["#ffffff", "#f3f3f3", "#A05EF8"] },
   { id: "cursor-warm", label: "Cursor Warm", color: "#f54e00", tones: ["#f2f1ed", "#ebeae5", "#f54e00"] },
   { id: "rose-pine", label: "Rosé Pine", color: "#ebbcba", tones: ["#191724", "#26233a", "#ebbcba"] },

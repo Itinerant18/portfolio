@@ -303,12 +303,12 @@ export function FlowNode({
                 {protocol}
               </motion.span>
             ) : null}
-            <div className="relative flex w-8 items-center sm:w-12">
+            <div className="relative flex w-4 items-center sm:w-6 lg:w-8">
               <div className="h-px w-full border-t border-dashed border-[var(--accent-muted)]" />
               {!shouldReduceMotion ? (
                 <motion.span
                   className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--accent)]"
-                  animate={{ x: [0, 30, 42], opacity: [0, 1, 1, 0] }}
+                  animate={{ x: [0, 12, 20], opacity: [0, 1, 1, 0] }}
                   transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
                 />
               ) : null}
@@ -334,16 +334,16 @@ export function FlowDiagram({ project }: { project: ProjectShape }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setIsMobileFlow(window.innerWidth < 600);
-    const handler = () => setIsMobileFlow(window.innerWidth < 600);
+    setIsMobileFlow(window.innerWidth < 900);
+    const handler = () => setIsMobileFlow(window.innerWidth < 900);
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
   }, []);
 
   return (
-    <div className="ide-scrollbar mt-3 overflow-x-auto overflow-y-hidden rounded-sm border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-base),var(--bg-elevated))] px-3 py-6 shadow-[var(--shadow-ambient)] sm:px-4 sm:py-8">
+    <div className="mt-3 rounded-sm border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-base),var(--bg-elevated))] px-3 py-6 shadow-[var(--shadow-ambient)] sm:px-4 sm:py-8">
       <div
-        className={`mx-auto flex ${isMobileFlow ? "w-full items-center justify-start flex-col gap-0" : "w-fit min-w-max items-center gap-3 sm:gap-4"}`}
+        className={`mx-auto flex ${isMobileFlow ? "w-full flex-col items-center gap-0" : "w-full flex-wrap items-start justify-center gap-3 sm:gap-4"}`}
       >
         {flow.map((node, index) => (
           <FlowNode

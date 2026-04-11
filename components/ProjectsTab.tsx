@@ -397,7 +397,7 @@ export default function ProjectsTab() {
                 <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[var(--bg-elevated)] bg-[var(--success)] animate-pulse" />
               </div>
 
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 overflow-hidden">
                 <div className="type-sys-micro flex flex-wrap items-center gap-x-2 gap-y-1 text-[var(--text-muted)]">
                   <span className="text-[var(--accent)]">{detail.category}</span>
                   <span className="opacity-30">•</span>
@@ -405,8 +405,8 @@ export default function ProjectsTab() {
                   <span className="opacity-30">•</span>
                   <span>{detail.year}</span>
                 </div>
-                <h1 className="type-hero mt-1 text-[var(--text-primary)]">
-                  <span className="gradient-text">{selectedProject.name}</span>
+                <h1 className="type-hero mt-1 text-[var(--text-primary)] overflow-hidden">
+                  <span className="gradient-text break-words">{selectedProject.name}</span>
                 </h1>
                 <p className="type-body mt-2 max-w-[60ch] text-[var(--text-secondary)]">
                   {detail.tagline}
@@ -444,7 +444,7 @@ export default function ProjectsTab() {
         <div className="shrink-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
           <div className="mx-auto w-full max-w-[1200px]">
             <div className="px-6">
-              <div className="flex overflow-x-auto scrollbar-hide gap-0 border-b border-[var(--border-default)]">
+              <div className="flex overflow-x-auto scrollbar-hide gap-0 border-b border-[var(--border-default)] max-w-full">
                 {TABS.map(({ key, label }) => (
                   <button
                     key={key}
@@ -478,7 +478,7 @@ export default function ProjectsTab() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="content-max section-spacing"
+              className="content-max section-spacing min-w-0"
             >
               {activeTab === "overview" && (
                 <ProjectOverview project={selectedProject} detail={detail} allProjects={projects} />
