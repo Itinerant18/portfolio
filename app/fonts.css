@@ -1,0 +1,21 @@
+/* Fallback font mappings approximating DESIGN.md proprietary fonts */
+@font-face {
+  font-family: "CursorGothic";
+  src: local("Space Grotesk"), local("system-ui");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "jjannon";
+  src: local("Lora"), local("Georgia");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "berkeleyMono";
+  src: local("DM Mono"), local("Menlo");
+  font-weight: 100 900;
+  font-display: swap;
+}

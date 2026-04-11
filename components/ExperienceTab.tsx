@@ -100,20 +100,20 @@ export default function ExperienceTab() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 font-sans text-[13px] text-[var(--text-primary)] md:p-12"
+      className="type-ui ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 text-[var(--text-primary)] md:p-12"
     >
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-10">
         <motion.div variants={item}>
-          <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--text-muted)]">
+          <div className="type-sys-micro text-[var(--text-muted)]">
             Professional journey timeline
           </div>
         </motion.div>
 
         <motion.div variants={item} className="flex flex-col gap-2">
-          <h1 className="text-[28px] font-bold tracking-[-0.04em]">
+          <h1 className="type-hero">
             <span className="gradient-text">Experience</span>
           </h1>
-          <p className="text-[14px] text-[var(--text-muted)]">
+          <p className="type-body text-[var(--text-muted)]">
             Professional roles across software engineering, testing, and cloud
             systems.
           </p>
@@ -134,22 +134,23 @@ export default function ExperienceTab() {
                 <exp.Icon size={14} style={{ color: exp.accentColor }} />
               </div>
 
+              {/* 20px gap */}
               <motion.div
                 whileHover={{ x: 4 }}
-                className="glow-card rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 transition-all"
+                className="glow-card rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-[20px] transition-all"
                 style={{ borderLeftWidth: 3, borderLeftColor: exp.accentColor }}
               >
                 {/* Top row */}
                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                  <span className="flex items-center gap-1.5 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 font-mono text-[10px] font-medium text-[var(--text-muted)]">
+                  <span className="type-mono-sm flex items-center gap-1.5 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[var(--text-muted)]">
                     <FaCalendarAlt size={9} />
                     {exp.period}
                   </span>
-                  <span className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-secondary)]">
+                  <span className="type-caption rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[var(--text-secondary)]">
                     {exp.type}
                   </span>
                   {exp.current && (
-                    <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[var(--success)]">
+                    <span className="type-caption flex items-center gap-1.5 text-[var(--success)]">
                       <VscCircleFilled size={8} className="animate-pulse" />
                       Active
                     </span>
@@ -157,25 +158,25 @@ export default function ExperienceTab() {
                 </div>
 
                 {/* Role */}
-                <h2 className="text-[17px] font-bold leading-tight text-[var(--text-primary)]">
+                <h2 className="type-sub text-[var(--text-primary)]">
                   {exp.role}
                 </h2>
                 <div
-                  className="mt-1 flex items-center gap-2 text-[13px] font-medium"
+                  className="type-btn mt-1 flex items-center gap-2"
                   style={{ color: exp.accentColor }}
                 >
                   <FaBuilding size={12} />
                   {exp.company}
                 </div>
                 {exp.location && (
-                  <div className="mt-1 flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                  <div className="type-caption mt-1 flex items-center gap-1.5 text-[var(--text-muted)]">
                     <FaMapMarkerAlt size={10} />
                     {exp.location}
                   </div>
                 )}
 
                 {/* Description */}
-                <p className="mt-3 text-[13px] leading-relaxed text-[var(--text-secondary)]">
+                <p className="type-body mt-3 text-[var(--text-secondary)]">
                   {exp.description}
                 </p>
 
@@ -184,7 +185,7 @@ export default function ExperienceTab() {
                   {exp.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-secondary)]"
+                      className="type-caption rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-0.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-secondary)]"
                     >
                       {tag}
                     </span>

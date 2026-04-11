@@ -9,6 +9,7 @@ export type ThemeMode =
   | "synthwave"
   | "dracula"
   | "light"
+  | "cursor-warm"
   | "rose-pine"
   | "tokyo-night"
   | "catppuccin"
@@ -75,6 +76,7 @@ const themeOrder: ThemeMode[] = [
   "synthwave",
   "dracula",
   "light",
+  "cursor-warm",
   "rose-pine",
   "tokyo-night",
   "catppuccin",
@@ -89,6 +91,16 @@ const initialMessages: ChatMessage[] = [
     content: "Session ready. Ask about projects, architecture, or experience.",
   },
 ];
+
+function triggerResumeDownload() {
+  if (typeof document === "undefined") return;
+  const link = document.createElement("a");
+  link.href = "/Aniket_resume_updated.pdf";
+  link.download = "resume.pdf";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
 export const useIDEStore = create<IDEState>()(
   persist(
@@ -110,12 +122,19 @@ export const useIDEStore = create<IDEState>()(
       searchQuery: "",
       chatMessages: initialMessages,
       openFile: (file) =>
-        set((state) => ({
-          activeFile: file,
-          openFiles: state.openFiles.includes(file)
-            ? state.openFiles
-            : [...state.openFiles, file],
-        })),
+        set((state) => {
+          if (file.toLowerCase().endsWith("resume.pdf")) {
+            triggerResumeDownload();
+            return {};
+          }
+
+          return {
+            activeFile: file,
+            openFiles: state.openFiles.includes(file)
+              ? state.openFiles
+              : [...state.openFiles, file],
+          };
+        }),
       closeFile: (file) =>
         set((state) => {
           const remaining = state.openFiles.filter((entry) => entry !== file);
@@ -186,6 +205,7 @@ export const useIDEStore = create<IDEState>()(
             "synthwave",
             "dracula",
             "light",
+            "cursor-warm",
             "rose-pine",
             "tokyo-night",
             "catppuccin",

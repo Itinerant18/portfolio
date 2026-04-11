@@ -28,7 +28,7 @@ function VersionBadge({ version }: { version: string }) {
   const normalized = normalizeVersion(version);
 
   return (
-    <div className="pt-1.5 font-mono text-[12px] font-bold tracking-tight text-[var(--accent)] sm:text-[14px]">
+    <div className="type-mono pt-1.5 font-bold tracking-tight text-[var(--accent)] sm:text-[14px]">
       v{normalized}
     </div>
   );
@@ -41,7 +41,7 @@ export function ProjectChangelog({ releases }: { releases: ReleaseEntry[] }) {
     <div className="flex flex-col gap-6 sm:gap-8">
       <div className="mb-2 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
         <SectionLabel label="Release History" />
-        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--accent)]">
+        <div className="type-sys-micro flex items-center gap-2 text-[var(--accent)]">
           <VscHistory size={14} />
           Changelog
         </div>
@@ -72,10 +72,10 @@ export function ProjectChangelog({ releases }: { releases: ReleaseEntry[] }) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.04, duration: 0.28 }}
               whileHover={shouldReduceMotion ? undefined : { x: 4 }}
-              className="group mb-8 rounded-sm border border-[var(--border-default)] border-l-4 border-l-[var(--accent)] bg-[var(--bg-elevated)] px-4 py-4 shadow-sm transition-colors hover:bg-[var(--bg-muted)] sm:mb-10 sm:px-6 sm:py-5"
+              className="group mb-8 rounded-sm border border-[var(--border-default)] border-l-4 border-l-[var(--accent)] bg-[var(--bg-elevated)] px-4 py-4 shadow-[var(--shadow-ambient)] transition-colors hover:bg-[var(--bg-muted)] sm:mb-10 sm:px-6 sm:py-5"
             >
               <div className="mb-3 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] transition-colors group-hover:text-[var(--text-secondary)]">
+                <div className="type-sys-micro flex items-center gap-2 text-[var(--text-muted)] transition-colors group-hover:text-[var(--text-secondary)]">
                   <VscCheckAll className="text-[var(--success)]" size={12} />
                   {release.meta}
                 </div>
@@ -85,7 +85,7 @@ export function ProjectChangelog({ releases }: { releases: ReleaseEntry[] }) {
                   } opacity-70`}
                 />
               </div>
-              <div className="text-[14px] leading-relaxed text-[var(--text-primary)]">
+              <div className="type-body text-[var(--text-primary)]">
                 {release.t}
               </div>
             </motion.div>
@@ -93,7 +93,7 @@ export function ProjectChangelog({ releases }: { releases: ReleaseEntry[] }) {
         ))}
 
         {releases.length === 0 ? (
-          <div className="py-20 text-center text-[13px] font-medium italic text-[var(--text-disabled)]">
+          <div className="type-body py-20 text-center italic text-[var(--text-disabled)]">
             Initial commit recorded. No additional releases found.
           </div>
         ) : null}

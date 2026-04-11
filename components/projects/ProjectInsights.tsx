@@ -165,12 +165,12 @@ export function ProjectInsights({ project }: { project: ProjectShape }) {
     <div className="space-y-8">
       <section>
         <SectionLabel label="Repository Metrics" />
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-muted)]">
+        <div className="type-mono-sm mt-2 flex flex-wrap items-center gap-2 uppercase text-[var(--text-muted)]">
           <span>Last pushed: {lastPushed}</span>
           {loading ? <span className="text-[var(--accent)]">syncing...</span> : null}
         </div>
         {metricsUnavailable ? (
-          <div className="mt-3 rounded-sm border border-dashed border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 text-[12px] text-[var(--text-muted)]">
+          <div className="type-btn mt-3 rounded-sm border border-dashed border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 text-[var(--text-muted)]">
             Repository metrics unavailable
           </div>
         ) : null}
@@ -213,10 +213,10 @@ export function ProjectInsights({ project }: { project: ProjectShape }) {
                 className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4"
                 style={{ borderLeftWidth: 3, borderLeftColor: metric.color }}
               >
-                <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                <div className="type-sys-micro text-[var(--text-muted)]">
                   {metric.label}
                 </div>
-                <div className="mt-2 font-display text-[24px] font-bold" style={{ color: metric.color }}>
+                <div className="type-sub mt-2" style={{ color: metric.color }}>
                   {unavailable ? "—" : <CounterText target={metric.value ?? 0} suffix={metric.suffix} />}
                 </div>
               </motion.div>
@@ -251,9 +251,9 @@ export function ProjectInsights({ project }: { project: ProjectShape }) {
               <div className="space-y-3 p-2">
                 {proficiencyData.map((entry) => (
                   <div key={entry.subject} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                    <div className="type-sys-micro flex items-center justify-between text-[var(--text-muted)]">
                       <span>{entry.subject}</span>
-                      <span className="font-mono">{entry.value}%</span>
+                      <span className="type-mono-sm">{entry.value}%</span>
                     </div>
                     <div className="h-1 rounded-full bg-[var(--bg-muted)]">
                       <div
@@ -264,7 +264,7 @@ export function ProjectInsights({ project }: { project: ProjectShape }) {
                   </div>
                 ))}
                 {proficiencyData.length === 0 ? (
-                  <div className="text-[12px] text-[var(--text-muted)]">
+                  <div className="type-btn text-[var(--text-muted)]">
                     No stack data available.
                   </div>
                 ) : null}
@@ -299,7 +299,7 @@ export function ProjectInsights({ project }: { project: ProjectShape }) {
             {languageData.map((entry) => (
               <div key={entry.name} className="flex items-center gap-1.5">
                 <div className="h-2.5 w-2.5 rounded-full" style={{ background: entry.color }} />
-                <span className="text-[10px] font-semibold text-[var(--text-muted)]">{entry.name}</span>
+                <span className="type-caption text-[var(--text-muted)]">{entry.name}</span>
               </div>
             ))}
           </div>
@@ -326,7 +326,7 @@ export function ProjectInsights({ project }: { project: ProjectShape }) {
             }}
           />
           <div className="absolute inset-0 flex items-center px-3">
-            <span className="text-[10px] font-bold text-[var(--text-primary)]">
+            <span className="type-caption text-[var(--text-primary)]">
               {score === null
                 ? "Unavailable"
                 : `${score}/100 — ${score > 60 ? "Active" : score > 30 ? "Moderate" : "Dormant"}`}

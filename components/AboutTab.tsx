@@ -57,28 +57,28 @@ export default function AboutTab() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 font-sans text-[13px] text-[var(--text-primary)] md:p-12"
+      className="ide-scrollbar type-ui flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 text-[var(--text-primary)] md:p-12"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
         {/* Header section */}
         <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)]">
+          <div className="type-sys-micro flex items-center gap-3 text-[var(--text-muted)]">
             <VscAccount size={12} />
             Background
           </div>
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-12">
             <div className="flex flex-col gap-4 md:flex-1">
-              <h1 className="text-[32px] font-bold tracking-[-0.04em] md:text-[40px]">
+              <h1 className="type-hero">
                 I build <span className="gradient-text">intelligent</span> web
                 interfaces.
               </h1>
-              <p className="text-[15px] leading-relaxed text-[var(--text-secondary)]">
+              <p className="type-body-lg text-[var(--text-secondary)]">
                 I'm Aniket Karmakar, a developer focused on creating seamless
                 digital experiences where design meets high-performance code. I
                 specialize in bridging the gap between complex backend systems
                 and intuitive frontend interfaces.
               </p>
-              <p className="text-[14px] leading-relaxed text-[var(--text-muted)]">
+              <p className="type-body text-[var(--text-muted)]">
                 Currently, I'm a{" "}
                 <strong className="text-[var(--text-primary)] font-semibold">
                   Junior Software Engineer in R&D at Security Engineers Pvt.
@@ -92,7 +92,7 @@ export default function AboutTab() {
 
         {/* Services */}
         <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
+          <div className="type-sys-micro flex items-center gap-3 text-[var(--accent)]">
             <FaBriefcase size={12} />
             Services
           </div>
@@ -102,7 +102,7 @@ export default function AboutTab() {
                 key={service}
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                className="flex cursor-default items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-2 text-[12px] font-semibold transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]"
+                className="type-btn flex cursor-default items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-2 transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]"
                 style={{ color: serviceColors[i % serviceColors.length] }}
               >
                 <span
@@ -119,7 +119,7 @@ export default function AboutTab() {
 
         {/* Tech stack visual */}
         <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
+          <div className="type-sys-micro flex items-center gap-3 text-[var(--accent)]">
             <VscCircuitBoard size={12} />
             Core Stack
           </div>
@@ -143,7 +143,7 @@ export default function AboutTab() {
                 className="glow-card flex flex-col items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] py-3 px-2 transition-all"
               >
                 <Icon size={20} style={{ color }} />
-                <span className="text-[9px] font-medium text-[var(--text-muted)]">
+                <span className="type-caption text-[var(--text-muted)]">
                   {label}
                 </span>
               </motion.div>
@@ -153,7 +153,7 @@ export default function AboutTab() {
 
         {/* Strategic focus */}
         <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
+          <div className="type-sys-micro flex items-center gap-3 text-[var(--accent)]">
             <VscCheck size={12} />
             Strategic Focus
           </div>
@@ -190,7 +190,7 @@ export default function AboutTab() {
                 className="glow-card flex items-start gap-4 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 transition-all"
               >
                 <span className="text-[18px]">{focus.icon}</span>
-                <span className="text-[12px] leading-relaxed text-[var(--text-secondary)]">
+                <span className="type-body text-[var(--text-secondary)]">
                   {focus.text}
                 </span>
               </motion.div>
@@ -200,11 +200,12 @@ export default function AboutTab() {
 
         {/* Education */}
         <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
+          <div className="type-sys-micro flex items-center gap-3 text-[var(--accent)]">
             <FaGraduationCap size={12} />
             Education
           </div>
           <div className="flex flex-col gap-3">
+            {/* 20px gap */}
             {[
               {
                 school: "NSHM College of Management and Technology",
@@ -225,32 +226,29 @@ export default function AboutTab() {
               <motion.div
                 key={i}
                 whileHover={{ x: 3 }}
-                className="glow-card flex flex-col gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 transition-all md:flex-row md:items-start md:justify-between"
+                className="glow-card flex flex-col gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-[20px] transition-all md:flex-row md:items-start md:justify-between"
                 style={{ borderLeftWidth: 3, borderLeftColor: edu.accent }}
               >
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
                     <FaGraduationCap size={14} style={{ color: edu.accent }} />
-                    <h3 className="text-[14px] font-bold text-[var(--text-primary)]">
+                    <h3 className="type-sub text-[var(--text-primary)]">
                       {edu.school}
                     </h3>
                   </div>
-                  <div className="text-[11px] font-medium text-[var(--text-muted)]">
+                  <div className="type-caption text-[var(--text-muted)]">
                     {edu.location}
                   </div>
-                  <div
-                    className="text-[12px] font-semibold"
-                    style={{ color: edu.accent }}
-                  >
+                  <div className="type-btn" style={{ color: edu.accent }}>
                     {edu.degree}
                   </div>
                 </div>
                 <div className="flex flex-col items-start gap-1 md:items-end">
-                  <div className="font-mono text-[11px] text-[var(--text-disabled)]">
+                  <div className="type-mono-sm text-[var(--text-disabled)]">
                     {edu.period}
                   </div>
                   {edu.grade && (
-                    <div className="text-[12px] font-bold text-[var(--success)]">
+                    <div className="type-btn text-[var(--success)]">
                       {edu.grade}
                     </div>
                   )}
@@ -262,7 +260,7 @@ export default function AboutTab() {
 
         {/* Certifications */}
         <motion.div variants={item} className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
+          <div className="type-sys-micro flex items-center gap-3 text-[var(--accent)]">
             <FaCertificate size={12} />
             Certifications
           </div>
@@ -288,10 +286,10 @@ export default function AboutTab() {
               >
                 <FaCertificate size={16} style={{ color: cert.color }} />
                 <div className="flex flex-col">
-                  <span className="text-[12px] font-semibold text-[var(--text-primary)]">
+                  <span className="type-btn text-[var(--text-primary)]">
                     {cert.name}
                   </span>
-                  <span className="text-[10px] text-[var(--text-muted)]">
+                  <span className="type-caption text-[var(--text-muted)]">
                     {cert.issuer} · {cert.date}
                   </span>
                 </div>
@@ -302,12 +300,12 @@ export default function AboutTab() {
 
         {/* Languages */}
         <motion.div variants={item} className="flex flex-col gap-3">
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
+          <div className="type-sys-micro flex items-center gap-3 text-[var(--accent)]">
             <FaLanguage size={12} />
             Languages
           </div>
           <div className="flex gap-2">
-            <div className="flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-2 text-[12px] font-medium text-[var(--text-secondary)]">
+            <div className="type-btn flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-2 text-[var(--text-secondary)]">
               🌐 English · Professional Working Proficiency
             </div>
           </div>

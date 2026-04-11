@@ -13,7 +13,7 @@ export default function EditorTabs() {
 
   return (
     <div className="h-9 border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
-      <div className="ide-scrollbar flex h-full overflow-x-auto overflow-y-hidden">
+      <div className="scrollbar-hide flex h-full overflow-x-auto overflow-y-hidden">
         <AnimatePresence initial={false}>
           {openFiles.length ? (
             openFiles.map((path) => {
@@ -52,7 +52,7 @@ export default function EditorTabs() {
                       e.stopPropagation();
                       closeFile(path);
                     }}
-                    className={`mr-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm text-[var(--text-muted)] transition-opacity hover:bg-[var(--border-default)] hover:text-[var(--text-primary)] ${isActive ? "opacity-50 group-hover:opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                    className={`touch-target mr-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm text-[var(--text-muted)] transition-opacity hover:bg-[var(--border-default)] hover:text-[var(--text-primary)] ${isActive ? "opacity-50 group-hover:opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                   >
                     <VscClose size={14} />
                   </button>
@@ -62,7 +62,7 @@ export default function EditorTabs() {
                       className="absolute inset-x-0 top-0 h-[2px]"
                       style={{
                         background: "var(--accent)",
-                        boxShadow: "0 0 8px 1px var(--accent-muted)",
+                        boxShadow: "var(--shadow-ambient)",
                       }}
                     />
                   ) : null}

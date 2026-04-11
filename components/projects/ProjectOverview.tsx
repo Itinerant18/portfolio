@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FaArrowUpRightFromSquare, FaLock } from "react-icons/fa6";
+import Image from "next/image";
 import type { ProjectDetail, ProjectShape, TechGroup, TechGroupItem } from "./ProjectData";
 import { languageOf } from "./ProjectData";
 import { FlowDiagram, SectionLabel, SidebarKeyValue, TechBadge } from "./ProjectUI";
+import { PillTag } from "@/components/ui/Button";
 
 function LivePreview({ url, projectName }: { url: string; projectName: string }) {
   const [loading, setLoading] = useState(true);
@@ -21,14 +23,14 @@ function LivePreview({ url, projectName }: { url: string; projectName: string })
       >
         <div className="flex items-center justify-center px-4 py-12 sm:py-16">
           <div className="space-y-2 text-center">
-            <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-disabled)]">
+            <div className="type-sys-micro text-[var(--text-disabled)]">
               Preview Unavailable
             </div>
             <a
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--accent)] hover:underline"
+              className="type-btn inline-flex items-center gap-1.5 text-[var(--accent)] hover:underline"
             >
               Open {displayUrl} in new tab
               <FaArrowUpRightFromSquare size={10} />
@@ -43,7 +45,7 @@ function LivePreview({ url, projectName }: { url: string; projectName: string })
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full overflow-hidden border border-[var(--border-default)] bg-[var(--bg-muted)] shadow-2xl"
+      className="w-full overflow-hidden border border-[var(--border-default)] bg-[var(--bg-muted)] shadow-[var(--shadow-card)]"
     >
       <div className="flex items-center gap-2 border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5">
         <div className="mr-1 flex items-center gap-1.5">
@@ -51,7 +53,7 @@ function LivePreview({ url, projectName }: { url: string; projectName: string })
           <div className="h-2.5 w-2.5 rounded-full bg-[var(--warning)]" />
           <div className="h-2.5 w-2.5 rounded-full bg-[var(--success)]" />
         </div>
-        <div className="flex flex-1 items-center gap-1.5 truncate border border-[var(--border-default)] bg-[var(--bg-muted)] px-2.5 py-1 font-mono text-[10px] tracking-wide text-[var(--text-muted)]">
+        <div className="type-mono-sm flex flex-1 items-center gap-1.5 truncate border border-[var(--border-default)] bg-[var(--bg-muted)] px-2.5 py-1 tracking-wide text-[var(--text-muted)]">
           <FaLock size={10} className="shrink-0 opacity-50" />
           <span className="truncate font-semibold">{displayUrl}</span>
         </div>
@@ -71,7 +73,7 @@ function LivePreview({ url, projectName }: { url: string; projectName: string })
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--bg-muted)]">
             <div className="flex flex-col items-center gap-3">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-disabled)]">
+              <span className="type-sys-micro text-[var(--text-disabled)]">
                 Synchronizing {projectName}
               </span>
             </div>
@@ -106,16 +108,8 @@ function GalleryImage({
   const [errored, setErrored] = useState(false);
 
   const resolvedSrc = useMemo(() => {
-    try {
-      const parsed = new URL(src);
-      const needsProxy =
-        parsed.hostname === "github.com" ||
-        parsed.hostname.endsWith(".githubusercontent.com");
-      if (needsProxy) {
-        return `/api/proxy-image?url=${encodeURIComponent(src)}`;
-      }
-    } catch {
-      return src;
+    if (/^https?:\/\//i.test(src)) {
+      return `/api/proxy-image?url=${encodeURIComponent(src)}`;
     }
     return src;
   }, [src]);
@@ -127,36 +121,36 @@ function GalleryImage({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.08 }}
-      className="group/img relative flex items-center justify-center overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] p-2 transition-all duration-300 hover:border-[var(--accent-muted)]"
+      className="group/img relative overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] p-2 transition-all duration-300 hover:border-[var(--accent-muted)] h-[300px] sm:h-[420px] lg:h-[600px]"
     >
       {!loaded ? (
-        <div
-          className="flex min-w-full items-center justify-center"
-          style={{ minHeight: total === 1 ? 220 : 180 }}
-        >
+        <div className="absolute inset-0 z-10 flex items-center justify-center">
           <div className="flex flex-col items-center gap-2.5">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-disabled)]">
+            <span className="type-sys-micro text-[var(--text-disabled)]">
               Loading
             </span>
           </div>
         </div>
       ) : null}
 
-      <img
-        src={resolvedSrc}
-        alt={alt}
-        referrerPolicy="no-referrer"
-        onLoad={() => setLoaded(true)}
-        onError={() => setErrored(true)}
-        style={!loaded ? { position: "absolute", opacity: 0 } : undefined}
-        className={`h-auto w-full max-h-[520px] rounded-[2px] object-contain transition-all duration-700 group-hover/img:scale-[1.02] sm:max-h-[600px] ${
-          loaded ? "opacity-100" : "opacity-0"
-        }`}
-      />
+      <div className="relative h-full w-full">
+        <Image
+          src={resolvedSrc}
+          alt={alt}
+          fill
+          sizes="(max-width:600px) 100vw, (max-width:900px) 50vw, 33vw"
+          loading="lazy"
+          onLoad={() => setLoaded(true)}
+          onError={() => setErrored(true)}
+          className={`rounded-[2px] object-contain transition-all duration-700 group-hover/img:scale-[1.02] ${
+            loaded ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      </div>
 
       {loaded && total > 1 ? (
-        <div className="absolute right-2.5 top-2.5 rounded-sm border border-[var(--border-default)]/50 bg-[var(--bg-base)]/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover/img:opacity-100">
+        <div className="type-caption absolute right-2.5 top-2.5 rounded-sm border border-[var(--border-default)]/50 bg-[var(--bg-base)]/80 px-2 py-0.5 uppercase text-[var(--text-muted)] opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover/img:opacity-100">
           {index + 1} / {total}
         </div>
       ) : null}
@@ -186,6 +180,8 @@ export function ProjectOverview({
   const shouldReduceMotion = useReducedMotion();
   const [scanning, setScanning] = useState(!shouldReduceMotion);
   const [problemExpanded, setProblemExpanded] = useState(false);
+  const [showAllTech, setShowAllTech] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const relatedProjects = useMemo(() => {
     if (!allProjects.length) return [];
@@ -203,7 +199,16 @@ export function ProjectOverview({
 
   useEffect(() => {
     setProblemExpanded(false);
+    setShowAllTech(false);
   }, [project.id]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setIsMobile(window.innerWidth < 600);
+    const handler = () => setIsMobile(window.innerWidth < 600);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
 
   useEffect(() => {
     if (shouldReduceMotion) {
@@ -237,13 +242,13 @@ export function ProjectOverview({
         ) : null}
       </AnimatePresence>
 
-      <div className="flex flex-col gap-6 sm:gap-8">
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-8">
+      <div className="bg-[var(--bg-base)] flex flex-col gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10">
           <div className="space-y-6 sm:space-y-8">
             <section>
               <SectionLabel label="The Problem" />
               <p
-                className={`text-[13px] leading-relaxed text-[var(--text-secondary)] ${
+                className={`type-body text-[var(--text-secondary)] ${
                   problemExpanded ? "" : "line-clamp-4"
                 }`}
               >
@@ -253,18 +258,18 @@ export function ProjectOverview({
                 <button
                   type="button"
                   onClick={() => setProblemExpanded((value) => !value)}
-                  className="mt-2 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--accent)] transition-colors hover:text-[var(--accent-hover)]"
+                  className="type-mono-sm mt-2 uppercase text-[var(--accent)] transition-colors hover:text-[var(--accent-hover)]"
                 >
                   {problemExpanded ? "Show less" : "Read more"}
                 </button>
               ) : null}
 
-              <div className="mt-4 border-l-2 border-[var(--accent)] pl-4 text-[13px] italic leading-relaxed text-[var(--text-secondary)]">
+              <div className="type-body mt-4 border-l-2 border-[var(--accent)] pl-4 italic text-[var(--text-secondary)]">
                 {detail.why}
               </div>
             </section>
 
-            <section>
+            <section className="design-surface p-4">
               <SectionLabel label="Core Features" />
               <div className="mb-4 overflow-hidden border-y border-[var(--border-default)] py-1.5">
                 <motion.div
@@ -285,25 +290,22 @@ export function ProjectOverview({
                   ).flat()}
                 </motion.div>
               </div>
-              <ul className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {detail.features.slice(0, 6).map((feature: string, index: number) => (
-                  <motion.li
+                  <motion.article
                     key={`${project.id}-feature-${index}`}
                     initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05, duration: 0.25 }}
-                    className="flex items-start gap-2"
+                    className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-2.5"
                   >
-                    <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
-                    <span className="text-[12px] leading-relaxed text-[var(--text-secondary)]">
-                      {feature}
-                    </span>
-                  </motion.li>
+                    <span className="type-body text-[var(--text-secondary)]">{feature}</span>
+                  </motion.article>
                 ))}
-              </ul>
+              </div>
             </section>
 
-            <section>
+            <section className="design-surface p-4">
               <SectionLabel label="Stack" />
               <div className="space-y-4">
                 {detail.techGroups.map((group: TechGroup, groupIndex: number) => (
@@ -313,11 +315,11 @@ export function ProjectOverview({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: groupIndex * 0.04 }}
                   >
-                    <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                    <div className="type-sys-micro mb-2 text-[var(--text-muted)]">
                       {group.label}
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {group.items.map((item: TechGroupItem, index: number) => (
+                    <div className={`flex flex-wrap gap-2 ${isMobile && !showAllTech ? "max-h-[88px] overflow-hidden" : ""}`}>
+                      {(isMobile && !showAllTech ? group.items.slice(0, 6) : group.items).map((item: TechGroupItem, index: number) => (
                         <TechBadge
                           key={`${project.id}-tech-${group.label}-${index}`}
                           name={item.n}
@@ -327,23 +329,32 @@ export function ProjectOverview({
                     </div>
                   </motion.div>
                 ))}
+                {isMobile && detail.techGroups.some((group) => group.items.length > 6) ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllTech((value) => !value)}
+                    className="type-mono-sm touch-target uppercase text-[var(--accent)] transition-colors hover:text-[var(--accent-hover)]"
+                  >
+                    {showAllTech ? "Show less" : "Show more"}
+                  </button>
+                ) : null}
               </div>
             </section>
 
-            <section>
+            <section className="design-surface p-4">
               <SectionLabel label="System Flow" />
               <FlowDiagram project={project} />
-              <p className="mt-2 text-[11px] font-mono leading-relaxed text-[var(--text-muted)]">
+              <p className="type-mono-sm mt-2 text-[var(--text-muted)]">
                 {detail.highLevel}
               </p>
             </section>
 
             <section>
               <SectionLabel label={liveUrl ? "Live Preview" : images.length > 0 ? "Gallery" : "Preview"} />
-              {liveUrl ? (
+              {!isMobile && liveUrl ? (
                 <LivePreview url={liveUrl} projectName={project.name} />
               ) : images.length > 0 ? (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                   {images.slice(0, 3).map((url, index) => (
                     <GalleryImage
                       key={`${project.id}-gallery-${index}`}
@@ -355,7 +366,7 @@ export function ProjectOverview({
                   ))}
                 </div>
               ) : (
-                <div className="rounded-sm border border-dashed border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 text-[12px] text-[var(--text-muted)]">
+                <div className="type-btn rounded-sm border border-dashed border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 text-[var(--text-muted)]">
                   No preview available.
                   <a
                     href={project.links.github}
@@ -371,36 +382,53 @@ export function ProjectOverview({
           </div>
 
           <div className="space-y-6">
-            <aside className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4">
+            <aside className="design-surface-ambient p-4">
               <SectionLabel label="Specifications" />
-              <div className="mt-3 space-y-3">
-                {[
-                  ["Category", detail.category],
-                  ["Engine", detail.language],
-                  ["Release", detail.year],
-                  ["Backend", detail.backend.split(".")[0]],
-                ].map(([label, value], index) => (
-                  <SidebarKeyValue
-                    key={`${label}-${value}`}
-                    label={label}
-                    value={value}
-                    delay={index * 80}
-                  />
-                ))}
-              </div>
+              {isMobile ? (
+                <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-hide">
+                  {[
+                    ["Category", detail.category],
+                    ["Engine", detail.language],
+                    ["Release", detail.year],
+                    ["Backend", detail.backend.split(".")[0]],
+                  ].map(([label, value]) => (
+                    <span
+                      key={`${label}-${value}`}
+                      className="type-caption touch-target inline-flex shrink-0 items-center rounded-full border border-[var(--border-default)] bg-[var(--bg-muted)] px-2.5 py-1 text-[var(--text-muted)]"
+                    >
+                      {label}: {value}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-3 space-y-3">
+                  {[
+                    ["Category", detail.category],
+                    ["Engine", detail.language],
+                    ["Release", detail.year],
+                    ["Backend", detail.backend.split(".")[0]],
+                  ].map(([label, value], index) => (
+                    <SidebarKeyValue
+                      key={`${label}-${value}`}
+                      label={label}
+                      value={value}
+                      delay={index * 80}
+                    />
+                  ))}
+                </div>
+              )}
             </aside>
 
-            <aside className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4">
+            <aside className="design-surface p-4">
               <SectionLabel label="Topic Tags" />
               <div className="mt-3 flex flex-wrap gap-2">
                 {detail.topics.slice(0, 12).map((topic: string, index: number) => (
-                  <motion.span
+                  <motion.div
                     key={`${project.id}-topic-${index}`}
                     whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
-                    className="inline-flex cursor-default items-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-2 py-1 text-[9px] font-bold text-[var(--text-muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
                   >
-                    #{topic}
-                  </motion.span>
+                    <PillTag>#{topic}</PillTag>
+                  </motion.div>
                 ))}
               </div>
             </aside>
@@ -415,14 +443,14 @@ export function ProjectOverview({
                       className="flex items-center justify-between rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-2"
                     >
                       <div className="min-w-0">
-                        <div className="truncate text-[11px] font-semibold text-[var(--text-primary)]">
+                        <div className="type-btn truncate text-[var(--text-primary)]">
                           {related.name}
                         </div>
-                        <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                        <span className="type-mono-sm uppercase text-[var(--text-muted)]">
                           {matchingCount} shared tech
                         </span>
                       </div>
-                      <span className="rounded-full border border-[var(--border-default)] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-[var(--text-secondary)]">
+                      <span className="type-caption touch-target rounded-full border border-[var(--border-default)] px-2 py-0.5 uppercase text-[var(--text-secondary)]">
                         {languageOf(related)}
                       </span>
                     </div>

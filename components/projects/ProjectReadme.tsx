@@ -25,13 +25,13 @@ export function ProjectReadme({ project }: { project: ProjectShape }) {
   if (loading) return (
     <div className="flex items-center gap-3 py-20 text-[var(--text-muted)]">
       <div className="h-4 w-4 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
-      <span className="font-mono text-[11px] tracking-wider">Fetching README.md...</span>
+      <span className="type-mono-sm tracking-wider">Fetching README.md...</span>
     </div>
   );
 
   if (error) return (
     <div className="py-20 text-center">
-      <p className="text-[13px] text-[var(--text-muted)]">No README found for this repository.</p>
+      <p className="type-body text-[var(--text-muted)]">No README found for this repository.</p>
     </div>
   );
 
@@ -53,13 +53,13 @@ export function ProjectReadme({ project }: { project: ProjectShape }) {
           remarkPlugins={[remarkGfm]}
           components={{
             h1: ({ children }) => (
-              <h1 className="section-heading gradient-text mb-6">{children}</h1>
+              <h1 className="type-hero gradient-text mb-6">{children}</h1>
             ),
             h2: ({ children }) => (
-              <h2 className="card-heading text-[var(--text-primary)] mb-4 mt-8 border-b border-[var(--border-default)] pb-2">{children}</h2>
+              <h2 className="type-section text-[var(--text-primary)] mb-4 mt-8 border-b border-[var(--border-default)] pb-2">{children}</h2>
             ),
             h3: ({ children }) => (
-              <h3 className="text-[var(--text-primary)] font-semibold text-[16px] mb-3 mt-6">{children}</h3>
+              <h3 className="type-sub text-[var(--text-primary)] mb-3 mt-6">{children}</h3>
             ),
             code({ className, children, ...props }: any) {
               const match = /language-(\w+)/.exec(className || "");
@@ -67,7 +67,7 @@ export function ProjectReadme({ project }: { project: ProjectShape }) {
                 return (
                   <div className="relative my-4 rounded-sm overflow-hidden border border-[var(--border-default)]">
                     <div className="flex items-center justify-between bg-[var(--bg-muted)] px-4 py-2 border-b border-[var(--border-default)]">
-                      <span className="font-mono text-[10px] text-[var(--accent)] uppercase tracking-wider">{match[1]}</span>
+                      <span className="type-mono-sm text-[var(--accent)] uppercase tracking-wider">{match[1]}</span>
                       <div className="flex gap-1.5">
                         <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]"/>
                         <div className="h-2.5 w-2.5 rounded-full bg-[#febc2e]"/>
@@ -84,7 +84,7 @@ export function ProjectReadme({ project }: { project: ProjectShape }) {
                   </div>
                 );
               }
-              return <code className="mono-text rounded px-1.5 py-0.5 text-[var(--accent)] bg-[var(--accent-subtle)]">{children}</code>;
+              return <code className="type-mono-sm rounded px-1.5 py-0.5 text-[var(--accent)] bg-[var(--accent-subtle)]">{children}</code>;
             },
             img: ({ src, alt }: any) => (
               <img src={`/api/proxy-image?url=${encodeURIComponent(src as string || "")}`} alt={alt as string} className="rounded-sm border border-[var(--border-default)] max-w-full my-4" />

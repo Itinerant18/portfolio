@@ -54,12 +54,12 @@ export default function HomeTab() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] px-6 pb-28 pt-8 font-sans text-[13px] text-[var(--text-primary)] md:px-10 md:pt-12"
+      className="ide-scrollbar type-ui flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] px-6 pb-28 pt-8 text-[var(--text-primary)] md:px-10 md:pt-12"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
         {/* ── Hero status badge ── */}
         <motion.div variants={item}>
-          <div className="inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-muted)]">
+          <div className="type-sys-micro inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[var(--text-muted)]">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-pulse" />
             Available for new opportunities · Noida / Remote
           </div>
@@ -67,13 +67,13 @@ export default function HomeTab() {
 
         {/* ── Name hero ── */}
         <motion.div variants={item} className="flex flex-col gap-2">
-          <h1 className="text-[52px] font-bold leading-[0.95] tracking-[-0.05em] text-[var(--text-primary)] md:text-[72px]">
+          <h1 className="type-hero text-[var(--text-primary)]">
             <span className="gradient-text">Aniket</span>
           </h1>
-          <h1 className="text-[52px] font-bold leading-[0.95] tracking-[-0.05em] text-[var(--text-primary)] md:text-[72px]">
+          <h1 className="type-hero text-[var(--text-primary)]">
             Karmakar
           </h1>
-          <p className="mt-3 max-w-[52ch] text-[15px] font-medium leading-relaxed text-[var(--text-muted)] md:text-[17px]">
+          <p className="type-body mt-3 max-w-[52ch] text-[var(--text-muted)]">
             Front-end UI Developer · Full-stack · AI/ML · IoT · Cloud
             <span
               className="ml-1 inline-block h-[16px] w-[2px] translate-y-[3px] bg-[var(--accent)]"
@@ -101,7 +101,7 @@ export default function HomeTab() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => openFile("src/projects.ts")}
-            className="inline-flex items-center gap-2 rounded-sm border border-transparent bg-[var(--accent)] px-5 py-2.5 text-[12px] font-semibold text-white shadow-lg shadow-[var(--accent-muted)] transition-all hover:bg-[var(--accent-hover)]"
+            className="type-btn inline-flex items-center gap-2 rounded-sm border border-transparent bg-[var(--accent)] px-5 py-2.5 text-white shadow-[var(--shadow-card)] transition-all hover:bg-[var(--accent-hover)]"
           >
             <VscFiles size={15} /> View Projects
           </motion.button>
@@ -109,7 +109,7 @@ export default function HomeTab() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => openFile("src/about.html")}
-            className="inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-5 py-2.5 text-[12px] font-medium text-[var(--text-secondary)] transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]"
+            className="type-btn inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-5 py-2.5 text-[var(--text-secondary)] transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]"
           >
             <FaUser size={15} /> About Me
           </motion.button>
@@ -117,7 +117,7 @@ export default function HomeTab() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => openFile("src/contact.css")}
-            className="inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-transparent px-5 py-2.5 text-[12px] font-medium text-[var(--text-muted)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
+            className="type-btn inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-transparent px-5 py-2.5 text-[var(--text-muted)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
           >
             <FaEnvelope size={15} /> Contact
           </motion.button>
@@ -145,7 +145,7 @@ export default function HomeTab() {
               >
                 {stat.value}
               </div>
-              <div className="mt-1 text-[9px] font-medium tracking-[0.14em] text-[var(--text-muted)]">
+              <div className="type-sys-micro mt-1 text-[var(--text-muted)]">
                 {stat.label}
               </div>
             </motion.div>
@@ -154,7 +154,7 @@ export default function HomeTab() {
 
         {/* ── Social links ── */}
         <motion.div variants={item} className="flex flex-col gap-3">
-          <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          <div className="type-sys-micro text-[var(--text-muted)]">
             Connect
           </div>
           <div className="flex flex-wrap gap-2">
@@ -191,7 +191,7 @@ export default function HomeTab() {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.03, y: -1 }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3.5 py-2 text-[12px] font-medium text-[var(--text-secondary)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
+                className="type-btn inline-flex items-center gap-2 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3.5 py-2 text-[var(--text-secondary)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
               >
                 <Icon size={14} style={{ color }} />
                 {label}
@@ -201,11 +201,12 @@ export default function HomeTab() {
         </motion.div>
 
         {/* ── Current focus ── */}
+        {/* 20px gap */}
         <motion.div
           variants={item}
-          className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5"
+          className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-[20px]"
         >
-          <div className="mb-4 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--accent)]">
+          <div className="type-sys-micro mb-4 flex items-center gap-2 text-[var(--accent)]">
             <VscSparkle size={12} />
             Current Focus
           </div>
@@ -234,7 +235,7 @@ export default function HomeTab() {
                 className="flex items-start gap-3 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)]/50 p-3 transition-colors hover:bg-[var(--bg-muted)]"
               >
                 <span className="text-[16px]">{focus.icon}</span>
-                <span className="text-[12px] leading-relaxed text-[var(--text-secondary)]">
+                <span className="type-body text-[var(--text-secondary)]">
                   {focus.text}
                 </span>
               </motion.div>

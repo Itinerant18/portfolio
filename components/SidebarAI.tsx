@@ -179,7 +179,7 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
 
       {/* Input Section */}
       <div className="border-t border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-2">
-        <div className="relative flex flex-col overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-base)] shadow-lg transition-all focus-within:border-[var(--accent)] focus-within:ring-1 focus-within:ring-[var(--accent)]/20">
+        <div className="relative flex flex-col overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-base)] shadow-[var(--shadow-ambient)] transition-all focus-within:border-[var(--accent)] focus-within:shadow-[var(--shadow-focus)]">
           <textarea
             ref={inputRef}
             rows={3}
@@ -211,7 +211,7 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
             <button
               onClick={handleSend}
               disabled={!input.trim() || pending}
-              className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-all disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed shadow-sm"
+              className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--accent)] text-white shadow-[var(--shadow-ambient)] transition-all hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-30 disabled:grayscale"
             >
                <VscArrowRight size={16} strokeWidth={1} />
             </button>

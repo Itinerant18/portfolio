@@ -16,12 +16,24 @@ const hexagonClipPath =
 
 export function SectionLabel({ label }: { label: string }) {
   return (
-    <div className="mb-3 flex items-center gap-2">
-      <span className="h-px w-5 bg-[var(--border-active)]" />
-      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+    <div
+      className="flex items-center gap-3 mb-4 pb-2 border-b"
+      style={{ borderColor: "var(--border-default)" }}
+    >
+      <span
+        className="type-sys-micro gradient-text"
+        style={{ color: "var(--accent)" }}
+      >
         {label}
       </span>
-      <div className="h-px flex-1 bg-[var(--border-default)]" />
+      <div
+        className="h-px flex-1 opacity-20"
+        style={{ background: "var(--border-default)" }}
+      />
+      <span
+        className="led-dot h-1.5 w-1.5 rounded-full flex-shrink-0"
+        style={{ background: "var(--accent)" }}
+      />
     </div>
   );
 }
@@ -67,7 +79,7 @@ export function LoadingState() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-[620px] overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-md"
+        className="w-full max-w-[620px] overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-[var(--shadow-card)]"
       >
         <div className="border-b border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
           sync status
@@ -190,7 +202,19 @@ export function IconMapper({ name, size = 20 }: { name: string; size?: number })
   return <FaRegCircleQuestion size={size} />;
 }
 
-export function FlowNode({ label, icon, isLast, protocol }: { label: string; icon: string; isLast?: boolean; protocol?: string }) {
+export function FlowNode({
+  label,
+  icon,
+  isLast,
+  protocol,
+  vertical = false,
+}: {
+  label: string;
+  icon: string;
+  isLast?: boolean;
+  protocol?: string;
+  vertical?: boolean;
+}) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -243,35 +267,60 @@ export function FlowNode({ label, icon, isLast, protocol }: { label: string; ico
           {label}
         </motion.span>
       </div>
-      {!isLast && (
-        <div className="mb-4 flex flex-col items-center gap-1 opacity-50">
-          {protocol ? (
-            <motion.span
-              initial={shouldReduceMotion ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="typewriter-text inline-block max-w-[56px] text-center text-[7px] font-bold uppercase tracking-widest text-[var(--text-muted)] sm:max-w-[72px]"
-            >
-              {protocol}
-            </motion.span>
-          ) : null}
-          <div className="relative flex w-8 items-center sm:w-12">
-            <div className="h-px w-full border-t border-dashed border-[var(--accent-muted)]" />
-            {!shouldReduceMotion ? (
+      {!isLast &&
+        (vertical ? (
+          <div className="mb-1 flex h-10 flex-col items-center justify-start gap-1 opacity-50">
+            {protocol ? (
               <motion.span
-                className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--accent)]"
-                animate={{ x: [0, 30, 42], opacity: [0, 1, 1, 0] }}
-                transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
-              />
+                initial={shouldReduceMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="typewriter-text inline-block max-w-[120px] text-center text-[7px] font-bold uppercase tracking-widest text-[var(--text-muted)]"
+              >
+                {protocol}
+              </motion.span>
             ) : null}
+            <div className="relative flex h-7 items-center">
+              <div className="h-full w-px border-l border-dashed border-[var(--accent-muted)]" />
+              {!shouldReduceMotion ? (
+                <motion.span
+                  className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[var(--accent)]"
+                  animate={{ y: [0, 14, 22], opacity: [0, 1, 1, 0] }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                />
+              ) : null}
+            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="mb-4 flex flex-col items-center gap-1 opacity-50">
+            {protocol ? (
+              <motion.span
+                initial={shouldReduceMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="typewriter-text inline-block max-w-[56px] text-center text-[7px] font-bold uppercase tracking-widest text-[var(--text-muted)] sm:max-w-[72px]"
+              >
+                {protocol}
+              </motion.span>
+            ) : null}
+            <div className="relative flex w-8 items-center sm:w-12">
+              <div className="h-px w-full border-t border-dashed border-[var(--accent-muted)]" />
+              {!shouldReduceMotion ? (
+                <motion.span
+                  className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--accent)]"
+                  animate={{ x: [0, 30, 42], opacity: [0, 1, 1, 0] }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                />
+              ) : null}
+            </div>
+          </div>
+        ))}
     </div>
   );
 }
 
 export function FlowDiagram({ project }: { project: ProjectShape }) {
+  const [isMobileFlow, setIsMobileFlow] = useState(false);
   const flow = project.visualFlow ?? [
     { label: "Input", icon: "box" },
     { label: "Process", icon: "settings" },
@@ -283,9 +332,19 @@ export function FlowDiagram({ project }: { project: ProjectShape }) {
     ? highLevel.split("->").map((p: string) => p.trim())
     : [];
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setIsMobileFlow(window.innerWidth < 600);
+    const handler = () => setIsMobileFlow(window.innerWidth < 600);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
   return (
-    <div className="ide-scrollbar mt-3 overflow-x-auto overflow-y-hidden rounded-sm border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-base),var(--bg-elevated))] px-3 py-6 shadow-inner sm:px-4 sm:py-8">
-      <div className="mx-auto flex w-fit min-w-max items-center gap-3 sm:gap-4">
+    <div className="ide-scrollbar mt-3 overflow-x-auto overflow-y-hidden rounded-sm border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-base),var(--bg-elevated))] px-3 py-6 shadow-[var(--shadow-ambient)] sm:px-4 sm:py-8">
+      <div
+        className={`mx-auto flex ${isMobileFlow ? "w-full items-center justify-start flex-col gap-0" : "w-fit min-w-max items-center gap-3 sm:gap-4"}`}
+      >
         {flow.map((node, index) => (
           <FlowNode
             key={`${project.id}-flow-${index}`}
@@ -293,6 +352,7 @@ export function FlowDiagram({ project }: { project: ProjectShape }) {
             icon={node.icon}
             isLast={index === flow.length - 1}
             protocol={protocols[index + 1]?.split(" ")[0]}
+            vertical={isMobileFlow}
           />
         ))}
       </div>
@@ -365,6 +425,9 @@ export function TechIcon({ name, size = 20 }: { name: string; size?: number }) {
     <img
       src={url}
       alt={name}
+      width={size}
+      height={size}
+      loading="lazy"
       style={{ width: size, height: size, objectFit: "contain" }}
       onError={(e) => {
         e.currentTarget.outerHTML = `<div style="width: ${size}px; height: ${size}px;" class="flex items-center justify-center rounded-sm bg-[var(--bg-muted)] text-[9px] font-bold text-[var(--text-muted)]">${name.slice(0, 1).toUpperCase()}</div>`;
@@ -390,7 +453,7 @@ export function TechBadge({ name, size = "md" }: { name: string; size?: "sm" | "
         }}
       />
       <div
-        className={`flex items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-sm transition-all duration-300 group-hover:border-[var(--accent)] ${compact ? "h-8 w-8" : "h-9 w-9 sm:h-10 sm:w-10"}`}
+        className={`flex items-center justify-center rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-[var(--shadow-ambient)] transition-all duration-300 group-hover:border-[var(--accent)] ${compact ? "h-8 w-8" : "h-9 w-9 sm:h-10 sm:w-10"}`}
       >
         <TechIcon name={name} size={compact ? 16 : 22} />
       </div>

@@ -215,7 +215,7 @@ export function executeTerminalCommand(
 
   if (normalized === "theme") {
     const requested = args[0]?.toLowerCase();
-    const validThemes = ["aniket-dark", "synthwave", "light", "dracula", "rose-pine", "tokyo-night", "catppuccin", "nord", "gruvbox"];
+    const validThemes = ["aniket-dark", "synthwave", "light", "dracula", "cursor-warm", "rose-pine", "tokyo-night", "catppuccin", "nord", "gruvbox"];
     
     if (!requested) {
       return { lines: ["Usage: theme <name>", `Available: ${validThemes.join(", ")}`] };

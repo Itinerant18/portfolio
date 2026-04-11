@@ -38,15 +38,17 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const toggleMobileAIPanel = useIDEStore((state) => state.toggleMobileAIPanel);
   const closeMobilePanels = useIDEStore((state) => state.closeMobilePanels);
   const toggleSidebar = useIDEStore((state) => state.toggleSidebar);
-  const toggleMode = useIDEStore((state) => state.toggleMode);
   const [isMounted, setIsMounted] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const [showSocials, setShowSocials] = useState(false);
+  const isMobile = viewportWidth < 600;
+  const isTablet = viewportWidth >= 600 && viewportWidth < 900;
+  const isDesktop = viewportWidth >= 900;
 
   const downloadResume = () => {
     const link = document.createElement("a");
     link.href = "/Aniket_resume_updated.pdf";
-    link.download = "Aniket_Karmakar_Resume.pdf";
+    link.download = "resume.pdf";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -104,7 +106,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     setIsMounted(true);
     const updateViewport = () => {
-      setIsDesktop(window.innerWidth >= 1024);
+      setViewportWidth(window.innerWidth);
     };
 
     updateViewport();
@@ -188,24 +190,19 @@ export default function AppShell({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleTheme]);
 
-  const gridTemplateColumns = !isDesktop
-    ? "1fr"
-    : currentMode === "agent"
-    ? "1fr"
-    : [
-        aiPanelOpen ? "260px" : null,
-        "minmax(0, 1fr)",
-        sidebarOpen ? "300px" : null,
-      ]
-        .filter(Boolean)
-        .join(" ");
+  const gridTemplateColumns =
+    currentMode === "agent"
+      ? "1fr"
+      : isDesktop
+      ? [aiPanelOpen ? "260px" : null, "minmax(0, 1fr)", sidebarOpen ? "300px" : null]
+          .filter(Boolean)
+          .join(" ")
+      : isTablet && aiPanelOpen
+      ? "220px minmax(0,1fr)"
+      : "1fr";
 
-  const gridTemplateRows = [
-    "32px",
-    "minmax(0, 1fr)",
-    terminalOpen ? "180px" : "0px",
-    "22px",
-  ].join(" ");
+  const terminalRow = terminalOpen ? "clamp(120px,18vh,180px)" : "0px";
+  const gridTemplateRows = `36px minmax(0,1fr) ${terminalRow} 22px`;
 
   if (!isMounted || !hasHydrated) {
     return (
@@ -213,7 +210,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <VantaBackground />
         <div
           className="relative z-10 grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]"
-          style={{ gridTemplateRows: "32px minmax(0, 1fr) 22px" }}
+          style={{ gridTemplateRows: "36px minmax(0,1fr) 22px" }}
         >
           <div className="border-b border-[var(--border-default)] bg-[var(--bg-base)]" />
           <div className="bg-[var(--bg-surface)]" />
@@ -228,7 +225,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <LenisProvider />
       <VantaBackground />
       <div
-        className="relative z-10 grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
+        className="relative z-10 grid h-screen overflow-hidden grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[260px_minmax(0,1fr)_300px] bg-[var(--bg-base)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
         style={{
           transform: `scale(${zoomLevel})`,
           transformOrigin: "0 0",
@@ -263,6 +260,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
             style={{
               gridColumn: isDesktop
                 ? (aiPanelOpen ? "2 / 3" : "1 / 2")
+                : isTablet && aiPanelOpen
+                ? "2 / 3"
                 : "1 / -1",
               gridRow: "2 / 3",
             }}
@@ -273,7 +272,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
         {currentMode === "editor" && aiPanelOpen && (
           <aside
-            className="hidden min-h-0 min-w-0 border-r border-[var(--border-default)] bg-[var(--bg-elevated)] lg:block"
+            className="hidden min-h-0 min-w-0 border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:block"
             style={{
               gridRow: "2 / 4"
             }}
@@ -294,7 +293,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           >
             {/* Activity Bar — refined horizontal header for the explorer */}
             <div className="flex items-center justify-between px-2.5 py-1.5 border-b border-[var(--border-default)] bg-[var(--bg-elevated)] shrink-0 select-none">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] px-1">
+              <div className="type-sys-micro text-[var(--text-muted)] px-1">
                 Explorer
               </div>
               <div className="flex items-center gap-0.5">
@@ -333,7 +332,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             {/* Social Links Panel — shown when Source Control is active */}
             {showSocials && (
               <div className="border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-3 shrink-0">
-                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)] mb-2.5 px-0.5">
+                <div className="type-sys-micro text-[var(--text-muted)] mb-2.5 px-0.5">
                   Connect
                 </div>
                 <div className="flex flex-col gap-1">
@@ -343,7 +342,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2.5 rounded-sm px-2 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+                      className="type-btn flex items-center gap-2.5 rounded-sm px-2 py-1.5 text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                     >
                       <link.icon size={14} style={{ color: link.color }} />
                       <span>{link.label}</span>
@@ -387,8 +386,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
         {mobileAIPanelOpen ? (
           <motion.div
             key="mobile-ai"
-            className="fixed inset-x-0 top-9 z-50 bg-black/45 lg:hidden"
-            style={{ bottom: terminalOpen ? 180 : 0 }}
+            className="fixed inset-x-0 top-9 z-50 bg-black/45 md:hidden"
+            style={{ bottom: terminalOpen ? "clamp(120px,18vh,180px)" : 0 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -399,7 +398,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -12, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-y-0 left-0 w-[260px] border-r border-[var(--border-default)] bg-[var(--bg-elevated)]"
+              className="absolute inset-y-0 left-0 w-full border-r border-[var(--border-default)] bg-[var(--bg-elevated)]"
               onClick={(event) => event.stopPropagation()}
             >
               <SidebarAI />
@@ -412,8 +411,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
         {mobileSidebarOpen ? (
           <motion.div
             key="mobile-files"
-            className="fixed inset-x-0 top-9 z-50 bg-black/45 lg:hidden"
-            style={{ bottom: terminalOpen ? 180 : 0 }}
+            className="fixed inset-x-0 top-9 z-50 bg-black/45 md:hidden"
+            style={{ bottom: terminalOpen ? "clamp(120px,18vh,180px)" : 0 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -424,7 +423,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 12, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-y-0 right-0 w-[300px] border-l border-[var(--border-default)] bg-[var(--bg-elevated)]"
+              className="absolute inset-y-0 right-0 w-full border-l border-[var(--border-default)] bg-[var(--bg-elevated)]"
               onClick={(event) => event.stopPropagation()}
             >
               <FileExplorer />
@@ -433,7 +432,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         ) : null}
       </AnimatePresence>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex h-12 items-center border-t border-[var(--border-default)] bg-[var(--bg-elevated)] lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex h-12 items-center border-t border-[var(--border-default)] bg-[var(--bg-elevated)] md:hidden">
         {mobileNavItems.map((item) => {
           const Icon = item.icon;
 
@@ -442,7 +441,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               key={item.key}
               type="button"
               onClick={item.onClick}
-              className={`flex h-full flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors ${
+              className={`type-caption flex h-full flex-1 flex-col items-center justify-center gap-0.5 transition-colors ${
                 item.active
                   ? "text-[var(--accent)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"

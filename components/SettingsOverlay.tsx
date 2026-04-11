@@ -17,6 +17,7 @@ import {
 const THEMES: { color: string; id: ThemeMode; label: string; tones: [string, string, string] }[] = [
   { id: "aniket-dark", label: "Aniket Dark", color: "#A05EF8", tones: ["#0b0b0b", "#1c1c1c", "#A05EF8"] },
   { id: "light", label: "Light", color: "#A05EF8", tones: ["#ffffff", "#f3f3f3", "#A05EF8"] },
+  { id: "cursor-warm", label: "Cursor Warm", color: "#f54e00", tones: ["#f2f1ed", "#ebeae5", "#f54e00"] },
   { id: "rose-pine", label: "Rosé Pine", color: "#ebbcba", tones: ["#191724", "#26233a", "#ebbcba"] },
   { id: "tokyo-night", label: "Tokyo Night", color: "#7aa2f7", tones: ["#1a1b26", "#24283b", "#7aa2f7"] },
   { id: "catppuccin", label: "Catppuccin", color: "#cba6f7", tones: ["#1e1e2e", "#313244", "#cba6f7"] },
@@ -107,7 +108,7 @@ export default function SettingsOverlay() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 right-0 z-[101] w-full max-w-[320px] border-l border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-2xl md:max-w-[380px]"
+            className="fixed inset-y-0 right-0 z-[101] w-full max-w-[320px] border-l border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-[var(--shadow-card)] md:max-w-[380px]"
           >
             <div className="flex h-full flex-col">
               {/* Header */}
@@ -130,7 +131,7 @@ export default function SettingsOverlay() {
               <div className="ide-scrollbar flex-1 overflow-y-auto px-4 py-6">
                 {/* Color Theme */}
                 <section className="mb-8">
-                  <h3 className="mb-4 flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                  <h3 className="type-sys-micro mb-4 flex items-center gap-2 text-[var(--text-muted)]">
                     <VscColorMode size={14} />
                     Color Theme
                   </h3>
@@ -142,10 +143,9 @@ export default function SettingsOverlay() {
                     <motion.div
                       animate={{
                         backgroundColor: previewTheme.color,
-                        boxShadow: `0 0 16px ${previewTheme.color}66`,
                       }}
                       transition={{ duration: 0.2 }}
-                      className="mt-3 h-2 rounded-full"
+                      className="mt-3 h-2 rounded-full shadow-[var(--shadow-ambient)]"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -164,7 +164,7 @@ export default function SettingsOverlay() {
                         <div className="flex items-center gap-3">
                           <div
                             className={`relative flex h-10 w-16 overflow-hidden rounded-sm border ${
-                              theme === t.id ? "neon-border" : "border-black/10"
+                              theme === t.id ? "neon-border" : "border-[var(--border-default)]"
                             }`}
                           >
                             {t.tones.map((tone, index) => (
@@ -191,10 +191,7 @@ export default function SettingsOverlay() {
                             className="h-2.5 w-2.5 rounded-full transition-all duration-200"
                             style={{
                               backgroundColor: t.color,
-                              boxShadow:
-                                hoveredTheme === t.id
-                                  ? `0 0 10px ${t.color}`
-                                  : "none",
+                              transform: hoveredTheme === t.id ? "scale(1.1)" : "scale(1)",
                             }}
                           />
                         )}
@@ -205,7 +202,7 @@ export default function SettingsOverlay() {
 
                 {/* Quick Actions */}
                 <section className="mb-8">
-                  <h3 className="mb-4 flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                  <h3 className="type-sys-micro mb-4 flex items-center gap-2 text-[var(--text-muted)]">
                     <VscSymbolMethod size={14} />
                     Quick Actions
                   </h3>
@@ -254,7 +251,7 @@ export default function SettingsOverlay() {
 
                 {/* Shortcuts */}
                 <section>
-                  <h3 className="mb-4 flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                  <h3 className="type-sys-micro mb-4 flex items-center gap-2 text-[var(--text-muted)]">
                     <VscCode size={14} />
                     Keyboard Shortcuts
                   </h3>
@@ -267,7 +264,7 @@ export default function SettingsOverlay() {
                         }`}
                       >
                         <span className="text-[var(--text-secondary)]">{s.label}</span>
-                        <kbd className="rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-primary)]">
+                        <kbd className="type-mono-sm rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-1.5 py-0.5 text-[var(--text-primary)]">
                           {s.keys}
                         </kbd>
                       </div>

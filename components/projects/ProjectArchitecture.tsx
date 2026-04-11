@@ -23,7 +23,7 @@ export function ProjectArchitecture({
     <div className="flex flex-col gap-6 sm:gap-8">
       <section>
         <SectionLabel label="High Level Description" />
-        <p className="mt-2 text-[13px] leading-relaxed text-[var(--text-secondary)]">
+        <p className="type-body mt-2 text-[var(--text-secondary)]">
           {detail.architecture}
         </p>
       </section>
@@ -55,10 +55,10 @@ export function ProjectArchitecture({
               }
               className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 transition-colors"
             >
-              <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+              <div className="type-sys-micro mb-2 text-[var(--text-muted)]">
                 {item.label}
               </div>
-              <div className="text-[13px] leading-relaxed text-[var(--text-secondary)]">
+              <div className="type-body text-[var(--text-secondary)]">
                 {item.value}
               </div>
             </motion.div>
@@ -94,10 +94,10 @@ export function ProjectArchitecture({
               transition={{ delay: modelIndex * 0.08, duration: 0.25 }}
               className="overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)]"
             >
-              <div className="border-b border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-secondary)]">
+              <div className="type-sys-micro border-b border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-2 text-[var(--text-secondary)]">
                 Schema Definition {modelIndex + 1}
               </div>
-              <div className="ide-scrollbar overflow-x-auto bg-[var(--bg-base)] p-4 font-mono text-[11px] leading-relaxed text-[var(--info)]">
+              <div className="type-mono-sm ide-scrollbar overflow-x-auto bg-[var(--bg-base)] p-4 text-[var(--info)]">
                 {model.split("\n").map((line, lineIndex) => (
                   <motion.div
                     key={`${project.id}-schema-${modelIndex}-${lineIndex}`}

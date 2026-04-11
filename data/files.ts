@@ -240,6 +240,13 @@ export const Hero = () => {
 }`,
   },
   {
+    name: "resume.pdf",
+    path: "resume.pdf",
+    language: "md",
+    content: `# Resume
+Selecting this file downloads the latest resume as \`resume.pdf\`.`,
+  },
+  {
     name: "README.md",
     path: "README.md",
     language: "md",

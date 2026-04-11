@@ -5,7 +5,6 @@ import { defaultFilePath } from "@/data/files";
 import { useIDEStore, type ThemeMode } from "@/store/useIDEStore";
 import { motion } from "framer-motion";
 import { FaGear } from "react-icons/fa6";
-import { GlitchHeading } from "@/components/ui/AnimatedText";
 import {
   VscChromeClose,
   VscChromeMaximize,
@@ -59,7 +58,7 @@ function WindowButton({
       type="button"
       onClick={onClick}
       title={title}
-      className={`flex h-8 w-11 items-center justify-center transition-colors ${close
+      className={`touch-target flex h-9 w-11 items-center justify-center transition-colors ${close
         ? "hover:bg-[var(--danger)] hover:text-white"
         : "hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
         } text-[var(--text-muted)] rounded-none`}
@@ -72,7 +71,7 @@ function WindowButton({
 function LiveClock() {
   const [t, setT] = useState(() => new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }));
   useEffect(() => { const id = setInterval(() => setT(new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })), 1000); return () => clearInterval(id); }, []);
-  return <span className="font-mono text-[10px] text-[var(--text-muted)] tabular-nums hidden lg:block">{t}</span>;
+  return <span className="type-mono-sm text-[var(--text-muted)] tabular-nums hidden lg:block">{t}</span>;
 }
 
 const THEMES = [
@@ -80,6 +79,11 @@ const THEMES = [
   { id: "synthwave", color: "#f9a8d4" },
   { id: "dracula", color: "#bd93f9" },
   { id: "light", color: "#2563eb" },
+  {
+    id: "cursor-warm",
+    color: "#f54e00",
+    swatch: "linear-gradient(135deg, #f2f1ed 0%, #f2f1ed 68%, #f54e00 68%, #f54e00 100%)",
+  },
   { id: "rose-pine", color: "#ebbcba" },
   { id: "tokyo-night", color: "#7aa2f7" },
   { id: "catppuccin", color: "#cba6f7" },
@@ -100,11 +104,12 @@ function ThemeSelector() {
             key={t.id}
             onClick={() => setTheme(t.id as ThemeMode)}
             title={`Theme: ${t.id}`}
-            className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${isActive ? "scale-[1.3] z-10" : "opacity-40 hover:opacity-100 hover:scale-110"}`}
-            style={{ 
-              backgroundColor: t.color,
-              ...(isActive ? { boxShadow: `0 0 0 1px var(--bg-base), 0 0 0 2px ${t.color}, 0 0 8px ${t.color}` } : {})
-            }}
+            className={`h-3 w-4 rounded-[4px] border transition-all duration-300 ${
+              isActive
+                ? "scale-[1.08] border-[var(--text-primary)]"
+                : "border-[var(--border-default)] opacity-60 hover:opacity-100 hover:border-[var(--border-hover)]"
+            }`}
+            style={{ background: "swatch" in t ? t.swatch : t.color }}
           />
         );
       })}
@@ -125,6 +130,7 @@ export default function TopBar() {
   const toggleTerminal = useIDEStore((state) => state.toggleTerminal);
   const toggleSidebar = useIDEStore((state) => state.toggleSidebar);
   const toggleAIPanel = useIDEStore((state) => state.toggleAIPanel);
+  const toggleMobileSidebar = useIDEStore((state) => state.toggleMobileSidebar);
   const resetTerminal = useIDEStore((state) => state.resetTerminal);
   const toggleMode = useIDEStore((state) => state.toggleMode);
   const toggleSettings = useIDEStore((state) => state.toggleSettings);
@@ -291,7 +297,10 @@ export default function TopBar() {
   const currentMenuOrder = currentMode === "agent" ? agentMenuOrder : editorMenuOrder;
 
   return (
-    <header className="relative flex h-8 shrink-0 items-center justify-between border-b border-[var(--border-default)] bg-[var(--bg-base)] pl-0.5 pr-2 select-none">
+    <header
+      className="relative flex h-9 shrink-0 items-center justify-between border-b border-[var(--border-10)] bg-[var(--bg-base)]/85 pl-0.5 pr-2 select-none backdrop-blur-[12px]"
+      style={{ WebkitBackdropFilter: "blur(12px)" }}
+    >
       {/* Left: Logo + Menu items */}
       <div ref={menuRef} className="flex min-w-0 items-center gap-1.5 pl-1.5">
         <div className="flex h-5 w-5 items-center justify-center pointer-events-none">
@@ -302,7 +311,23 @@ export default function TopBar() {
           />
         </div>
 
-        <nav className="hidden items-center gap-0.5 lg:flex ml-1">
+        <button
+          type="button"
+          className="touch-target flex md:hidden h-6 w-6 items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          onClick={toggleMobileSidebar}
+          aria-label="Open menu"
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <line x1="1" y1="3.5" x2="13" y2="3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="1" y1="10.5" x2="13" y2="10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </button>
+
+        <nav
+          className="hidden items-center gap-0.5 lg:flex ml-1 backdrop-blur-[12px]"
+          style={{ WebkitBackdropFilter: "blur(12px)" }}
+        >
           {currentMenuOrder.map((item) => (
             <div
               key={item}
@@ -316,23 +341,23 @@ export default function TopBar() {
               <button
                 type="button"
                 onClick={() => setOpenMenu((current: MenuKey | null) => (current === item ? null : item))}
-                className={`h-7 px-1.5 rounded-md text-[12.5px] font-medium leading-none transition-colors ${openMenu === item
-                  ? "bg-[var(--bg-muted)] text-[var(--text-primary)]"
-                  : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+                className={`type-sys-caption h-7 px-1.5 rounded-md leading-none transition-[color_150ms_ease] ${openMenu === item
+                  ? "bg-[var(--bg-muted)] text-[var(--accent)]"
+                  : "text-[var(--text-primary)] hover:bg-[var(--bg-muted)] hover:text-[var(--accent)]"
                   }`}
               >
                 {item}
               </button>
 
               {openMenu === item ? (
-                <div className="absolute left-0 top-full z-50 mt-1 min-w-[240px] rounded-sm border border-[var(--border-default)] bg-[var(--bg-overlay)] py-1.5 shadow-xl backdrop-blur-md">
+                <div className="absolute left-0 top-full z-50 mt-1 min-w-[240px] rounded-sm border border-[var(--border-default)] bg-[var(--bg-overlay)] py-1.5 shadow-[var(--shadow-card)] backdrop-blur-md">
                   {menuActions[item].map((action, i) => {
                     if (action.type === "divider") {
                       return <div key={i} className="my-1 border-t border-[var(--border-default)]" />;
                     }
                     if (action.type === "header") {
                       return (
-                        <div key={i} className="mb-0.5 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--text-disabled)]">
+                        <div key={i} className="type-sys-micro mb-0.5 px-3.5 py-1.5 text-[var(--text-disabled)]">
                           {action.label}
                         </div>
                       );
@@ -342,14 +367,14 @@ export default function TopBar() {
                         key={i}
                         type="button"
                         onClick={() => void handleMenuAction(action)}
-                        className={`group flex h-8 w-full items-center justify-between gap-4 px-3.5 text-left text-[13px] transition mx-0 ${action.className
+                        className={`type-btn group flex h-8 w-full items-center justify-between gap-4 px-3.5 text-left transition mx-0 ${action.className
                           ? action.className
                           : "text-[var(--text-secondary)] hover:bg-[var(--accent)] hover:text-white"
                           }`}
                       >
                         <span className="font-medium">{action.label}</span>
                         {action.shortcut ? (
-                          <span className={`${action.className ? '' : 'text-[var(--text-disabled)] group-hover:text-white/80'} text-[11px] font-mono tracking-tighter`}>
+                          <span className={`${action.className ? '' : 'text-[var(--text-disabled)] group-hover:text-white/80'} type-mono-sm tracking-tighter`}>
                             {action.shortcut}
                           </span>
                         ) : null}
@@ -369,18 +394,18 @@ export default function TopBar() {
           <button
             type="button"
             onClick={() => openCommandPalette("files")}
-            className="flex h-[22px] w-[220px] sm:w-[260px] md:w-[320px] lg:w-[380px] items-center gap-2 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 text-[var(--text-secondary)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] group"
+            className="group flex h-[22px] w-[min(64vw,380px)] min-w-[160px] items-center gap-2 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 text-[var(--text-secondary)] shadow-[var(--shadow-ambient)] transition-all hover:border-[var(--border-hover)] hover:bg-[var(--bg-muted)] sm:min-w-[220px]"
           >
             <VscSearch size={13} className="shrink-0 opacity-60 transition-opacity group-hover:opacity-100" />
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="min-w-0 cursor-pointer"
             >
-              <GlitchHeading className="gradient-text text-[13px] font-bold font-display cursor-pointer" data-text="aniket.site">
-                aniket.site
-              </GlitchHeading>
+              <span className="gradient-text cursor-pointer type-section max-[900px]:type-title-sm leading-none">
+                Aniket.site
+              </span>
             </motion.div>
-            <span className="ml-auto flex items-center gap-1 opacity-30 group-hover:opacity-50 shrink-0">
+            <span className="ml-auto hidden shrink-0 items-center gap-1 opacity-30 group-hover:opacity-50 sm:flex">
               <span className="rounded border border-[var(--border-default)] px-1 py-[1px] text-[9px] font-bold leading-none">CTRL</span>
               <span className="rounded border border-[var(--border-default)] px-1 py-[1px] text-[9px] font-bold leading-none">P</span>
             </span>
@@ -392,9 +417,9 @@ export default function TopBar() {
             whileHover={{ scale: 1.05 }}
             className="cursor-pointer"
           >
-            <GlitchHeading className="gradient-text text-[13px] font-bold font-display cursor-pointer" data-text="aniket.site">
-              aniket.site
-            </GlitchHeading>
+            <span className="gradient-text cursor-pointer type-section max-[900px]:type-title-sm leading-none">
+              Aniket.site
+            </span>
           </motion.div>
         </div>
       )}
@@ -408,7 +433,7 @@ export default function TopBar() {
               type="button"
               onClick={toggleMode}
               title={`Switch to Agent Mode`}
-              className="hidden md:flex items-center gap-1 mr-2 px-2 h-[22px] rounded-md text-[11px] font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="type-caption hidden md:flex items-center gap-1 mr-2 px-2 h-[22px] rounded-md text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"
             >
               <span>Editor</span>
             </button>
@@ -418,9 +443,9 @@ export default function TopBar() {
               <button
                 onClick={toggleSidebar}
                 title="Toggle Sidebar"
-                className={`w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${sidebarOpen
-                  ? "bg-[#2d2d2d] text-[var(--text-primary)] border border-[#404040]"
-                  : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
+                className={`touch-target w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${sidebarOpen
+                  ? "bg-[var(--bg-muted)] text-[var(--text-primary)] border border-[var(--border-default)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                   }`}
               >
                 <VscCode size={14} />
@@ -428,9 +453,9 @@ export default function TopBar() {
               <button
                 onClick={toggleTerminal}
                 title="Toggle Terminal"
-                className={`w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${terminalOpen
-                  ? "bg-[#2d2d2d] text-[var(--text-primary)] border border-[#404040]"
-                  : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
+                className={`touch-target w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${terminalOpen
+                  ? "bg-[var(--bg-muted)] text-[var(--text-primary)] border border-[var(--border-default)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                   }`}
               >
                 <VscTerminal size={14} />
@@ -438,9 +463,9 @@ export default function TopBar() {
               <button
                 onClick={toggleAIPanel}
                 title="Toggle AI Panel"
-                className={`w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${aiPanelOpen
-                  ? "bg-[#2d2d2d] text-[var(--text-primary)] border border-[#444444]"
-                  : "text-[var(--text-muted)] hover:bg-[#2d2d2d] hover:text-[var(--text-primary)]"
+                className={`touch-target w-[26px] h-[26px] flex items-center justify-center rounded-[4px] transition-all duration-200 ${aiPanelOpen
+                  ? "bg-[var(--bg-muted)] text-[var(--text-primary)] border border-[var(--border-default)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
                   }`}
               >
                 <VscLayoutSidebarLeft size={14} />
@@ -454,13 +479,15 @@ export default function TopBar() {
             type="button"
             onClick={toggleMode}
             title={`Switch to Editor Mode`}
-            className="flex items-center gap-1 mr-2 px-2 h-[22px] rounded-md text-[11px] font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="type-caption flex items-center gap-1 mr-2 px-2 h-[22px] rounded-md text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             <span>Agent</span>
           </button>
         )}
 
 
+
+        <ThemeSelector />
 
         <div className="mr-2">
           <LiveClock />
@@ -472,7 +499,7 @@ export default function TopBar() {
             type="button"
             onClick={toggleSettings}
             title="Settings"
-            className="mr-1 flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+            className="touch-target mr-1 flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
           >
             <FaGear size={13} />
           </button>

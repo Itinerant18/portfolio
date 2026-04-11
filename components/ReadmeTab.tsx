@@ -19,7 +19,7 @@ export default function ReadmeTab() {
   };
 
   return (
-    <div className="ide-scrollbar flex h-full w-full flex-col overflow-y-auto bg-[var(--bg-base)] pb-32 font-sans text-[var(--text-secondary)]">
+    <div className="type-ui ide-scrollbar flex h-full w-full flex-col overflow-y-auto bg-[var(--bg-base)] pb-32 text-[var(--text-secondary)]">
       <motion.div
         variants={container}
         initial="hidden"
@@ -79,7 +79,8 @@ export default function ReadmeTab() {
         <motion.div variants={item}>
           <SectionTitle emoji="👤" title="About Me" />
           <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-[1.2fr_0.8fr]">
-            <div className="overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 font-mono text-[12px] leading-7 shadow-sm">
+            {/* 20px gap */}
+            <div className="type-mono overflow-hidden rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-[20px] leading-7 shadow-[var(--shadow-ambient)]">
               <pre className="whitespace-pre-wrap text-[var(--text-secondary)]">{`name: Aniket Karmakar
 role: Junior Executive Engineer — R&D
 company: Security Engineers Pvt. Ltd.
@@ -121,12 +122,12 @@ leveling_up: ▸ System Design & Distributed Systems
             <StackRow label="☁️ DevOps & Cloud" icons="docker,githubactions,aws,vercel,nginx,git" />
 
             <div className="w-full">
-              <div className="mb-2 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+              <div className="type-sys-micro mb-2 text-center text-[var(--text-muted)]">
                 🤖 AI · ML · Vector
               </div>
               <div className="flex flex-wrap justify-center gap-1.5">
                 {["LangChain", "OpenAI", "Sarvam‑M LLM", "Pinecone", "pgvector", "Upstash Redis", "Ollama", "RAG Pipelines"].map((t) => (
-                  <span key={t} className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[10px] font-bold text-[var(--text-secondary)]">
+                  <span key={t} className="type-caption rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[var(--text-secondary)]">
                     {t}
                   </span>
                 ))}
@@ -134,14 +135,14 @@ leveling_up: ▸ System Design & Distributed Systems
             </div>
 
             <div className="w-full">
-              <div className="mb-2 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+              <div className="type-sys-micro mb-2 text-center text-[var(--text-muted)]">
                 📡 IoT & Hardware
               </div>
               <div className="flex flex-wrap justify-center gap-1.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="https://skillicons.dev/icons?i=arduino,raspberrypi&perline=8" alt="IoT" className="h-10" />
                 {["ThingsBoard", "MQTT"].map((t) => (
-                  <span key={t} className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[10px] font-bold text-[var(--text-secondary)]">
+                  <span key={t} className="type-caption rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[var(--text-secondary)]">
                     {t}
                   </span>
                 ))}
@@ -156,16 +157,16 @@ leveling_up: ▸ System Design & Distributed Systems
         <motion.div variants={item}>
           <SectionTitle emoji="🏗️" title="Architecture Mastery" />
           <div className="mt-4 flex flex-col gap-4">
-            <div className="text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--success)]">✅ Battle-Tested</div>
+            <div className="type-sys-micro text-center text-[var(--success)]">✅ Battle-Tested</div>
             <div className="flex flex-wrap justify-center gap-1.5">
               {["MVC Architecture", "REST API Design", "JWT / OAuth2", "Spring Security", "RAG Pipelines", "Semantic Search", "LLM Orchestration", "Docker Compose", "ThingsBoard IoT", "MQTT Telemetry", "SSR Next.js", "Component Architecture", "pgvector / Vector DB", "Redis Caching"].map((t) => (
-                <span key={t} className="rounded-sm border border-[var(--success)]/30 bg-[var(--success)]/10 px-2.5 py-1 text-[10px] font-bold text-[var(--success)]">
+                <span key={t} className="type-caption rounded-sm border border-[var(--success)]/30 bg-[var(--success)]/10 px-2.5 py-1 text-[var(--success)]">
                   ✅ {t}
                 </span>
               ))}
             </div>
 
-            <div className="mt-2 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">🔥 Currently Learning</div>
+            <div className="type-sys-micro mt-2 text-center text-[var(--accent)]">🔥 Currently Learning</div>
             <div className="flex flex-wrap justify-center gap-1.5">
               {[
                 "System Design HLD/LLD — 75%", "CAP Theorem — 55%", "Kafka / Event Driven — 40%",
@@ -173,7 +174,7 @@ leveling_up: ▸ System Design & Distributed Systems
                 "Multi-Agent AI — 35%", "LLM Fine-Tuning — 25%", "Kubernetes — 28%",
                 "Observability — 35%", "Flutter BLoC — 38%", "Flutter Clean Arch — 48%"
               ].map((t) => (
-                <span key={t} className="rounded-sm border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-2.5 py-1 text-[10px] font-bold text-[var(--accent)]">
+                <span key={t} className="type-caption rounded-sm border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-2.5 py-1 text-[var(--accent)]">
                   {t}
                 </span>
               ))}
@@ -299,8 +300,9 @@ leveling_up: ▸ System Design & Distributed Systems
         <motion.div variants={item}>
           <SectionTitle emoji="⚔️" title="Character Sheet" />
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 shadow-sm">
-              <h3 className="mb-3 text-[12px] font-bold uppercase tracking-[0.1em] text-[var(--text-primary)]">🎮 Genshin Roster</h3>
+            {/* 20px gap */}
+            <div className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-[20px] shadow-[var(--shadow-ambient)]">
+              <h3 className="type-sub mb-3 text-[var(--text-primary)]">🎮 Genshin Roster</h3>
               <table className="w-full text-[11px]">
                 <tbody>
                   {[
@@ -323,8 +325,9 @@ leveling_up: ▸ System Design & Distributed Systems
               </table>
             </div>
 
-            <div className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 shadow-sm">
-              <h3 className="mb-3 text-[12px] font-bold uppercase tracking-[0.1em] text-[var(--text-primary)]">🧙 Dev Stats</h3>
+            {/* 20px gap */}
+            <div className="rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-[20px] shadow-[var(--shadow-ambient)]">
+              <h3 className="type-sub mb-3 text-[var(--text-primary)]">🧙 Dev Stats</h3>
               <table className="w-full text-[11px]">
                 <tbody>
                   {[
@@ -369,7 +372,7 @@ leveling_up: ▸ System Design & Distributed Systems
           </div>
 
           <div className="rounded-sm border border-[var(--accent)]/30 bg-[var(--accent)]/5 px-6 py-3">
-            <span className="text-[11px] font-bold italic text-[var(--accent)]">
+            <span className="type-caption italic text-[var(--accent)]">
               💬 &quot;Architecture is decisions made early — the rest is just code.&quot;
             </span>
           </div>
@@ -393,7 +396,7 @@ leveling_up: ▸ System Design & Distributed Systems
 
 function SectionTitle({ emoji, title }: { emoji: string; title: string }) {
   return (
-    <h2 className="flex items-center gap-3 border-b border-[var(--border-default)] pb-3 text-[15px] font-semibold tracking-tight text-[var(--text-primary)]">
+    <h2 className="type-section flex items-center gap-3 border-b border-[var(--border-default)] pb-3 text-[var(--text-primary)]">
       <span>{emoji}</span>
       {title}
     </h2>
@@ -416,7 +419,7 @@ function Divider() {
 function StackRow({ label, icons }: { label: string; icons: string }) {
   return (
     <div className="w-full">
-      <div className="mb-2 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+      <div className="type-sys-micro mb-2 text-center text-[var(--text-muted)]">
         {label}
       </div>
       <div className="flex justify-center">

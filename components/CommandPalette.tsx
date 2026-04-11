@@ -178,11 +178,11 @@ export default function CommandPalette() {
             exit={{ opacity: 0, scale: 0.99, y: -4 }}
             transition={{ duration: 0.1, ease: "easeOut" }}
             onClick={(event) => event.stopPropagation()}
-            className="w-full max-w-[640px] overflow-hidden rounded-lg border border-[#3c3c3c] bg-[#1e1e1e] shadow-[0_16px_48px_rgba(0,0,0,0.5)] flex flex-col"
+            className="flex w-full max-w-[640px] flex-col overflow-hidden rounded-[8px] border border-[var(--border-default)] bg-[var(--bg-overlay)] shadow-[var(--shadow-card)]"
           >
             {/* Header: Input Area */}
-            <div className="flex items-center gap-3 px-4 py-[11px] bg-[#1e1e1e]">
-              <span className="text-[#858585] text-[15px] font-mono leading-none flex items-center">&gt;</span>
+            <div className="flex items-center gap-3 bg-[var(--bg-overlay)] px-4 py-[11px]">
+              <span className="flex items-center text-[15px] leading-none text-[var(--text-muted)] font-mono">&gt;</span>
               <input
                 ref={inputRef}
                 value={searchQuery}
@@ -216,17 +216,17 @@ export default function CommandPalette() {
                   }
                 }}
                 placeholder="Go to file or run command..."
-                className="h-6 w-full bg-transparent text-[14px] text-[#cccccc] outline-none placeholder:text-[#5c5c5c] font-medium"
+                className="h-6 w-full bg-transparent text-[14px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-disabled)] font-medium"
               />
               <div className="flex items-center">
-                <span className="px-1.5 py-[2px] rounded-sm border border-[#454545] bg-[#333333] text-[9px] font-bold text-[#8c8c8c] leading-none uppercase select-none">Esc</span>
+                <span className="select-none rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-1.5 py-[2px] text-[9px] font-bold uppercase leading-none text-[var(--text-muted)]">Esc</span>
               </div>
             </div>
 
-            <div className="h-[1px] w-full bg-[#3c3c3c]" />
+            <div className="h-[1px] w-full bg-[var(--border-default)]" />
 
             {/* List Content */}
-            <div className="max-h-[min(520px,70vh)] overflow-y-auto py-1.5 flex flex-col">
+            <div className="ide-scrollbar flex max-h-[min(520px,70vh)] flex-col overflow-y-auto py-1.5">
               {items.length ? (
                 items.map((entry, index) => {
                   const isActive = activeIndex === index;
@@ -237,7 +237,7 @@ export default function CommandPalette() {
                   return (
                     <div key={entry.kind === "file" ? entry.value.path : entry.kind === "copilot" ? "copilot" : entry.value.id}>
                       {showFilesHeader && (
-                        <div className="px-4 pt-3 pb-1 text-[10px] font-bold text-[#6f6f6f] uppercase tracking-wider select-none">
+                        <div className="select-none px-4 pb-1 pt-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                           Files
                         </div>
                       )}
@@ -247,38 +247,38 @@ export default function CommandPalette() {
                         onMouseEnter={() => setActiveIndex(index)}
                         onClick={() => handleSelect(entry)}
                         className={`group flex w-full items-center gap-3.5 px-3 py-1.5 text-left text-[13px] transition-colors relative ${isActive
-                            ? "bg-[#2a2d2e]"
-                            : "text-[#cccccc]"
+                            ? "bg-[var(--bg-muted)]"
+                            : "text-[var(--text-secondary)]"
                           }`}
                       >
                         {entry.kind === "copilot" ? (
                           <>
-                            <VscSparkle className={`${isActive ? "text-[#a981ff]" : "text-[#8e6fd7]"}`} size={16} />
-                            <span className={`font-medium ${isActive ? "text-white" : "text-[#c2abff]"}`}>
+                            <VscSparkle className={`${isActive ? "text-[var(--accent-hover)]" : "text-[var(--accent)]"}`} size={16} />
+                            <span className={`font-medium ${isActive ? "text-[var(--text-primary)]" : "text-[var(--accent)]"}`}>
                               {entry.value.title}
                             </span>
-                            <span className="ml-auto text-[10px] font-mono text-[#6f6f6f] border border-[#3c3c3c] px-1.5 py-[1px] rounded bg-[#252526]">
+                            <span className="ml-auto rounded border border-[var(--border-default)] bg-[var(--bg-base)] px-1.5 py-[1px] text-[10px] font-mono text-[var(--text-muted)]">
                               {entry.value.shortcut}
                             </span>
                           </>
                         ) : entry.kind === "file" ? (
                           <>
-                            <FileIcon name={entry.value.name} className={`${isActive ? "text-[#cccccc]" : "text-[#858585]"}`} />
-                            <span className={`font-semibold truncate ${isActive ? "text-white" : "text-[#cccccc]"}`}>
+                            <FileIcon name={entry.value.name} className={`${isActive ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"}`} />
+                            <span className={`truncate font-semibold ${isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}`}>
                               {entry.value.name}
                             </span>
-                            <span className="ml-auto text-[12px] font-mono text-[#6f6f6f] select-none italic">
+                            <span className="ml-auto select-none text-[12px] font-mono italic text-[var(--text-muted)]">
                               {formatPath(entry.value.path)}
                             </span>
                           </>
                         ) : (
                           <>
-                             <VscSymbolMethod className={`${isActive ? "text-[#cccccc]" : "text-[#858585]"}`} size={16} />
-                             <span className={`font-semibold ${isActive ? "text-white" : "text-[#cccccc]"}`}>
+                             <VscSymbolMethod className={`${isActive ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"}`} size={16} />
+                             <span className={`font-semibold ${isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}`}>
                                 {entry.value.title}
                              </span>
                              {entry.value.shortcut && (
-                               <span className="ml-auto text-[10px] font-mono text-[#6f6f6f] border border-[#3c3c3c] px-1.5 py-[1px] rounded bg-[#252526]">
+                               <span className="ml-auto rounded border border-[var(--border-default)] bg-[var(--bg-base)] px-1.5 py-[1px] text-[10px] font-mono text-[var(--text-muted)]">
                                  {entry.value.shortcut}
                                </span>
                              )}
@@ -290,14 +290,14 @@ export default function CommandPalette() {
                 })
               ) : (
                 <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                  <div className="text-[13px] font-medium text-[#858585]">No matching results found</div>
+                  <div className="text-[13px] font-medium text-[var(--text-muted)]">No matching results found</div>
                 </div>
               )}
             </div>
             
             {/* Footer */}
-            <div className="px-4 py-[6px] bg-[#1e1e1e] border-t border-[#2d2d2d] flex items-center justify-between select-none">
-               <div className="flex items-center gap-2.5 text-[11px] text-[#858585] font-medium">
+            <div className="flex select-none items-center justify-between border-t border-[var(--border-default)] bg-[var(--bg-overlay)] px-4 py-[6px]">
+               <div className="flex items-center gap-2.5 text-[11px] font-medium text-[var(--text-muted)]">
                  <span className="flex items-center gap-1">
                    <span className="text-[12px]">↑↓</span> navigate
                  </span>
@@ -310,8 +310,8 @@ export default function CommandPalette() {
                    Esc close
                  </span>
                </div>
-               <div className="text-[11px] text-[#6f6f6f] flex items-center gap-1.5">
-                 <span className="font-normal">Tip: type <span className="text-[#858585] italic">"copilot"</span> to open AI chat</span>
+               <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                 <span className="font-normal">Tip: type <span className="italic text-[var(--text-secondary)]">"copilot"</span> to open AI chat</span>
                </div>
             </div>
           </motion.div>

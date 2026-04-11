@@ -8,7 +8,7 @@ import {
 
 export default function StatusBar() {
   return (
-    <div className="hidden h-[22px] w-full items-center justify-between border-t border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 font-sans text-[11px] text-[var(--text-secondary)] select-none lg:flex">
+    <div className="type-caption hidden h-[22px] w-full items-center justify-between border-t border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 text-[var(--text-secondary)] select-none lg:flex">
       <div className="flex items-center gap-4">
         <span className="cursor-pointer hover:bg-[var(--bg-muted)] px-1.5 py-0.5 rounded transition-colors flex items-center gap-1.5">
           <VscSourceControl size={11} />

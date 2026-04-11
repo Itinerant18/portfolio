@@ -105,10 +105,10 @@ export default function CodeEditor() {
         {!file || !activeFile ? (
           <div className="flex h-full items-center justify-center px-6 pb-16 text-[var(--text-primary)]">
             <div className="w-full max-w-3xl rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 md:p-8">
-              <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
+              <div className="type-sys-micro text-[var(--text-muted)]">
                 Welcome
               </div>
-              <h2 className="mt-3 text-[24px] font-semibold tracking-[-0.04em] md:text-[28px]">
+              <h2 className="type-section mt-3">
                 Keyboard shortcuts
               </h2>
               <div className="mt-6 grid gap-3 md:grid-cols-2">
@@ -117,8 +117,8 @@ export default function CodeEditor() {
                     key={label}
                     className="flex items-center justify-between rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-3"
                   >
-                    <span className="text-[13px] text-[var(--text-secondary)]">{label}</span>
-                    <kbd className="rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-1 text-[11px] text-[var(--text-primary)]">
+                    <span className="type-btn text-[var(--text-secondary)]">{label}</span>
+                    <kbd className="type-mono-sm rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-1 text-[var(--text-primary)]">
                       {combo}
                     </kbd>
                   </div>
@@ -158,7 +158,7 @@ export default function CodeEditor() {
                             }`}
                           >
                             <div
-                              className={`select-none px-3 text-right text-[12px] font-mono font-medium leading-6 ${
+                              className={`type-mono select-none px-3 text-right font-medium leading-6 ${
                                 isActive
                                   ? "text-[var(--text-primary)]"
                                   : "text-[var(--text-disabled)]"
@@ -168,7 +168,7 @@ export default function CodeEditor() {
                             </div>
                             <pre className="m-0 overflow-visible px-4">
                               <code
-                                className="block whitespace-pre font-mono text-[13px] leading-6 text-[var(--text-secondary)]"
+                                className="type-mono block whitespace-pre text-[var(--text-secondary)]"
                                 dangerouslySetInnerHTML={{
                                   __html: line.length ? line : "&nbsp;",
                                 }}

@@ -105,12 +105,12 @@ export default function SkillsTab() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 font-sans text-[13px] text-[var(--text-primary)] md:p-12"
+      className="type-ui ide-scrollbar flex h-full w-full flex-col overflow-auto bg-[var(--bg-surface)] p-6 pb-32 text-[var(--text-primary)] md:p-12"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
         <motion.div
           variants={item}
-          className="font-mono text-[var(--text-muted)] text-[12px]"
+          className="type-mono text-[var(--text-muted)]"
         >
           <span className="text-[var(--accent)]">const</span>{" "}
           <span className="text-[var(--info)]">capabilities</span>{" "}
@@ -119,27 +119,28 @@ export default function SkillsTab() {
         </motion.div>
 
         <motion.div variants={item} className="flex flex-col gap-2">
-          <h1 className="text-[28px] font-bold tracking-[-0.04em]">
+          <h1 className="type-hero">
             <span className="gradient-text">Technical Skills</span>
           </h1>
-          <p className="text-[14px] text-[var(--text-muted)]">
+          <p className="type-body text-[var(--text-muted)]">
             Competency matrix across full-stack, AI/ML, IoT and cloud.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {/* 20px gap */}
           {skillCategories.map((category) => (
             <motion.div
               key={category.title}
               variants={item}
-              className="glow-card flex flex-col gap-5 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5"
+              className="glow-card flex flex-col gap-5 rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] p-[20px]"
             >
               <div className="flex items-center gap-2">
                 <category.Icon
                   size={14}
                   style={{ color: category.iconColor }}
                 />
-                <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                <h2 className="type-sys-micro text-[var(--text-muted)]">
                   {category.title}
                 </h2>
               </div>
@@ -147,10 +148,10 @@ export default function SkillsTab() {
                 {category.skills.map((skill) => (
                   <div key={skill.name} className="flex flex-col gap-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[12px] font-medium text-[var(--text-secondary)]">
+                      <span className="type-btn text-[var(--text-secondary)]">
                         {skill.name}
                       </span>
-                      <span className="font-mono text-[10px] font-medium text-[var(--text-muted)]">
+                      <span className="type-mono-sm text-[var(--text-muted)]">
                         {skill.pct}%
                       </span>
                     </div>
@@ -178,7 +179,7 @@ export default function SkillsTab() {
           variants={item}
           className="flex flex-col gap-4 border-t border-[var(--border-default)] pt-8"
         >
-          <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          <div className="type-sys-micro flex items-center gap-2 text-[var(--text-muted)]">
             <VscSymbolNamespace size={12} />
             Ecosystem & Libraries
           </div>
@@ -190,7 +191,7 @@ export default function SkillsTab() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.025 }}
                 whileHover={{ scale: 1.06, y: -2 }}
-                className="cursor-default rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-secondary)] transition-all hover:border-[var(--accent-muted)] hover:text-[var(--accent)]"
+                className="type-caption cursor-default rounded-sm border border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[var(--text-secondary)] transition-all hover:border-[var(--accent-muted)] hover:text-[var(--accent)]"
               >
                 {tag}
               </motion.span>

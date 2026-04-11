@@ -101,6 +101,12 @@ export default function Terminal() {
     }
   }, [entries]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 600 && useIDEStore.getState().terminalOpen) {
+      useIDEStore.getState().toggleTerminal();
+    }
+  }, []);
+
   useEffect(() => () => clearBootTimers(), []);
 
   useEffect(() => {
@@ -199,13 +205,13 @@ export default function Terminal() {
       {/* Top Bar */}
       <div className="flex h-9 shrink-0 items-center justify-between px-4 border-b border-[var(--border-default)] bg-[var(--bg-muted)]/30">
         {/* Tabs */}
-        <div className="flex h-full items-center gap-6">
+        <div className="flex h-full items-center gap-6 overflow-x-auto scrollbar-hide whitespace-nowrap">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`relative flex h-full items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider transition-all ${
+              className={`touch-target relative flex h-full items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider transition-all ${
                 activeTab === tab.key
                   ? "text-[var(--text-primary)]"
                   : "text-[var(--text-disabled)] hover:text-[var(--text-muted)]"
@@ -227,29 +233,29 @@ export default function Terminal() {
         {/* Actions */}
         <div className="flex items-center gap-1">
           {/* Terminal Profile */}
-          <div className="cursor-pointer rounded-md px-2 py-1 text-[11px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-muted)]">
+          <div className="touch-target cursor-pointer rounded-md px-2 py-1 text-[11px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-muted)]">
             <div className="flex items-center gap-1.5">
               <VscTerminal size={14} className="text-[var(--text-secondary)]" />
             <span>pwsh</span>
             </div>
           </div>
           
-          <button title="Show Warnings" className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--warning)] hover:bg-[var(--bg-muted)] transition-colors">
+          <button title="Show Warnings" className="touch-target flex h-6 w-6 items-center justify-center rounded-md text-[var(--warning)] hover:bg-[var(--bg-muted)] transition-colors">
             <VscWarning size={14} />
           </button>
           
-          <div className="flex border border-[var(--border-default)] rounded-md ml-1 overflow-hidden bg-[var(--bg-elevated)] shadow-sm">
+          <div className="ml-1 flex overflow-hidden rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-[var(--shadow-ambient)]">
              <button
                type="button"
                title="New Terminal"
                onClick={resetTerminal}
-               className="flex h-6 w-7 items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"
+               className="touch-target flex h-6 w-7 items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"
              >
                <VscAdd size={14} />
              </button>
              <button
                type="button"
-               className="flex h-6 w-5 items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-muted)] border-l border-[var(--border-default)] transition-colors"
+               className="touch-target flex h-6 w-5 items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-muted)] border-l border-[var(--border-default)] transition-colors"
              >
                <VscChevronDown size={14} />
              </button>
@@ -259,7 +265,7 @@ export default function Terminal() {
             type="button"
             title="Kill Terminal"
             onClick={() => setEntries([])}
-            className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--error)] ml-1"
+            className="touch-target flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--error)] ml-1"
           >
             <VscClose size={16} />
           </button>
@@ -268,7 +274,7 @@ export default function Terminal() {
             type="button"
             title="Close Panel"
             onClick={toggleTerminal}
-            className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+            className="touch-target flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
           >
             <VscClose size={16} />
           </button>
@@ -305,7 +311,7 @@ export default function Terminal() {
             ))}
 
             <form onSubmit={handleSubmit} className="mt-1 pb-4">
-              <label className="flex items-center gap-2">
+              <label className="touch-target flex min-h-[44px] items-center gap-2">
                 <span className="font-medium text-[var(--accent)]">{prompt}</span>
                 <input
                   ref={inputRef}
