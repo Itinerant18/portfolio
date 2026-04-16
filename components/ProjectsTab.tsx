@@ -1,67 +1,199 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion, Variants } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   fallbackProjects,
   isForkedProject,
   sortProjectsByUpdatedAt,
 } from "@/data/projects";
-import { useIDEStore } from "@/store/useIDEStore";
-import { IDEButton, IDEInput } from "@/components/ui/Primitives";
-import { 
-  ProjectDetail, ProjectShape, TabKey, LoadState, 
-  isProjectLike, asProjectShape, getInitials, techColor, 
-  categoryOf, languageOf, yearOf, whyOf, problemOf, 
-  techGroupsOf, featuresOf, topicsOf, flowsOf, 
-  dataModelsOf, backendOf, storageOf, architectureOf, 
-  highLevelOf, releasesOf 
+import { IDEInput } from "@/components/ui/Primitives";
+import {
+  ProjectDetail,
+  ProjectShape,
+  TabKey,
+  LoadState,
+  isProjectLike,
+  asProjectShape,
+  getInitials,
+  techColor,
+  categoryOf,
+  languageOf,
+  yearOf,
+  techGroupsOf,
+  topicsOf,
 } from "./projects/ProjectData";
-import { 
-  LoadingState, ProjectRowSkeleton
-} from "./projects/ProjectUI";
+import { LoadingState, ProjectRowSkeleton } from "./projects/ProjectUI";
 import { ProjectOverview } from "./projects/ProjectOverview";
+import { ProjectPreview } from "./projects/ProjectPreview";
 import { ProjectArchitecture } from "./projects/ProjectArchitecture";
+import { ProjectTech } from "./projects/ProjectTech";
 import { ProjectChangelog } from "./projects/ProjectChangelog";
-import { ProjectReadme } from "./projects/ProjectReadme";
-import { ProjectInsights } from "./projects/ProjectInsights";
-import { VscRepo, VscCode, VscProject } from "react-icons/vsc";
-import { calcHealth } from "@/utils/projectHealth";
+import {
+  VscChevronDown,
+  VscChromeClose,
+  VscGithub,
+  VscGlobe,
+  VscProject,
+} from "react-icons/vsc";
+
+const LANGS = ["All", "TypeScript", "Python", "Dart", "JavaScript"] as const;
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "overview", label: "Overview" },
-  { key: "readme", label: "README" },
+  { key: "preview", label: "Preview" },
   { key: "architecture", label: "Architecture" },
-  { key: "insights", label: "Insights" },
+  { key: "tech", label: "Tech" },
   { key: "changelog", label: "Changelog" },
 ];
 
-function openExternal(url: string) {
-  window.open(url, "_blank", "noopener,noreferrer");
+function activityState(updatedAt: string | undefined) {
+  if (!updatedAt) {
+    return { color: "#ef4444", label: "Dormant" };
+  }
+
+  const days = (Date.now() - new Date(updatedAt).getTime()) / 86400000;
+  if (days < 90) return { color: "#22c55e", label: "Active" };
+  if (days < 365) return { color: "#f59e0b", label: "Recent" };
+  return { color: "#ef4444", label: "Dormant" };
 }
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
-};
+function ProjectListRow({
+  active,
+  onSelect,
+  project,
+}: {
+  active: boolean;
+  onSelect: () => void;
+  project: ProjectShape;
+}) {
+  const language = languageOf(project);
+  const health = activityState(project.updatedAt);
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, x: -10 },
-  show: { opacity: 1, x: 0 },
-};
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`relative grid h-14 w-full grid-cols-[32px_minmax(0,1fr)] items-center gap-3 rounded-md px-3 text-left transition-colors ${
+        active ? "bg-[var(--bg-base)]" : "hover:bg-[var(--bg-muted)]"
+      }`}
+      style={active ? { boxShadow: "inset 0 0 0 1px var(--accent)" } : undefined}
+    >
+      <div
+        className="flex h-8 w-8 items-center justify-center rounded-md text-[10px] font-bold text-white"
+        style={{ backgroundColor: techColor(project.primaryTech || language) }}
+      >
+        {getInitials(project.name)}
+      </div>
+
+      <div className="relative min-w-0 pr-4">
+        <div
+          className="type-title-sm overflow-hidden text-[var(--text-primary)]"
+          style={{
+            display: "-webkit-box",
+            WebkitBoxOrient: "vertical",
+            WebkitLineClamp: 2,
+          }}
+        >
+          {project.name}
+        </div>
+        <div className="mt-1 flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+          <span className="h-2 w-2 rounded-full" style={{ background: techColor(language) }} />
+          <span className="truncate">{language}</span>
+        </div>
+      </div>
+
+      <span
+        className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full"
+        style={{ backgroundColor: health.color }}
+        aria-hidden="true"
+      />
+    </button>
+  );
+}
+
+function ActivityLegend() {
+  return (
+    <div className="sticky bottom-0 border-t border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-3">
+      <div className="mb-2 text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
+        Activity
+      </div>
+      {[
+        { color: "#22c55e", label: "Active (< 90d)" },
+        { color: "#f59e0b", label: "Recent (< 1y)" },
+        { color: "#ef4444", label: "Dormant" },
+      ].map((item) => (
+        <div
+          key={item.label}
+          className="mb-1 flex items-center gap-2 text-[11px] text-[var(--text-secondary)] last:mb-0"
+        >
+          <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: item.color }} />
+          {item.label}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ActionLink({
+  accent = false,
+  href,
+  icon,
+  label,
+}: {
+  accent?: boolean;
+  href: string;
+  icon: ReactNode;
+  label: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`type-btn inline-flex items-center gap-2 rounded-md px-3 py-2 transition-colors ${
+        accent
+          ? "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]"
+          : "border border-[var(--border-default)] bg-[var(--bg-base)] text-[var(--text-primary)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
+      }`}
+    >
+      {icon}
+      {label}
+    </a>
+  );
+}
+
+function LanguageFilterChip({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`type-sys-micro rounded-full border px-2.5 py-1 transition-colors ${
+        active
+          ? "border-[var(--accent)] bg-[var(--accent-subtle)] text-[var(--text-primary)]"
+          : "border-[var(--border-default)] bg-[var(--bg-base)] text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--text-primary)]"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
 
 export default function ProjectsTab() {
-  const openFile = useIDEStore((state) => state.openFile);
   const fallbackList = useMemo(
     () =>
-      sortProjectsByUpdatedAt(fallbackProjects.filter((project) => !isForkedProject(project))).map(
-        asProjectShape,
-      ),
+      sortProjectsByUpdatedAt(
+        fallbackProjects.filter((project) => !isForkedProject(project)),
+      ).map(asProjectShape),
     [],
   );
   const [loadState, setLoadState] = useState<LoadState>("loading");
@@ -69,6 +201,8 @@ export default function ProjectsTab() {
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [searchQuery, setSearchQuery] = useState("");
+  const [langFilter, setLangFilter] = useState<(typeof LANGS)[number]>("All");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,15 +213,44 @@ export default function ProjectsTab() {
         if (!response.ok) throw new Error(`Failed to load projects: ${response.status}`);
         const payload = (await response.json()) as unknown;
         if (!Array.isArray(payload)) throw new Error("Projects payload was not an array.");
+
         const nextProjects = sortProjectsByUpdatedAt(
-          payload.filter(isProjectLike).filter((project) => !isForkedProject(project)).filter((project) => project.id !== "Itinerant18"),
-        ).map(asProjectShape);
+          payload
+            .filter(isProjectLike)
+            .filter((project) => !isForkedProject(project))
+            .filter((project) => project.id !== "Itinerant18"),
+        ).map((project) => {
+          const shape = asProjectShape(project);
+          // Merge with fallback data to preserve handwritten rich fields
+          const fallback = fallbackList.find((f) => f.id === shape.id);
+          if (fallback) {
+            return {
+              ...shape,
+              problem: shape.problem || fallback.problem,
+              features: (shape.features?.length ? shape.features : fallback.features) ?? [],
+              architecture: shape.architecture || fallback.architecture,
+              flows: (shape.flows?.length ? shape.flows : fallback.flows) ?? [],
+              dataModels: (shape.dataModels?.length ? shape.dataModels : fallback.dataModels) ?? [],
+              backend: shape.backend || fallback.backend,
+              dataStorage: shape.dataStorage || fallback.dataStorage,
+              visualFlow: (shape.visualFlow?.length ? shape.visualFlow : fallback.visualFlow) ?? [],
+              highLevel: shape.highLevel || fallback.highLevel,
+              why: shape.why || fallback.why,
+              techGroups: (shape.techGroups?.length ? shape.techGroups : fallback.techGroups) ?? [],
+              liveUrl: shape.liveUrl ?? fallback.liveUrl,
+              previewImages: (shape.previewImages?.length ? shape.previewImages : fallback.previewImages) ?? [],
+            } as ProjectShape;
+          }
+          return shape;
+        });
+
         if (cancelled) return;
         if (nextProjects.length > 0) {
           setProjects(nextProjects);
           setLoadState("ready");
           return;
         }
+
         setProjects(fallbackList);
         setLoadState("fallback");
       } catch {
@@ -98,6 +261,7 @@ export default function ProjectsTab() {
     }
 
     void hydrateProjects();
+
     return () => {
       cancelled = true;
     };
@@ -105,21 +269,21 @@ export default function ProjectsTab() {
 
   const filteredProjects = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return projects;
 
     return projects.filter((project) => {
+      const language = languageOf(project);
       const category = categoryOf(project).toLowerCase();
-      const language = languageOf(project).toLowerCase();
-      const topics = topicsOf(project).join(" ").toLowerCase();
-
-      return (
+      const matchesLanguage = langFilter === "All" || language === langFilter;
+      const matchesQuery =
+        !query ||
         project.name.toLowerCase().includes(query) ||
         category.includes(query) ||
-        language.includes(query) ||
-        topics.includes(query)
-      );
+        language.toLowerCase().includes(query) ||
+        (project.topics ?? []).some((topic) => topic.toLowerCase().includes(query));
+
+      return matchesLanguage && matchesQuery;
     });
-  }, [projects, searchQuery]);
+  }, [langFilter, projects, searchQuery]);
 
   useEffect(() => {
     if (filteredProjects.length === 0) {
@@ -143,55 +307,44 @@ export default function ProjectsTab() {
   const detail = useMemo(() => {
     if (!selectedProject) return null;
 
-    const techGroups = techGroupsOf(selectedProject);
-    const features = featuresOf(selectedProject);
-    const flows = flowsOf(selectedProject);
-    const releases = releasesOf(selectedProject);
-    const topics = topicsOf(selectedProject);
-
     return {
-      architecture: architectureOf(selectedProject),
-      backend: backendOf(selectedProject),
+      architecture: selectedProject.architecture?.trim() || null,
+      backend: selectedProject.backend?.trim() || null,
       category: categoryOf(selectedProject),
-      dataModels: dataModelsOf(selectedProject),
-      dependencies: techGroups.reduce((sum, group) => sum + group.items.length, 0),
-      features,
-      flows,
-      highLevel: highLevelOf(selectedProject),
+      dataModels: selectedProject.dataModels ?? [],
+      dataStorage: selectedProject.dataStorage?.trim() || null,
+      features: selectedProject.features ?? [],
+      flows: selectedProject.flows ?? [],
+      problem: selectedProject.problem?.trim() || null,
       language: languageOf(selectedProject),
-      problem: problemOf(selectedProject),
-      releases,
-      storage: storageOf(selectedProject),
-      tagline:
-        selectedProject.shortDescription ||
-        `${selectedProject.name} packages a focused workflow into a sharper operational surface.`,
-      techGroups,
-      topics,
-      why: whyOf(selectedProject),
+      tagline: selectedProject.shortDescription?.trim() || "No description provided.",
+      techGroups: techGroupsOf(selectedProject),
+      topics: topicsOf(selectedProject),
+      visualFlow: selectedProject.visualFlow ?? [],
       year: yearOf(selectedProject),
       previewImage: selectedProject.previewImage ?? null,
-      previewImages: selectedProject.previewImages ?? (selectedProject.previewImage ? [selectedProject.previewImage] : []),
+      previewImages:
+        selectedProject.previewImages ??
+        (selectedProject.previewImage ? [selectedProject.previewImage] : []),
       liveUrl: selectedProject.liveUrl ?? null,
     } satisfies ProjectDetail;
   }, [selectedProject]);
 
-  if (loadState === "loading" || !selectedProject || !detail) {
+  if (loadState === "loading") {
     return (
       <div className="type-ui flex h-full w-full overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]">
-        <aside className="hidden h-full shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:flex md:w-[200px] lg:w-[260px]">
-          <div className="shrink-0 border-b border-[var(--border-default)] px-4 py-3">
+        <aside className="hidden h-full shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:flex md:w-[220px] lg:w-[260px]">
+          <div className="shrink-0 border-b border-[var(--border-default)] px-4 py-4">
             <div className="mb-3 flex items-center justify-between">
-              <span className="type-sys-micro text-[var(--text-muted)]">
-                Projects
-              </span>
+              <span className="type-sys-micro text-[var(--text-muted)]">Projects</span>
               <div className="type-sys-micro flex items-center gap-2 text-[var(--text-muted)]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-pulse" />
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--success)]" />
                 Syncing
               </div>
             </div>
-            <div className="h-8 rounded-sm border border-[var(--border-default)] bg-[var(--bg-muted)]" />
+            <div className="h-8 rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)]" />
           </div>
-          <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto">
+          <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto px-2 py-2">
             {Array.from({ length: 9 }, (_, index) => (
               <ProjectRowSkeleton key={`loading-row-${index}`} index={index} />
             ))}
@@ -204,237 +357,236 @@ export default function ProjectsTab() {
     );
   }
 
+  if (!selectedProject || !detail) {
+    return (
+      <div className="type-ui flex h-full w-full overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]">
+        <aside className="hidden h-full shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:flex md:w-[220px] lg:w-[260px]">
+          <div className="shrink-0 border-b border-[var(--border-default)] px-4 py-4">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <VscProject className="text-[var(--accent)]" size={14} />
+                <span className="type-sys-micro text-[var(--text-primary)]">Projects</span>
+              </div>
+            </div>
+            <IDEInput
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search projects..."
+            />
+            <div className="mt-3 flex flex-wrap gap-2">
+              {LANGS.map((lang) => (
+                <LanguageFilterChip
+                  key={`empty-${lang}`}
+                  active={langFilter === lang}
+                  label={lang}
+                  onClick={() => setLangFilter(lang)}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-1 items-center justify-center px-4 text-center text-[12px] italic text-[var(--text-muted)]">
+            No matching repositories.
+          </div>
+          <ActivityLegend />
+        </aside>
+
+        <div className="flex min-w-0 flex-1 items-center justify-center px-6">
+          <div className="max-w-md text-center">
+            <div className="type-title-sm text-[var(--text-primary)]">No matching repositories</div>
+            <p className="type-body mt-2 text-[var(--text-muted)]">
+              Adjust the search query or language filter to see more projects.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="type-ui flex h-full w-full overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]">
-      <aside className="hidden h-full shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:flex md:w-[200px] lg:w-[260px]">
+      <aside className="hidden h-full shrink-0 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:flex md:w-[220px] lg:w-[260px]">
         <div className="shrink-0 border-b border-[var(--border-default)] px-4 py-4">
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <VscProject className="text-[var(--accent)]" size={14} />
-              <span className="type-sys-micro text-[var(--text-primary)]">
-                Projects
-              </span>
+              <span className="type-sys-micro text-[var(--text-primary)]">Projects</span>
             </div>
             <div className="type-sys-micro flex items-center gap-2 text-[var(--text-muted)]">
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
               Ready
             </div>
           </div>
+
           <IDEInput
             type="text"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search registry..."
+            placeholder="Search projects..."
           />
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {LANGS.map((lang) => (
+              <LanguageFilterChip
+                key={lang}
+                active={langFilter === lang}
+                label={lang}
+                onClick={() => setLangFilter(lang)}
+              />
+            ))}
+          </div>
         </div>
 
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="ide-scrollbar min-h-0 flex-1 overflow-y-auto"
-        >
-          {filteredProjects.map((project) => {
-            const active = project.id === selectedProjectId;
-            const lang = languageOf(project);
-            const health = calcHealth(project);
-
-            return (
-              <motion.button
-                key={project.id}
-                variants={itemVariants}
-                whileHover={{ x: 1 }}
-                type="button"
-                onClick={() => {
-                  setSelectedProjectId(project.id);
-                  setActiveTab("overview");
-                }}
-                className={`design-row relative mb-2 grid w-full grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-2.5 px-4 py-3 text-left ${
-                  active ? "border-[var(--accent)]" : ""
-                }`}
-                style={active ? { boxShadow: "var(--shadow-card)" } : undefined}
-              >
-                {active && (
-                  <motion.span 
-                    layoutId="active-indicator"
-                    className="absolute left-0 top-0 h-full w-[2px] bg-[var(--accent)]" 
-                  />
-                )}
-                <div
-                  className="flex h-[38px] w-[38px] items-center justify-center rounded-sm text-[10px] font-bold text-white shadow-[var(--shadow-ambient)]"
-                  style={{ backgroundColor: techColor(lang) }}
-                >
-                  {getInitials(project.name)}
-                </div>
-                <div className="min-w-0">
-                  <div className="type-title-sm truncate text-[var(--text-primary)]">
-                    {project.name}
-                  </div>
-                  <div className="type-body truncate text-[var(--text-secondary)]">
-                    {project.shortDescription ?? `${lang} project`}
-                  </div>
-                </div>
-                <span
-                  className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full"
-                  style={{ backgroundColor: health.color }}
-                />
-              </motion.button>
-            );
-          })}
+        <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto px-2 py-2">
+          {filteredProjects.map((project) => (
+            <ProjectListRow
+              key={project.id}
+              active={project.id === selectedProjectId}
+              project={project}
+              onSelect={() => {
+                setSelectedProjectId(project.id);
+                setActiveTab("overview");
+              }}
+            />
+          ))}
 
           {filteredProjects.length === 0 ? (
-            <div className="px-6 py-12 text-center text-[12px] text-[var(--text-disabled)] italic font-medium">
-              No matching records in registry.
+            <div className="px-4 py-12 text-center text-[12px] italic text-[var(--text-muted)]">
+              No matching repositories.
             </div>
           ) : null}
-        </motion.div>
+        </div>
+
+        <ActivityLegend />
       </aside>
 
       <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[var(--bg-base)]">
-        <div className="border-b border-[var(--border-default)] bg-[var(--bg-elevated)] md:hidden">
-          <div className="px-4 py-4 sm:px-6">
-            <div className="flex items-center gap-2">
-              <VscProject className="text-[var(--accent)]" size={14} />
-              <span className="type-sys-micro text-[var(--text-primary)]">
-                Projects
-              </span>
-            </div>
-
-            <div className="mt-3">
-              <IDEInput
-                type="text"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="Search registry..."
-              />
-            </div>
-
-            {filteredProjects.length > 0 ? (
-              <div className="mt-4 space-y-2">
-                {filteredProjects.map((project) => {
-                  const active = project.id === selectedProjectId;
-                  const projectLanguage = languageOf(project);
-                  const visibleTech = (project.techStack ?? []).slice(0, 3);
-                  const hiddenTechCount = Math.max((project.techStack ?? []).length - visibleTech.length, 0);
-
-                  return (
-                    <button
-                      key={`mobile-${project.id}`}
-                      type="button"
-                      onClick={() => {
-                        setSelectedProjectId(project.id);
-                        setActiveTab("overview");
-                      }}
-                      className={`w-full rounded-sm border p-3 text-left transition-all ${
-                        active
-                          ? "border-[var(--accent)] bg-[var(--bg-muted)]"
-                          : "border-[var(--border-default)] bg-[var(--bg-base)] hover:border-[var(--accent-muted)] hover:bg-[var(--bg-muted)]/40"
-                      }`}
-                    >
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-sm text-[10px] font-bold text-white shadow-[var(--shadow-ambient)]"
-                            style={{ backgroundColor: techColor(projectLanguage) }}
-                          >
-                            {getInitials(project.name)}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="type-title-sm truncate leading-none text-[var(--text-primary)]">
-                              {project.name}
-                            </div>
-                            <div className="type-body mt-1 truncate text-[var(--text-secondary)]">
-                              {project.shortDescription ?? `${projectLanguage} project`}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          {visibleTech.map((tech) => (
-                            <span
-                              key={`${project.id}-${tech}`}
-                              className="type-caption touch-target inline-flex items-center rounded-full border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-0.5 text-[var(--text-muted)]"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                          {hiddenTechCount > 0 ? (
-                            <span className="type-caption touch-target inline-flex items-center rounded-full border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-0.5 text-[var(--text-muted)]">
-                              +{hiddenTechCount}
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
+        <div className="sticky top-0 z-10 border-b border-[var(--border-default)] bg-[var(--bg-elevated)] md:hidden">
+          <div className="flex items-center justify-between gap-3 px-4 py-3">
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              className="min-w-0 flex-1 rounded-md border border-[var(--border-default)] bg-[var(--bg-base)] px-3 py-2 text-left"
+            >
+              <div className="type-sys-micro text-[var(--text-muted)]">Projects</div>
+              <div className="mt-1 flex items-center justify-between gap-3">
+                <span className="type-title-sm truncate text-[var(--text-primary)]">
+                  {selectedProject.name}
+                </span>
+                <VscChevronDown className="shrink-0 text-[var(--text-muted)]" size={16} />
               </div>
-            ) : (
-              <div className="mt-4 rounded-sm border border-dashed border-[var(--border-default)] px-4 py-5 text-center text-[12px] font-medium italic text-[var(--text-disabled)]">
-                No matching records in registry.
-              </div>
-            )}
+            </button>
           </div>
         </div>
 
+        {drawerOpen ? (
+          <div
+            className="fixed inset-0 z-50 bg-black/40 md:hidden"
+            onClick={() => setDrawerOpen(false)}
+          >
+            <div
+              className="absolute bottom-0 inset-x-0 max-h-[70vh] overflow-y-auto rounded-t-2xl border-t border-[var(--border-default)] bg-[var(--bg-elevated)]"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="sticky top-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="type-title-sm text-[var(--text-primary)]">Select project</div>
+                  <button
+                    type="button"
+                    onClick={() => setDrawerOpen(false)}
+                    className="rounded-md border border-[var(--border-default)] p-2 text-[var(--text-muted)]"
+                  >
+                    <VscChromeClose size={14} />
+                  </button>
+                </div>
+                <IDEInput
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search projects..."
+                />
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {LANGS.map((lang) => (
+                    <LanguageFilterChip
+                      key={`mobile-${lang}`}
+                      active={langFilter === lang}
+                      label={lang}
+                      onClick={() => setLangFilter(lang)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1 px-2 py-2">
+                {filteredProjects.map((project) => (
+                  <ProjectListRow
+                    key={`drawer-${project.id}`}
+                    active={project.id === selectedProjectId}
+                    project={project}
+                    onSelect={() => {
+                      setSelectedProjectId(project.id);
+                      setActiveTab("overview");
+                      setDrawerOpen(false);
+                    }}
+                  />
+                ))}
+
+                {filteredProjects.length === 0 ? (
+                  <div className="px-4 py-10 text-center text-[12px] italic text-[var(--text-muted)]">
+                    No matching repositories.
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         <div className="shrink-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
-          <div className="mx-auto w-full max-w-[1200px] px-6 py-4 sm:py-5">
-            <motion.div 
+          <div className="mx-auto w-full max-w-[1200px] px-4 py-5 sm:px-6">
+            <motion.div
+              key={`hero-${selectedProject.id}`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              key={`hero-${selectedProject.id}`}
-              className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
+              className="flex flex-col gap-4"
             >
-              <div className="relative shrink-0">
-                <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="flex h-16 w-16 items-center justify-center rounded-sm text-[22px] font-bold text-white shadow-[var(--shadow-card)]"
+              <div className="flex items-start gap-4">
+                <div
+                  className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md text-[18px] font-bold text-white"
                   style={{ backgroundColor: techColor(detail.language) }}
                 >
                   {getInitials(selectedProject.name)}
-                </motion.div>
-                <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[var(--bg-elevated)] bg-[var(--success)] animate-pulse" />
-              </div>
-
-              <div className="min-w-0 flex-1 overflow-hidden">
-                <div className="type-sys-micro flex flex-wrap items-center gap-x-2 gap-y-1 text-[var(--text-muted)]">
-                  <span className="text-[var(--accent)]">{detail.category}</span>
-                  <span className="opacity-30">•</span>
-                  <span>{detail.language}</span>
-                  <span className="opacity-30">•</span>
-                  <span>{detail.year}</span>
                 </div>
-                <h1 className="type-hero mt-1 text-[var(--text-primary)] overflow-hidden">
-                  <span className="gradient-text break-words">{selectedProject.name}</span>
-                </h1>
-                <p className="type-body mt-2 max-w-[60ch] text-[var(--text-secondary)]">
-                  {detail.tagline}
-                </p>
-                
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <IDEButton
-                    type="button"
-                    onClick={() => openExternal(selectedProject.links.github)}
-                    variant="primary"
-                    className="type-btn h-8 gap-2 px-3"
-                  >
-                    <VscRepo size={14} /> Repository
-                  </IDEButton>
-                  <IDEButton
-                    type="button"
-                    onClick={() => openFile("data/projects.ts")}
-                    variant="ghost"
-                    className="type-btn h-8 gap-2 px-3"
-                  >
-                    <VscCode size={14} /> Source
-                  </IDEButton>
-                </div>
-              </div>
 
-              <div className="shrink-0 md:pt-1">
-                <div className="type-mono-sm rounded-full border border-[var(--border-default)] bg-[var(--bg-base)] px-2 py-1 uppercase text-[var(--text-muted)]">
-                  {detail.dependencies} deps
+                <div className="min-w-0 flex-1">
+                  <div className="type-sys-micro flex flex-wrap items-center gap-x-2 gap-y-1 text-[var(--text-muted)]">
+                    <span>{detail.language}</span>
+                    <span className="opacity-40">•</span>
+                    <span>{detail.year}</span>
+                    <span className="opacity-40">•</span>
+                    <span>{detail.category}</span>
+                  </div>
+                  <h1 className="type-hero mt-1 break-words text-[var(--text-primary)]">
+                    {selectedProject.name}
+                  </h1>
+                  <p className="type-body mt-2 max-w-[70ch] text-[var(--text-secondary)]">
+                    {detail.tagline}
+                  </p>
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <ActionLink
+                      href={selectedProject.links.github}
+                      icon={<VscGithub size={14} />}
+                      label="GitHub"
+                    />
+                    {detail.liveUrl ? (
+                      <ActionLink
+                        accent
+                        href={detail.liveUrl}
+                        icon={<VscGlobe size={14} />}
+                        label="Live Site"
+                      />
+                    ) : null}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -442,65 +594,58 @@ export default function ProjectsTab() {
         </div>
 
         <div className="shrink-0 border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
-          <div className="mx-auto w-full max-w-[1200px]">
-            <div className="px-6">
-              <div className="flex overflow-x-auto scrollbar-hide gap-0 border-b border-[var(--border-default)] max-w-full">
-                {TABS.map(({ key, label }) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setActiveTab(key)}
-                    className={`type-sys-micro touch-target relative flex-shrink-0 whitespace-nowrap px-4 py-3 text-center transition-all ${
-                      activeTab === key
-                        ? "gradient-text"
-                        : "text-[var(--text-muted)] hover:text-[var(--accent)]"
-                    }`}
-                  >
-                    {label}
-                    {activeTab === key && (
-                      <motion.div 
-                        layoutId="activeTabUnderline" 
-                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--accent)]"
-                      />
-                    )}
-                  </button>
-                ))}
-              </div>
+          <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6">
+            <div className="flex overflow-x-auto">
+              {TABS.map(({ key, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setActiveTab(key)}
+                  className={`type-sys-micro relative shrink-0 px-4 py-3 transition-colors ${
+                    activeTab === key
+                      ? "text-[var(--text-primary)]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  {label}
+                  {activeTab === key ? (
+                    <motion.span
+                      layoutId="projects-tab-active"
+                      className="absolute inset-x-0 bottom-0 h-[2px] bg-[var(--accent)]"
+                    />
+                  ) : null}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto bg-[var(--bg-base)]">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`${selectedProject.id}-${activeTab}`}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="content-max section-spacing min-w-0"
-            >
-              {activeTab === "overview" && (
-                <ProjectOverview project={selectedProject} detail={detail} allProjects={projects} />
-              )}
+        <div className="ide-scrollbar min-h-0 flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-[1200px] px-4 py-6 sm:px-6 sm:py-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${selectedProject.id}-${activeTab}`}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                {activeTab === "overview" ? (
+                  <ProjectOverview detail={detail} project={selectedProject} />
+                ) : null}
 
-              {activeTab === "readme" && (
-                <ProjectReadme project={selectedProject} />
-              )}
+                {activeTab === "preview" ? <ProjectPreview detail={detail} project={selectedProject} /> : null}
 
-              {activeTab === "architecture" && (
-                <ProjectArchitecture project={selectedProject} detail={detail} />
-              )}
+                {activeTab === "architecture" ? (
+                  <ProjectArchitecture project={selectedProject} />
+                ) : null}
 
-              {activeTab === "insights" && (
-                <ProjectInsights project={selectedProject} />
-              )}
+                {activeTab === "tech" ? <ProjectTech project={selectedProject} /> : null}
 
-              {activeTab === "changelog" && (
-                <ProjectChangelog releases={detail.releases} />
-              )}
-            </motion.div>
-          </AnimatePresence>
+                {activeTab === "changelog" ? <ProjectChangelog project={selectedProject} /> : null}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </section>
     </div>

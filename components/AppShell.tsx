@@ -202,17 +202,26 @@ export default function AppShell({ children }: { children: ReactNode }) {
       : "1fr";
 
   const terminalRow = terminalOpen ? "clamp(120px,18vh,180px)" : "0px";
-  const gridTemplateRows = `36px minmax(0,1fr) ${terminalRow} 22px`;
+  // Grid no longer includes the TopBar row — TopBar is fixed outside the grid
+  const gridTemplateRows = `minmax(0,1fr) ${terminalRow} 22px`;
 
   if (!isMounted || !hasHydrated) {
     return (
       <div className="relative h-screen overflow-hidden">
         <VantaBackground />
+        {/* Fixed TopBar placeholder */}
+        <div className="fixed inset-x-0 top-0 z-[9999] h-9 border-b border-[var(--border-default)] bg-[var(--bg-base)]" />
         <div
-          className="relative z-10 grid h-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]"
-          style={{ gridTemplateRows: "36px minmax(0,1fr) 22px" }}
+          className="relative z-10 grid overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]"
+          style={{
+            position: "fixed",
+            top: "36px",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            gridTemplateRows: "minmax(0,1fr) 22px",
+          }}
         >
-          <div className="border-b border-[var(--border-default)] bg-[var(--bg-base)]" />
           <div className="bg-[var(--bg-surface)]" />
           <div className="border-t border-[var(--border-default)] bg-[var(--bg-elevated)]" />
         </div>
@@ -224,32 +233,39 @@ export default function AppShell({ children }: { children: ReactNode }) {
     <>
       <LenisProvider />
       <VantaBackground />
+
+      {/* ─── TopBar: FIXED outside the grid, always on top ──────────── */}
       <div
-        className="relative z-10 grid h-screen overflow-hidden grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[260px_minmax(0,1fr)_300px] bg-[var(--bg-base)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
+        className="fixed inset-x-0 top-0 z-[9999] overflow-visible"
         style={{
           transform: `scale(${zoomLevel})`,
           transformOrigin: "0 0",
           width: `${100 / zoomLevel}%`,
-          height: `${100 / zoomLevel}%`,
+        }}
+      >
+        <TopBar />
+      </div>
+
+      {/* ─── Main Grid Shell: starts below the fixed TopBar ────────── */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-10 grid overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)] transition-[grid-template-columns,grid-template-rows] duration-200"
+        style={{
+          top: "36px",
+          transform: `scale(${zoomLevel})`,
+          transformOrigin: "0 0",
+          width: `${100 / zoomLevel}%`,
+          height: `calc(${100 / zoomLevel}% - 36px)`,
           gridTemplateColumns,
           gridTemplateRows,
         } as CSSProperties}
       >
-        <div
-          className="col-start-1 row-start-1 min-w-0"
-          style={{ gridColumn: "1 / -1" }}
-        >
-          <TopBar />
-        </div>
-
-
-
+        {/* ─── Main Content ─────────────────────────────────────────── */}
         {currentMode === "agent" ? (
           <main
             className="min-h-0 min-w-0 bg-[var(--bg-surface)]"
             style={{
               gridColumn: "1 / -1",
-              gridRow: "2 / 3",
+              gridRow: "1 / 2",
             }}
           >
             <SidebarAI mode="full" />
@@ -263,24 +279,26 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 : isTablet && aiPanelOpen
                 ? "2 / 3"
                 : "1 / -1",
-              gridRow: "2 / 3",
+              gridRow: "1 / 2",
             }}
           >
             {children}
           </main>
         )}
 
+        {/* ─── AI Sidebar (left) ───────────────────────────────────── */}
         {currentMode === "editor" && aiPanelOpen && (
           <aside
             className="hidden min-h-0 min-w-0 border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:block"
             style={{
-              gridRow: "2 / 4"
+              gridRow: "1 / 3",
             }}
           >
             <SidebarAI />
           </aside>
         )}
 
+        {/* ─── File Explorer Sidebar (right) ───────────────────────── */}
         {currentMode === "editor" && sidebarOpen ? (
           <aside
             className="hidden min-h-0 min-w-0 border-l border-[var(--border-default)] bg-[var(--bg-elevated)] lg:flex lg:flex-col"
@@ -288,10 +306,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
               gridColumn: isDesktop
                 ? (aiPanelOpen ? "3 / 4" : "2 / 3")
                 : undefined,
-              gridRow: "2 / 4"
+              gridRow: "1 / 3",
             }}
           >
-            {/* Activity Bar — refined horizontal header for the explorer */}
+            {/* Activity Bar */}
             <div className="flex items-center justify-between px-2.5 py-1.5 border-b border-[var(--border-default)] bg-[var(--bg-elevated)] shrink-0 select-none">
               <div className="type-sys-micro text-[var(--text-muted)] px-1">
                 Explorer
@@ -329,7 +347,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               </div>
             </div>
 
-            {/* Social Links Panel — shown when Source Control is active */}
+            {/* Social Links Panel */}
             {showSocials && (
               <div className="border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-3 py-3 shrink-0">
                 <div className="type-sys-micro text-[var(--text-muted)] mb-2.5 px-0.5">
@@ -358,10 +376,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </aside>
         ) : null}
 
+        {/* ─── Terminal ────────────────────────────────────────────── */}
         <div
           className="min-h-0 min-w-0 overflow-hidden border-t border-[var(--border-default)]"
           style={{
-            gridRow: "3 / 4",
+            gridRow: "2 / 3",
             gridColumn: isDesktop
               ? (currentMode === "agent"
                   ? "1 / -1"
@@ -374,14 +393,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <Terminal />
         </div>
 
+        {/* ─── Status Bar ──────────────────────────────────────────── */}
         <div
-          className="col-start-1 row-start-4 min-h-0 min-w-0"
-          style={{ gridColumn: "1 / -1" }}
+          className="min-h-0 min-w-0"
+          style={{ gridColumn: "1 / -1", gridRow: "3 / 4" }}
         >
           <StatusBar />
         </div>
       </div>
 
+      {/* ─── Mobile AI Panel overlay ───────────────────────────────── */}
       <AnimatePresence initial={false}>
         {mobileAIPanelOpen ? (
           <motion.div
@@ -407,6 +428,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         ) : null}
       </AnimatePresence>
 
+      {/* ─── Mobile File Explorer overlay ──────────────────────────── */}
       <AnimatePresence initial={false}>
         {mobileSidebarOpen ? (
           <motion.div
@@ -432,6 +454,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         ) : null}
       </AnimatePresence>
 
+      {/* ─── Mobile Bottom Nav ─────────────────────────────────────── */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex h-12 items-center border-t border-[var(--border-default)] bg-[var(--bg-elevated)] md:hidden">
         {mobileNavItems.map((item) => {
           const Icon = item.icon;

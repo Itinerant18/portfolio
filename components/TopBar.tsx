@@ -255,7 +255,7 @@ export default function TopBar() {
 
   return (
     <header
-      className="relative flex h-9 shrink-0 items-center justify-between border-b border-[var(--border-10)] bg-[var(--bg-base)]/85 pl-0.5 pr-2 select-none backdrop-blur-[12px]"
+      className="relative z-50 flex h-9 shrink-0 items-center justify-between border-b border-[var(--border-10)] bg-[var(--bg-base)]/85 pl-0.5 pr-2 select-none backdrop-blur-[12px]"
       style={{ WebkitBackdropFilter: "blur(12px)" }}
     >
       {/* Left: Logo + Menu items */}
@@ -307,7 +307,7 @@ export default function TopBar() {
               </button>
 
               {openMenu === item ? (
-                <div className="absolute left-0 top-full z-50 mt-1 min-w-[240px] rounded-sm border border-[var(--border-default)] bg-[var(--bg-overlay)] py-1.5 shadow-[var(--shadow-card)] backdrop-blur-md">
+                <div className="absolute left-0 top-full z-[100] mt-1 min-w-[240px] rounded-sm border border-[var(--border-default)] bg-[var(--bg-overlay)] py-1.5 shadow-[var(--shadow-card)] backdrop-blur-md">
                   {menuActions[item].map((action, i) => {
                     if (action.type === "divider") {
                       return <div key={i} className="my-1 border-t border-[var(--border-default)]" />;
