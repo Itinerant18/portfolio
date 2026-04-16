@@ -97,7 +97,7 @@ function BentoCard({
       initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, delay }}
-      className={`rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 transition-colors hover:border-[var(--border-hover)] ${spanClass} ${className}`}
+      className={`rounded-lg border border-[var(--border-default)] bg-[#f7f7f4] p-6 transition-all hover:border-[var(--border-hover)] hover:shadow-sm ${spanClass} ${className}`}
     >
       {children}
     </motion.div>
@@ -116,11 +116,11 @@ function QuickStat({
   value: string;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] px-3.5 py-3">
-      <div className="mt-0.5 text-[var(--accent)] opacity-70">{icon}</div>
+    <div className="flex items-start gap-3 rounded-md border border-[var(--border-default)] bg-[#ebeae5] px-3.5 py-3 transition-colors hover:border-[var(--border-active)]">
+      <div className="mt-0.5 text-[#f54e00] opacity-70">{icon}</div>
       <div className="min-w-0">
-        <div className="type-title-sm text-[var(--text-primary)]">{value}</div>
-        <div className="type-sys-micro mt-0.5 text-[var(--text-muted)]">{label}</div>
+        <div className="type-title-sm font-semibold text-[#26251e] tracking-tight">{value}</div>
+        <div className="type-sys-micro mt-0.5 text-[#26251e]/40">{label}</div>
       </div>
     </div>
   );
@@ -137,12 +137,12 @@ function FeatureCard({ text, index }: { text: string; index: number }) {
       initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18, delay: index * 0.04 }}
-      className="group flex items-start gap-2.5 rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)] px-3 py-2.5 transition-all hover:border-[var(--accent-muted)] hover:bg-[var(--bg-elevated)]"
+      className="group flex items-start gap-2.5 rounded-md border border-[var(--border-default)] bg-[#ebeae5] px-3 py-2.5 transition-all hover:border-[#f54e00]/20 hover:bg-[#f7f7f4]"
     >
-      <div className="mt-0.5 shrink-0 text-[var(--accent)] opacity-60 transition-opacity group-hover:opacity-100">
+      <div className="mt-0.5 shrink-0 text-[#f54e00] opacity-60 transition-opacity group-hover:opacity-100">
         <Icon size={13} />
       </div>
-      <span className="text-[12px] font-medium leading-snug text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
+      <span className="type-mono-sm text-[#26251e]/80 group-hover:text-[#26251e]">
         {text}
       </span>
     </motion.div>
@@ -154,10 +154,10 @@ function FeatureCard({ text, index }: { text: string; index: number }) {
 function TopicPill({ name }: { name: string }) {
   return (
     <span
-      className="type-sys-micro inline-flex items-center gap-1.5 rounded-full border border-[var(--border-default)] bg-[var(--bg-muted)] px-2.5 py-1 text-[var(--text-secondary)]"
+      className="type-sys-micro inline-flex items-center gap-1.5 rounded-full border border-[var(--border-default)] bg-[#ebeae5] px-2.5 py-1 text-[#26251e]/70 transition-colors hover:text-[#f54e00]"
       style={{ whiteSpace: "nowrap" }}
     >
-      <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] opacity-50" />
+      <span className="h-1.5 w-1.5 rounded-full bg-[#f54e00] opacity-50" />
       {name}
     </span>
   );
@@ -236,28 +236,28 @@ export function ProjectOverview({
   }, [detail.language, project.id, project.updatedAt]);
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {/* ── Row 1: Problem + Quick Stats ─────────────────────── */}
 
       {/* The Problem / Description — spans 2 cols */}
       <BentoCard colSpan={2} delay={0}>
         <SectionLabel label={problem ? "The Problem" : "Description"} />
         {problem ? (
-          <p className="type-body max-w-[72ch] leading-relaxed text-[var(--text-secondary)]">
+          <p className="type-body max-w-[72ch] leading-relaxed text-[#26251e]/80">
             {problem}
           </p>
         ) : description ? (
-          <p className="type-body max-w-[72ch] leading-relaxed text-[var(--text-secondary)]">
+          <p className="type-body max-w-[72ch] leading-relaxed text-[#26251e]/80">
             {description}
           </p>
         ) : (
-          <p className="type-body italic text-[var(--text-muted)]">No description provided.</p>
+          <p className="type-body italic text-[#26251e]/40">No description provided.</p>
         )}
         <a
           href={`${project.links.github}#readme`}
           target="_blank"
           rel="noopener noreferrer"
-          className="type-btn mt-4 inline-flex items-center gap-2 text-[var(--accent)] transition-colors hover:underline"
+          className="type-btn mt-6 inline-flex items-center gap-2 text-[#f54e00] transition-colors hover:underline"
         >
           View README
           <FaArrowUpRightFromSquare size={10} />
@@ -267,7 +267,7 @@ export function ProjectOverview({
       {/* Quick Stats — spans 2 cols */}
       <BentoCard colSpan={2} delay={0.05}>
         <SectionLabel label="Quick Stats" />
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-3">
           <QuickStat
             icon={<FaStar size={14} />}
             label="Stars"
@@ -295,13 +295,13 @@ export function ProjectOverview({
       {features.length > 0 ? (
         <BentoCard colSpan={4} delay={0.1}>
           <SectionLabel label="Core Features" />
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
             {features.slice(0, 8).map((feat, i) => (
               <FeatureCard key={`feat-${i}`} text={feat} index={i} />
             ))}
           </div>
           {features.length > 8 ? (
-            <div className="type-sys-micro mt-3 text-[var(--text-muted)]">
+            <div className="type-sys-micro mt-4 text-[#26251e]/40">
               +{features.length - 8} more features
             </div>
           ) : null}
@@ -332,7 +332,7 @@ export function ProjectOverview({
       {problem && description ? (
         <BentoCard colSpan={detail.topics.length > 0 ? 2 : 4} delay={0.22}>
           <SectionLabel label="Repository Summary" />
-          <p className="type-body text-[var(--text-secondary)]">{description}</p>
+          <p className="type-body text-[#26251e]/80 leading-relaxed">{description}</p>
         </BentoCard>
       ) : null}
     </div>

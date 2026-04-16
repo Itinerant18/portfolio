@@ -2,6 +2,49 @@
 @import "@fontsource/dm-sans/400.css";
 @import "@fontsource/dm-sans/500.css";
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@custom-variant dark (&:is(.dark *, [data-theme="aniket-dark"] *, [data-theme="synthwave"] *, [data-theme="dracula"] *, [data-theme="rose-pine"] *, [data-theme="tokyo-night"] *, [data-theme="catppuccin"] *, [data-theme="nord"] *, [data-theme="gruvbox"] *));
+
 
 /* ── DEFAULT: aniket-dark (existing, enhanced) ── */
 :root, [data-theme="aniket-dark"] {
@@ -220,6 +263,11 @@
   --transition-color: color 150ms ease, background-color 150ms ease;
   --transition-shadow: box-shadow 200ms ease;
   --transition-all: all 150ms ease;
+  --motion-fast: 0.16s;
+  --motion-base: 0.24s;
+  --motion-slow: 0.34s;
+  --motion-ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   /* Breakpoints as custom properties for JS reference */
   --bp-mobile: 600px;
@@ -314,6 +362,24 @@
 
 /* ── LIGHT ── */
 [data-theme="light"] {
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --card: var(--bg-elevated);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-overlay);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent);
+  --primary-foreground: #ffffff;
+  --secondary: var(--bg-muted);
+  --secondary-foreground: var(--text-secondary);
+  --muted: var(--bg-muted);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--accent-subtle);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--error);
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: var(--accent);
   --bg-base: #fafafa;
   --bg-surface: #f4f4f5;
   --bg-elevated: #ffffff;
@@ -348,6 +414,24 @@
 
 /* ── CURSOR WARM ── */
 [data-theme="cursor-warm"] {
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --card: var(--bg-elevated);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-overlay);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent);
+  --primary-foreground: #ffffff;
+  --secondary: var(--bg-muted);
+  --secondary-foreground: var(--text-secondary);
+  --muted: var(--bg-muted);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--accent-subtle);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--error);
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: var(--accent);
   --bg-base: #f2f1ed;
   --bg-surface: #ebeae5;
   --bg-elevated: #ffffff;
@@ -901,7 +985,10 @@ kbd {
   background: var(--bg-muted);
   color: var(--text-muted);
   border-radius: 9999px;
-  transition: var(--transition-color);
+  transition: color var(--motion-fast) var(--motion-ease-soft),
+    background-color var(--motion-fast) var(--motion-ease-soft),
+    border-color var(--motion-fast) var(--motion-ease-soft),
+    box-shadow var(--motion-base) var(--motion-ease-smooth);
 }
 
 .pill-tag:hover {

@@ -1,4 +1,117 @@
 import { NextResponse } from "next/server";
+import { getProjectArchitectureOverride } from "@/data/projectArchitecture";
+import { isHiddenProjectId } from "@/data/projects";
+import { getSupabaseServerClient } from "@/utils/supabase";
+
+type VisualFlowNode = { label: string; icon: string };
+
+interface DbArchitectureRow {
+  repo_name: string;
+  source: "readme_auto" | "manual_override";
+  confidence: "high" | "medium" | "low";
+  problem: string | null;
+  architecture: string | null;
+  high_level: string | null;
+  visual_flow: unknown;
+  mermaid_diagrams: unknown;
+  flows: string[] | null;
+  data_models: string[] | null;
+  backend: string | null;
+  data_storage: string | null;
+  live_url: string | null;
+  updated_at: string;
+}
+
+type DbArchitectureOverride = {
+  source?: "readme_auto" | "manual_override";
+  problem?: string;
+  architecture?: string;
+  highLevel?: string;
+  visualFlow?: VisualFlowNode[];
+  mermaidDiagrams?: string[];
+  flows?: string[];
+  dataModels?: string[];
+  backend?: string;
+  dataStorage?: string;
+  liveUrl?: string | null;
+};
+
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+function asVisualFlow(value: unknown): VisualFlowNode[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const node = item as { label?: unknown; icon?: unknown };
+      if (typeof node.label !== "string" || typeof node.icon !== "string") return null;
+      return { label: node.label, icon: node.icon };
+    })
+    .filter((item): item is VisualFlowNode => item !== null);
+}
+
+function pickPreferredRows(rows: DbArchitectureRow[]): Map<string, DbArchitectureOverride> {
+  const grouped = new Map<string, DbArchitectureRow[]>();
+
+  for (const row of rows) {
+    const key = row.repo_name.trim().toLowerCase();
+    const list = grouped.get(key) ?? [];
+    list.push(row);
+    grouped.set(key, list);
+  }
+
+  const selected = new Map<string, DbArchitectureOverride>();
+  for (const [repo, list] of grouped.entries()) {
+    const manual = list.find((item) => item.source === "manual_override");
+    const readmeAuto = list.find((item) => item.source === "readme_auto");
+    const row = manual ?? readmeAuto ?? list[0];
+    if (!row) continue;
+
+    selected.set(repo, {
+      source: row.source,
+      problem: row.problem ?? undefined,
+      architecture: row.architecture ?? undefined,
+      highLevel: row.high_level ?? undefined,
+      visualFlow: asVisualFlow(row.visual_flow),
+      mermaidDiagrams: asStringArray(row.mermaid_diagrams),
+      flows: row.flows ?? [],
+      dataModels: row.data_models ?? [],
+      backend: row.backend ?? undefined,
+      dataStorage: row.data_storage ?? undefined,
+      liveUrl: row.live_url,
+    });
+  }
+
+  return selected;
+}
+
+async function fetchArchitectureOverridesFromDb(repoNames: string[]) {
+  try {
+    const supabase = getSupabaseServerClient();
+    if (!supabase) {
+      return new Map<string, DbArchitectureOverride>();
+    }
+    const normalized = repoNames.map((name) => name.trim().toLowerCase());
+
+    const { data, error } = await supabase
+      .from("project_architecture")
+      .select(
+        "repo_name,source,confidence,problem,architecture,high_level,visual_flow,mermaid_diagrams,flows,data_models,backend,data_storage,live_url,updated_at",
+      )
+      .in("repo_name", normalized);
+
+    if (error || !data) {
+      return new Map<string, DbArchitectureOverride>();
+    }
+
+    return pickPreferredRows(data as DbArchitectureRow[]);
+  } catch {
+    return new Map<string, DbArchitectureOverride>();
+  }
+}
 
 interface GitHubRepo {
   default_branch?: string;
@@ -11,6 +124,19 @@ interface GitHubRepo {
   private: boolean;
   topics?: string[];
   updated_at: string;
+}
+
+function extractMermaidBlocks(readmeText: string): string[] {
+  const out: string[] = [];
+  const regex = /```mermaid\s*([\s\S]*?)```/gi;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(readmeText)) !== null) {
+    const block = match[1]?.trim();
+    if (block) out.push(block);
+  }
+
+  return out;
 }
 
 function extractTechFromReadme(readmeText: string) {
@@ -169,12 +295,20 @@ export async function GET() {
       if (repo.fork) return false;
       if (repo.private) return false;
       if (repo.name === username) return false; // profile README repo
+      if (isHiddenProjectId(repo.name)) return false;
       return true;
     });
 
+    const dbOverrides = await fetchArchitectureOverridesFromDb(
+      filteredRepos.map((repo) => repo.name),
+    );
+
     const projectsWithImages = await Promise.all(
       filteredRepos.map(async (repo) => {
+        const architectureOverride = getProjectArchitectureOverride(repo.name);
+        const dbOverride = dbOverrides.get(repo.name.trim().toLowerCase());
         const previewImages: string[] = [];
+        let mermaidDiagramsFromReadme: string[] = [];
         let archInfo = {
           highLevel: "Standard repository architecture.",
           visualFlow: [
@@ -268,6 +402,7 @@ export async function GET() {
 
             // Extract dynamic architecture
             archInfo = parseArchitecture(readmeText, repo.language || "");
+            mermaidDiagramsFromReadme = extractMermaidBlocks(readmeText);
             
             // Extract tech from readme
             extraTechs = [...extraTechs, ...extractTechFromReadme(readmeText)];
@@ -308,14 +443,36 @@ export async function GET() {
           id: repo.name,
           name: repo.name,
           shortDescription: repo.description || "No description provided.",
-          problem: repo.description || "No specific problem documented.",
+          problem:
+            dbOverride?.problem ||
+            architectureOverride?.problem ||
+            repo.description ||
+            "No specific problem documented.",
           type: "Repository",
           primaryTech: repo.language || "Unknown",
           techStack: fullTechStack,
           features: [],
-          architecture: archInfo.highLevel,
-          highLevel: archInfo.highLevel,
-          visualFlow: archInfo.visualFlow,
+          architecture: dbOverride?.architecture || architectureOverride?.architecture || archInfo.highLevel,
+          highLevel: dbOverride?.highLevel || architectureOverride?.highLevel || archInfo.highLevel,
+          visualFlow: dbOverride?.visualFlow?.length
+            ? dbOverride.visualFlow
+            : architectureOverride?.visualFlow || archInfo.visualFlow,
+          mermaidDiagrams:
+            dbOverride?.source === "manual_override" && dbOverride?.mermaidDiagrams?.length
+              ? dbOverride.mermaidDiagrams
+              : mermaidDiagramsFromReadme.length
+                ? mermaidDiagramsFromReadme
+                : dbOverride?.mermaidDiagrams?.length
+                  ? dbOverride.mermaidDiagrams
+                  : architectureOverride?.mermaidDiagrams?.length
+                    ? architectureOverride.mermaidDiagrams
+                    : [],
+          flows: dbOverride?.flows?.length ? dbOverride.flows : architectureOverride?.flows || [],
+          dataModels: dbOverride?.dataModels?.length
+            ? dbOverride.dataModels
+            : architectureOverride?.dataModels || [],
+          backend: dbOverride?.backend || architectureOverride?.backend || null,
+          dataStorage: dbOverride?.dataStorage || architectureOverride?.dataStorage || null,
           links: {
             github: repo.html_url,
           },
@@ -324,7 +481,7 @@ export async function GET() {
           isFork: false,
           previewImage: previewImages[0] || null,
           previewImages,
-          liveUrl,
+          liveUrl: dbOverride?.liveUrl ?? architectureOverride?.liveUrl ?? liveUrl,
         };
       })
     );

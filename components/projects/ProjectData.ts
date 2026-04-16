@@ -20,6 +20,7 @@ export interface ProjectDetail {
   techGroups: TechGroup[];
   topics: string[];
   visualFlow: Array<{ label: string; icon: string }>;
+  mermaidDiagrams?: string[];
   year: string;
   previewImage: string | null;
   previewImages: string[];
@@ -46,6 +47,7 @@ export type ProjectShape = Omit<Project, "changelog"> & {
   liveUrl?: string | null;
   size?: number;
   visualFlow?: Array<{ label: string; icon: string }>;
+  mermaidDiagrams?: string[];
   highLevel?: string;
   why?: string;
 };

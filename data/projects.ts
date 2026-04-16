@@ -40,6 +40,7 @@ export interface Project {
   architecture: string;
   highLevel?: string;
   visualFlow?: Array<{ label: string; icon: string }>;
+  mermaidDiagrams?: string[];
   flows?: string[];
   dataModels?: string[];
   backend?: string;
@@ -199,6 +200,17 @@ export const fallbackProjects: Project[] = [
 ];
 
 export const projects = fallbackProjects;
+
+/**
+ * Repositories hidden from Projects tab regardless of GitHub visibility.
+ * Add repo names here if you want to suppress them explicitly.
+ */
+export const hiddenProjectIds: string[] = [];
+
+export function isHiddenProjectId(repoId: string): boolean {
+  const normalized = repoId.trim().toLowerCase();
+  return hiddenProjectIds.some((id) => id.trim().toLowerCase() === normalized);
+}
 
 export const featuredProjectIds = [
   "FAS-Control",

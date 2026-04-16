@@ -9,6 +9,7 @@ import {
 import { VscSymbolStructure } from "react-icons/vsc";
 import type { ProjectShape } from "./ProjectData";
 import { SectionLabel, FlowDiagram } from "./ProjectUI";
+import { MermaidBlock } from "./MermaidBlock";
 
 function ArchCard({
   children,
@@ -69,7 +70,8 @@ export function ProjectArchitecture({ project }: { project: ProjectShape }) {
   const backend = (project.backend as string | undefined)?.trim();
   const dataStorage = (project.dataStorage as string | undefined)?.trim();
   const hasVisualFlow = (project.visualFlow?.length ?? 0) > 0;
-  const hasAnyContent = architecture || hasVisualFlow || flows.length > 0 || dataModels.length > 0 || backend || dataStorage;
+  const mermaidDiagrams = project.mermaidDiagrams ?? [];
+  const hasAnyContent = architecture || hasVisualFlow || mermaidDiagrams.length > 0 || flows.length > 0 || dataModels.length > 0 || backend || dataStorage;
 
   if (!hasAnyContent) {
     return (
@@ -111,6 +113,22 @@ export function ProjectArchitecture({ project }: { project: ProjectShape }) {
         <section>
           <SectionLabel label="System Flow" />
           <FlowDiagram project={project} />
+        </section>
+      ) : null}
+
+      {/* Mermaid Architecture Diagrams */}
+      {mermaidDiagrams.length > 0 ? (
+        <section>
+          <SectionLabel label="Detailed Architecture" />
+          <div className="space-y-4">
+            {mermaidDiagrams.map((chart, index) => (
+              <MermaidBlock
+                key={`mermaid-${project.id}-${index}`}
+                chart={chart}
+                title={index === 0 ? "System Architecture" : "Request/Processing Pipeline"}
+              />
+            ))}
+          </div>
         </section>
       ) : null}
 
