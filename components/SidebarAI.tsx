@@ -1,10 +1,10 @@
 "use client";
 
-import { buildAIResponse } from "@/data/content";
-import { getPortfolioFile } from "@/data/files";
 import { type ChatMessage, useIDEStore } from "@/store/useIDEStore";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { 
   VscAdd, VscEllipsis, VscArrowRight, 
   VscCircuitBoard, VscLibrary, VscSparkle 
@@ -20,17 +20,18 @@ function createMessage(role: "user" | "assistant", content: string): ChatMessage
 
 export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "full" }) {
   void mode;
-  const activeFile = useIDEStore((state) => state.activeFile);
   const chatMessages = useIDEStore((state) => state.chatMessages);
   const addMessage = useIDEStore((state) => state.addMessage);
+  const updateLastMessage = useIDEStore((state) => state.updateLastMessage);
   const clearChat = useIDEStore((state) => state.clearChat);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [flash, setFlash] = useState(false);
   const suggestions = [
-    "Summarize the strongest projects",
-    "What stack does Aniket use most?",
-    "Which experience is most relevant for UI roles?",
+    "What projects has Aniket built?",
+    "What is Aniket's current tech stack?",
+    "Tell me about Aniket's work experience",
+    "How can I contact Aniket?",
   ];
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -60,23 +61,107 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
     }, 300);
   }
 
-  function handleSend() {
+  async function handleSend() {
     const trimmed = input.trim();
 
     if (!trimmed || pending) {
       return;
     }
 
-    addMessage(createMessage("user", trimmed));
+    const newUserMsg = createMessage("user", trimmed);
+    const streamingMsg: ChatMessage = {
+      id: `streaming-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      role: "assistant",
+      content: "",
+    };
+
+    addMessage(newUserMsg);
+    addMessage(streamingMsg);
     setInput("");
     setPending(true);
 
-    window.setTimeout(() => {
-      const activeMeta = activeFile ? getPortfolioFile(activeFile) : undefined;
-      const reply = buildAIResponse(trimmed, activeMeta?.name);
-      addMessage(createMessage("assistant", reply));
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [...chatMessages, newUserMsg].map((message) => ({
+            role: message.role,
+            content: message.content,
+          })),
+        }),
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error("AI service unavailable");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split("\n\n");
+        buffer = events.pop() ?? "";
+
+        for (const event of events) {
+          const dataLines = event
+            .split("\n")
+            .filter((line) => line.startsWith("data: "))
+            .map((line) => line.slice(6));
+
+          for (const data of dataLines) {
+            if (data === "[DONE]") {
+              continue;
+            }
+
+            try {
+              const parsed = JSON.parse(data) as {
+                text?: string;
+                error?: string;
+              };
+
+              if (parsed.error) {
+                throw new Error(parsed.error);
+              }
+
+              if (parsed.text) {
+                updateLastMessage(parsed.text);
+              }
+            } catch (error) {
+              if (error instanceof SyntaxError) {
+                continue;
+              }
+
+              throw error;
+            }
+          }
+        }
+      }
+    } catch {
+      useIDEStore.setState((state) => ({
+        chatMessages: state.chatMessages.map((message, index) =>
+          index === state.chatMessages.length - 1
+            ? {
+                ...message,
+                content:
+                  "Sorry, I couldn't connect to the AI service. Check your API key.",
+              }
+            : message,
+        ),
+      }));
+    } finally {
       setPending(false);
-    }, 260);
+    }
   }
 
   return (
@@ -129,51 +214,50 @@ export default function SidebarAI({ mode = "sidebar" }: { mode?: "sidebar" | "fu
             </div>
           ) : null}
 
-          {chatMessages.map((message) => {
+          {chatMessages.map((message, index) => {
             const isAsst = message.role === "assistant";
+            const isStreamingLast = pending && index === chatMessages.length - 1;
             return (
-              <div key={message.id} className={`flex flex-col gap-2 ${isAsst ? "items-start" : "items-end"}`}>
-                {isAsst ? (
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center justify-center p-1 rounded-sm bg-[var(--accent)]/10 text-[var(--accent)]">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"/></svg>
+              <div key={message.id} className={`flex flex-col gap-1 ${isAsst ? "items-start" : "items-end"}`}>
+                <div className="flex items-center gap-1.5">
+                  {isAsst ? (
+                    <div className="flex items-center justify-center w-5 h-5 rounded-sm bg-[var(--accent)]/10 text-[var(--accent)]">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 4l7.07 17 2.51-7.39L21 11.07z" />
+                      </svg>
                     </div>
-                    <span className="text-[11px] font-medium uppercase tracking-widest text-[var(--text-muted)]">Assistant</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-medium uppercase tracking-widest text-[var(--text-muted)]">You</span>
-                    <div className="flex items-center justify-center p-1 rounded-sm bg-[var(--info)]/10 text-[var(--info)]">
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
-                    </div>
-                  </div>
-                )}
-                <div className={`text-[13px] leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap p-3 ${
-                  isAsst 
-                    ? "rounded-r-md rounded-bl-md border-l-2 border-[var(--accent)] bg-[var(--accent)]/[0.05]" 
+                  ) : (
+                    <span className="text-[10px] font-medium text-[var(--text-muted)]">You</span>
+                  )}
+                </div>
+
+                <div className={`text-[12px] leading-snug p-2.5 max-w-[90%] ${
+                  isAsst
+                    ? "rounded-r-md rounded-bl-md border-l-2 border-[var(--accent)] bg-[var(--accent)]/[0.04]"
                     : "rounded-l-md rounded-br-md bg-[var(--bg-elevated)] border border-[var(--border-default)]"
                 }`}>
-                  {message.content}
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({ children }) => <p className="mb-1.5 last:mb-0 leading-snug">{children}</p>,
+                      ul: ({ children }) => <ul className="space-y-0.5 mb-1.5">{children}</ul>,
+                      ol: ({ children }) => <ol className="space-y-0.5 mb-1.5 pl-3">{children}</ol>,
+                      li: ({ children }) => <li className="flex items-start gap-1.5"><span className="text-[var(--accent)] mt-0.5"></span><span className="flex-1">{children}</span></li>,
+                      strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                      code: ({ children }) => <code className="bg-[var(--bg-muted)] px-1 py-0.5 rounded text-[var(--accent)] text-[11px] font-mono">{children}</code>,
+                      pre: ({ children }) => <pre className="bg-[var(--bg-muted)] p-2 rounded overflow-x-auto mb-1.5 text-[11px]">{children}</pre>,
+                      a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] hover:underline text-[11px]">{children}</a>,
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                  {isStreamingLast && (
+                    <span className="ml-0.5 inline-block w-1.5 h-3 bg-[var(--accent)] animate-pulse" />
+                  )}
                 </div>
               </div>
             );
           })}
-          
-          {pending && (
-            <div className="flex flex-col gap-2 items-start">
-              <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center p-1 rounded-sm bg-[var(--accent)]/10 text-[var(--accent)] animate-pulse">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"/></svg>
-                </div>
-                <span className="text-[11px] font-medium uppercase tracking-widest text-[var(--text-muted)]">Assistant</span>
-              </div>
-              <div className="flex items-center gap-1.5 p-3 rounded-r-md rounded-bl-md border-l-2 border-[var(--accent)] bg-[var(--accent)]/[0.05]">
-                 <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                 <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                 <span className="h-1.5 w-1.5 bg-[var(--accent)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-              </div>
-            </div>
-          )}
         </motion.div>
       </div>
 

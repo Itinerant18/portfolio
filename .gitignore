@@ -40,6 +40,7 @@ next-env.d.ts
 .trae/
 .vscode/
 .windsurf/
+.minimax/
 
 # Internal Documentation & Planning
 IMPLEMENTATION_PLAN.md

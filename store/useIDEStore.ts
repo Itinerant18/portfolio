@@ -63,6 +63,7 @@ interface IDEState {
   toggleMode: () => void;
   focusAIPanel: () => void;
   addMessage: (message: ChatMessage) => void;
+  updateLastMessage: (text: string) => void;
   clearChat: () => void;
   zoomLevel: number;
   zoomIn: () => void;
@@ -243,6 +244,14 @@ export const useIDEStore = create<IDEState>()(
       addMessage: (message) =>
         set((state) => ({
           chatMessages: [...state.chatMessages, message],
+        })),
+      updateLastMessage: (text) =>
+        set((state) => ({
+          chatMessages: state.chatMessages.map((message, index) =>
+            index === state.chatMessages.length - 1
+              ? { ...message, content: message.content + text }
+              : message,
+          ),
         })),
       clearChat: () =>
         set({
