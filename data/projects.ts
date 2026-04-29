@@ -196,15 +196,102 @@ export const fallbackProjects: Project[] = [
     changelog: DEFAULT_CHANGELOG,
     topics: ["iot", "mobile", "typescript", "capacitor", "esp32", "mlkit", "react", "automation"],
     links: { github: "https://github.com/Itinerant18/FAS-Control" },
+  },
+  {
+    id: "ml-predicter",
+    name: "ML Predicter",
+    shortDescription: "Astrology + ML prediction engine.",
+    problem: "Combines astrology with ML forecasting for insights. Time-series prediction and vector embeddings are used to generate confidence scores.",
+    type: "Machine Learning",
+    primaryTech: "Python",
+    techStack: ["Python", "ML", "Vector Embeddings", "Pandas"],
+    features: ["Astrology engine", "Time-series prediction", "Vector embeddings", "Confidence scoring"],
+    architecture: "Input -> ML models -> prediction output.",
+    links: { github: "https://github.com/Itinerant18/ml-predicter" },
+    changelog: DEFAULT_CHANGELOG
+  },
+  {
+    id: "finance-gpt",
+    name: "Finance GPT",
+    shortDescription: "AI-driven financial analysis tool.",
+    problem: "Explains finance questions quickly with real-time sentiment analysis and historical data summaries.",
+    type: "AI/FinTech",
+    primaryTech: "JavaScript",
+    techStack: ["JavaScript", "OpenAI", "Next.js", "Tailwind CSS"],
+    features: ["Prompt Q&A", "Financial summaries", "Interactive UI"],
+    architecture: "Frontend UI -> AI logic orchestration via OpenAI API.",
+    links: { github: "https://github.com/Itinerant18/finance-gpt" },
+    changelog: DEFAULT_CHANGELOG
+  },
+  {
+    id: "checkmate-arena-ai",
+    name: "Checkmate Arena AI",
+    shortDescription: "Chess arena with AI opponent.",
+    problem: "Gives players a competitive chess experience with automated move validation and AI difficulty scaling.",
+    type: "AI / Games",
+    primaryTech: "TypeScript",
+    techStack: ["TypeScript", "React", "Stockfish API", "Tailwind CSS"],
+    features: ["Chess board", "AI opponent", "Move validation"],
+    architecture: "Frontend UI -> Chess engine logic -> State synchronization.",
+    links: { github: "https://github.com/Itinerant18/checkmate-arena-ai" },
+    changelog: DEFAULT_CHANGELOG
+  },
+  {
+    id: "Swacth360_bot",
+    name: "Swacth360 Bot",
+    shortDescription: "Automation bot for system monitoring.",
+    problem: "Automates repetitive monitoring and workflow tasks within the Swacth360 ecosystem.",
+    type: "Automation / Bot",
+    primaryTech: "TypeScript",
+    techStack: ["TypeScript", "Node.js", "Puppeteer", "Cron"],
+    features: ["Event handling", "Notifications", "Automation flows"],
+    architecture: "Bot engine -> Target APIs -> Alert dispatchers.",
+    links: { github: "https://github.com/Itinerant18/Swacth360_bot" },
+    changelog: DEFAULT_CHANGELOG
+  },
+  {
+    id: "SWatch360",
+    name: "SWatch360",
+    shortDescription: "Mobile monitoring companion app.",
+    problem: "Provides real-time tracking and monitoring workflows for ThingsBoard platforms on mobile.",
+    type: "Mobile App",
+    primaryTech: "Flutter",
+    techStack: ["Flutter", "Dart", "ThingsBoard", "Firebase"],
+    features: ["Mobile UI", "Real-time tracking", "Push notifications"],
+    architecture: "Mobile client application synchronized with ThingsBoard PE backend.",
+    links: { github: "https://github.com/Itinerant18/SWatch360" },
+    changelog: DEFAULT_CHANGELOG
+  },
+  {
+    id: "Local_Service_Finder",
+    name: "Local Service Finder",
+    shortDescription: "TypeScript-based service discovery platform.",
+    problem: "Streamlines the discovery of local services with an optimized, clean search interface.",
+    type: "Web App",
+    primaryTech: "TypeScript",
+    techStack: ["TypeScript", "React", "Tailwind CSS", "Search Engine"],
+    features: ["Listing directory", "Search/filter", "Optimized UX"],
+    architecture: "Search-first frontend architecture with optimized filtering logic.",
+    links: { github: "https://github.com/Itinerant18/Local_Service_Finder" },
+    changelog: DEFAULT_CHANGELOG
+  },
+  {
+    id: "med",
+    name: "MediFlow",
+    shortDescription: "Healthcare management platform.",
+    problem: "Manages healthcare operations with a tiered role system for doctors, assistants, and staff.",
+    type: "Web/Backend",
+    primaryTech: "Flutter",
+    techStack: ["Flutter", "Supabase", "Firebase", "Dart"],
+    features: ["Role management", "Patient tracking", "Scheduling"],
+    architecture: "Three-tier architecture with Supabase as the primary data store and Firebase for auth.",
+    links: { github: "https://github.com/Itinerant18/med" },
+    changelog: DEFAULT_CHANGELOG
   }
 ];
 
 export const projects = fallbackProjects;
 
-/**
- * Repositories hidden from Projects tab regardless of GitHub visibility.
- * Add repo names here if you want to suppress them explicitly.
- */
 export const hiddenProjectIds: string[] = [];
 
 export function isHiddenProjectId(repoId: string): boolean {
@@ -279,29 +366,17 @@ export const skillsFromProjects = [
   "Mobile applications",
   "Backend APIs",
   "Dashboards",
-  "Real-time systems (inferred)",
-  "Scrapers and automation (inferred)",
-  "AI chatbots (inferred)",
-  "Data analytics tools (inferred)"
+  "Real-time systems",
+  "Scrapers and automation",
+  "AI chatbots",
+  "Data analytics tools"
 ];
 
 export const projectTimeline = [
-  {
-    "year": "2022",
-    "summary": "Basic projects, animations, games."
-  },
-  {
-    "year": "2024",
-    "summary": "Web apps and trackers."
-  },
-  {
-    "year": "2025",
-    "summary": "Finance, AI, automation."
-  },
-  {
-    "year": "2026",
-    "summary": "Advanced TypeScript, bots, AI systems."
-  }
+  { "year": "2022", "summary": "Basic projects, animations, games." },
+  { "year": "2024", "summary": "Web apps and trackers." },
+  { "year": "2025", "summary": "Finance, AI, automation." },
+  { "year": "2026", "summary": "Advanced TypeScript, bots, AI systems." }
 ];
 
 export function getProjectUpdatedAt(project: Project): string | null {
