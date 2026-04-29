@@ -173,5 +173,21 @@
       "View on GitHub: https://github.com/Itinerant18/Dexter-Webserver",
       "Stars: 0"
     ]
+  },
+  {
+    "name": "MediFlow",
+    "year": "2026",
+    "role": "Developer",
+    "stack": [
+      "Flutter",
+      "Supabase",
+      "Firebase",
+      "Dart"
+    ],
+    "summary": "Healthcare management platform with three-tier role system and real-time patient data management.",
+    "impact": [
+      "View on GitHub: https://github.com/Itinerant18/med",
+      "Stars: 0"
+    ]
   }
 ]

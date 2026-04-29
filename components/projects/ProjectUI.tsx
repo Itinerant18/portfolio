@@ -417,9 +417,27 @@ const TECH_STACK_MAP: Record<string, string> = {
 };
 
 export function TechIcon({ name, size = 20 }: { name: string; size?: number }) {
+  const [failed, setFailed] = useState(false);
   let slugStr = TECH_STACK_MAP[name.toLowerCase()];
   if (!slugStr) slugStr = `${name.toLowerCase()}/${name.toLowerCase()}-original`;
   const url = `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${slugStr}.svg`;
+
+  useEffect(() => {
+    setFailed(false);
+  }, [url]);
+
+  if (failed) {
+    return (
+      <div
+        aria-label={name}
+        title={name}
+        className="flex items-center justify-center rounded-sm bg-[var(--bg-muted)] text-[9px] font-bold text-[var(--text-muted)]"
+        style={{ width: size, height: size }}
+      >
+        {name.slice(0, 1).toUpperCase()}
+      </div>
+    );
+  }
 
   return (
     <img
@@ -429,9 +447,7 @@ export function TechIcon({ name, size = 20 }: { name: string; size?: number }) {
       height={size}
       loading="lazy"
       style={{ width: size, height: size, objectFit: "contain" }}
-      onError={(e) => {
-        e.currentTarget.outerHTML = `<div style="width: ${size}px; height: ${size}px;" class="flex items-center justify-center rounded-sm bg-[var(--bg-muted)] text-[9px] font-bold text-[var(--text-muted)]">${name.slice(0, 1).toUpperCase()}</div>`;
-      }}
+      onError={() => setFailed(true)}
     />
   );
 }

@@ -5,6 +5,11 @@ import {
   FaDatabase,
   FaServer,
   FaArrowUpRightFromSquare,
+  FaShieldHalved,
+  FaGaugeHigh,
+  FaVial,
+  FaArrowTrendUp,
+  FaLightbulb,
 } from "react-icons/fa6";
 import { VscSymbolStructure } from "react-icons/vsc";
 import type { ProjectShape } from "./ProjectData";
@@ -71,7 +76,27 @@ export function ProjectArchitecture({ project }: { project: ProjectShape }) {
   const dataStorage = (project.dataStorage as string | undefined)?.trim();
   const hasVisualFlow = (project.visualFlow?.length ?? 0) > 0;
   const mermaidDiagrams = project.mermaidDiagrams ?? [];
-  const hasAnyContent = architecture || hasVisualFlow || mermaidDiagrams.length > 0 || flows.length > 0 || dataModels.length > 0 || backend || dataStorage;
+  
+  // New fields
+  const rationale = project.rationale?.trim();
+  const security = project.security?.trim();
+  const performance = project.performance?.trim();
+  const testing = project.testing?.trim();
+  const scalability = project.scalability?.trim();
+
+  const hasAnyContent = 
+    architecture || 
+    hasVisualFlow || 
+    mermaidDiagrams.length > 0 || 
+    flows.length > 0 || 
+    dataModels.length > 0 || 
+    backend || 
+    dataStorage ||
+    rationale ||
+    security ||
+    performance ||
+    testing ||
+    scalability;
 
   if (!hasAnyContent) {
     return (
@@ -97,7 +122,7 @@ export function ProjectArchitecture({ project }: { project: ProjectShape }) {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-10">
       {/* System Overview */}
       {architecture ? (
         <section>
@@ -108,10 +133,24 @@ export function ProjectArchitecture({ project }: { project: ProjectShape }) {
         </section>
       ) : null}
 
+      {/* Rationale */}
+      {rationale ? (
+        <section>
+          <SectionLabel label="Technical Rationale" />
+          <ArchCard className="border-l-4 border-l-[var(--accent)]">
+            <div className="mb-3 flex items-center gap-2">
+              <FaLightbulb size={14} className="text-[var(--accent)]" />
+              <span className="type-sys-micro text-[var(--text-muted)] uppercase tracking-wider">Engineering Logic</span>
+            </div>
+            <p className="type-body max-w-[72ch] text-[var(--text-secondary)]">{rationale}</p>
+          </ArchCard>
+        </section>
+      ) : null}
+
       {/* Flow Diagram */}
       {hasVisualFlow ? (
         <section>
-          <SectionLabel label="System Flow" />
+          <SectionLabel label="Visual Flow" />
           <FlowDiagram project={project} />
         </section>
       ) : null}
@@ -119,69 +158,129 @@ export function ProjectArchitecture({ project }: { project: ProjectShape }) {
       {/* Mermaid Architecture Diagrams */}
       {mermaidDiagrams.length > 0 ? (
         <section>
-          <SectionLabel label="Detailed Architecture" />
-          <div className="space-y-4">
+          <SectionLabel label="Architectural Blueprints" />
+          <div className="space-y-6">
             {mermaidDiagrams.map((chart, index) => (
               <MermaidBlock
                 key={`mermaid-${project.id}-${index}`}
                 chart={chart}
-                title={index === 0 ? "System Architecture" : "Request/Processing Pipeline"}
+                title={index === 0 ? "System Topology" : `Logic Flow ${index + 1}`}
               />
             ))}
           </div>
         </section>
       ) : null}
 
-      {/* Execution Flows */}
-      {flows.length > 0 ? (
+      {/* Detailed Vital Signs (Security & Performance) */}
+      {(security || performance) ? (
         <section>
-          <SectionLabel label="Execution Flow" />
-          <ArchCard>
-            <div className="flex flex-col">
-              {flows.map((step, index) => (
-                <FlowStep key={`flow-${index}`} step={step} index={index} />
-              ))}
-            </div>
-          </ArchCard>
+          <SectionLabel label="Operational Vital Signs" />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {security ? (
+              <ArchCard delay={0.05} className="group">
+                <div className="mb-3 flex items-center gap-2">
+                  <FaShieldHalved size={14} className="text-[var(--error)]" />
+                  <span className="type-sys-micro text-[var(--text-muted)] uppercase tracking-wider">Security Posture</span>
+                </div>
+                <p className="type-body text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">{security}</p>
+              </ArchCard>
+            ) : null}
+            {performance ? (
+              <ArchCard delay={0.1} className="group">
+                <div className="mb-3 flex items-center gap-2">
+                  <FaGaugeHigh size={14} className="text-[var(--success)]" />
+                  <span className="type-sys-micro text-[var(--text-muted)] uppercase tracking-wider">Performance Metrics</span>
+                </div>
+                <p className="type-body text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">{performance}</p>
+              </ArchCard>
+            ) : null}
+          </div>
         </section>
       ) : null}
 
-      {/* Data Models */}
-      {dataModels.length > 0 ? (
+      {/* Reliability & Scale (Testing & Scalability) */}
+      {(testing || scalability) ? (
         <section>
-          <SectionLabel label="Data Models" />
-          <ArchCard>
-            <div className="space-y-2">
-              {dataModels.map((model, index) => (
-                <DataModelBlock key={`model-${index}`} model={model} />
-              ))}
-            </div>
-          </ArchCard>
+          <SectionLabel label="Reliability & Scale" />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {testing ? (
+              <ArchCard delay={0.15} className="group">
+                <div className="mb-3 flex items-center gap-2">
+                  <FaVial size={14} className="text-[var(--info)]" />
+                  <span className="type-sys-micro text-[var(--text-muted)] uppercase tracking-wider">Validation Strategy</span>
+                </div>
+                <p className="type-body text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">{testing}</p>
+              </ArchCard>
+            ) : null}
+            {scalability ? (
+              <ArchCard delay={0.2} className="group">
+                <div className="mb-3 flex items-center gap-2">
+                  <FaArrowTrendUp size={14} className="text-[var(--warning)]" />
+                  <span className="type-sys-micro text-[var(--text-muted)] uppercase tracking-wider">Scaling Potential</span>
+                </div>
+                <p className="type-body text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">{scalability}</p>
+              </ArchCard>
+            ) : null}
+          </div>
         </section>
       ) : null}
 
-      {/* Backend + Storage */}
+      {/* Execution Flows & Data Models */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {/* Execution Flows */}
+        {flows.length > 0 ? (
+          <section>
+            <SectionLabel label="Execution Pipeline" />
+            <ArchCard>
+              <div className="flex flex-col">
+                {flows.map((step, index) => (
+                  <FlowStep key={`flow-${index}`} step={step} index={index} />
+                ))}
+              </div>
+            </ArchCard>
+          </section>
+        ) : null}
+
+        {/* Data Models */}
+        {dataModels.length > 0 ? (
+          <section>
+            <SectionLabel label="Core Data Models" />
+            <ArchCard>
+              <div className="space-y-3">
+                {dataModels.map((model, index) => (
+                  <DataModelBlock key={`model-${index}`} model={model} />
+                ))}
+              </div>
+            </ArchCard>
+          </section>
+        ) : null}
+      </div>
+
+      {/* Infrastructure Components */}
       {(backend || dataStorage) ? (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {backend ? (
-            <ArchCard delay={0.05}>
-              <div className="mb-3 flex items-center gap-2">
-                <FaServer size={14} className="text-[var(--accent)]" />
-                <span className="type-sys-micro text-[var(--text-muted)]">Backend</span>
-              </div>
-              <p className="type-body text-[var(--text-secondary)]">{backend}</p>
-            </ArchCard>
-          ) : null}
-          {dataStorage ? (
-            <ArchCard delay={0.1}>
-              <div className="mb-3 flex items-center gap-2">
-                <FaDatabase size={14} className="text-[var(--accent)]" />
-                <span className="type-sys-micro text-[var(--text-muted)]">Data Storage</span>
-              </div>
-              <p className="type-body text-[var(--text-secondary)]">{dataStorage}</p>
-            </ArchCard>
-          ) : null}
-        </div>
+        <section>
+          <SectionLabel label="Infrastructure Components" />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {backend ? (
+              <ArchCard delay={0.25}>
+                <div className="mb-3 flex items-center gap-2">
+                  <FaServer size={14} className="text-[var(--accent)]" />
+                  <span className="type-sys-micro text-[var(--text-muted)] uppercase tracking-wider">Backend Service</span>
+                </div>
+                <p className="type-body text-[var(--text-secondary)]">{backend}</p>
+              </ArchCard>
+            ) : null}
+            {dataStorage ? (
+              <ArchCard delay={0.3}>
+                <div className="mb-3 flex items-center gap-2">
+                  <FaDatabase size={14} className="text-[var(--accent)]" />
+                  <span className="type-sys-micro text-[var(--text-muted)] uppercase tracking-wider">Persistence Layer</span>
+                </div>
+                <p className="type-body text-[var(--text-secondary)]">{dataStorage}</p>
+              </ArchCard>
+            ) : null}
+          </div>
+        </section>
       ) : null}
     </div>
   );

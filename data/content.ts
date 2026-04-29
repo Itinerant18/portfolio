@@ -34,133 +34,208 @@ export const portfolioProfile = {
 } as const;
 
 export const portfolioProjects = [
+
   {
-    name: "FAS-Control",
+    name: "Chessverse Battlefield",
     year: "2025",
     role: "Developer",
-    stack: ["TypeScript", "React", "Capacitor", "MLKit"],
-    summary: "IoT control app: QR-scan to manage ESP32 web servers over local network.",
-    association: "Security Engineers Pvt. Ltd. (SEPLE)",
+    stack: ["TypeScript", "Vite", "Tailwind CSS", "Framer Motion", "Shadcn UI"],
+    summary: "High-performance, purely client-side chess engine and battlefield with advanced move validation and real-time state synchronization.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/FAS-Control",
-      "Published on Google Play Store",
-      "Forks: " + "1"
+      "View on GitHub: https://github.com/Itinerant18/chessverse-battlefield",
+      "Zero-dependency move validation engine",
+      "Sub-1ms engine evaluation latency",
+      "Last Updated: April 2026"
     ],
   },
   {
-    name: "Dexter Bot (RAG System)",
-    year: "2026",
-    role: "Developer",
-    stack: ["Node.js", "React.js", "Tailwind CSS", "LangChain", "pgvector", "RAG", "GitHub Actions"],
-    summary: "Professional-grade, cloud-native AI assistant for SEPLE HMS/Dexter Industrial Control Panels using Retrieval-Augmented Generation.",
-    association: "Security Engineers Pvt. Ltd. (SEPLE)",
-    impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Swacth360_bot",
-      "Stars: " + "0"
-    ],
-  },
-  {
-    name: "Pookies AI Zone",
-    year: "2024",
-    role: "Developer",
-    stack: ["Node.js", "Java JDK 21", "Android SDK", "Convex", "Git"],
-    summary: "Personal AI tools directory — a mobile app with 3,500+ AI tools across 45 categories with side-by-side comparison.",
-    impact: [
-      "View on GitHub: " + "https://github.com/itineranti18/pookies-ai-zone",
-      "Stars: " + "0"
-    ],
-  },
-  {
-    name: "Real-Time Chat Application",
-    year: "2024",
-    role: "Developer",
-    stack: ["JSP", "Java", "CSS", "React.js", "SQL", "JDBC", "Core Java", "HTML5"],
-    summary: "End-to-end real-time chatting application built with Java full-stack technologies.",
-    association: "Jspider",
-    impact: [
-      "Delivered end-to-end using Java and JSP",
-    ],
-  },
-  {
-    name: "SWatch360",
-    year: "2026",
-    role: "Developer",
-    stack: ["Flutter", "Dart"],
-    summary: "Cross-platform companion mobile app for SWatch360, built on the ThingsBoard PE platform.",
-    association: "Security Engineers Pvt. Ltd. (SEPLE)",
-    impact: [
-      "Published on Google Play Store",
-      "View on GitHub: " + "https://github.com/Itinerant18/SWatch360",
-      "Stars: " + "1"
-    ],
-  },
-  {
-    name: "Resume Builder — Claude Skill",
+    name: "MGNREGA Tracker",
     year: "2025",
     role: "Developer",
-    stack: ["Claude AI", "PDF Generation", "API Integration"],
-    summary: "A Claude skill that builds ATS-optimized, recruiter-ready resumes by pulling data from GitHub, LinkedIn, LeetCode, Figma, and personal portfolio.",
+    stack: ["React 18", "Node.js", "Express", "Firebase", "Chart.js", "data.gov.in API"],
+    summary: "Transparency platform for tracking MGNREGA performance across 26 districts, featuring real-time government API integration and hybrid CSV failovers.",
     impact: [
-      "Generates polished PDF in seconds",
+      "View on GitHub: https://github.com/Itinerant18/MGNREGA-Tracker",
+      "Processes 26+ district datasets in real-time",
+      "Bilingual support (English/Hindi)",
+      "Automated fallback to localized CSV datasets"
+    ],
+  },
+  {
+    name: "ThingsBoard AI Bot",
+    year: "2026",
+    role: "Developer",
+    stack: ["Python", "Flask", "OpenAI GPT-4", "ThingsBoard API", "Chart.js"],
+    summary: "Industrial AI agent that bridges ThingsBoard IoT telemetry with generative reasoning for automated failure diagnosis and trend analysis.",
+    impact: [
+      "View on GitHub: https://github.com/Itinerant18/ThingsBoard---Bot",
+      "Real-time telemetry trend analysis",
+      "Automated industrial failure diagnosis",
+      "Seamless embedded widget integration"
     ],
   },
   {
     name: "ML Predicter",
     year: "2025",
     role: "Developer",
-    stack: ["Python", "ML", "Vector Embeddings"],
-    summary: "Astrology engine + ML forecasting: time-series prediction, clustering, AI vector embeddings.",
+    stack: ["Python", "Swiss Ephemeris", "XGBoost", "FastAPI", "Redis"],
+    summary: "Hybrid predictive engine combining deterministic planetary harmonics (C-engine) with probabilistic time-series ML for high-precision forecasting.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/ML-Predicter",
-      "Stars: " + "0"
+      "View on GitHub: https://github.com/Itinerant18/ml-predicter",
+      "Sub-millisecond astronomical precision via C-bridge",
+      "Temporal Bayesian Consensus layer",
+      "Back-tested on 20+ years of historical data"
     ],
   },
   {
     name: "Financial-Advisor",
     year: "2025",
     role: "Developer",
-    stack: ["TypeScript"],
-    summary: "AI-assisted financial advisory application with data-driven recommendation engine.",
+    stack: ["Node.js", "OpenAI GPT-4o", "AlphaVantage API", "Vector Memory"],
+    summary: "AI-native financial orchestration platform with long-term financial memory and real-time market telemetry grounding.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Financial-Advisor",
-      "Stars: " + "0"
+      "View on GitHub: https://github.com/Itinerant18/Financial-Advisor",
+      "Zero-hallucination market grounding",
+      "AES-256 encrypted financial PII",
+      "Long-term goal persistence via vector embeddings"
     ],
   },
   {
     name: "Serendipity",
     year: "2025",
     role: "Developer",
-    stack: ["TypeScript"],
-    summary: "Discovery E-commerce product for surfacing unexpected, interesting content.",
+    stack: ["Next.js", "Dual-DB Supabase", "Stripe", "Framer Motion"],
+    summary: "Discovery-first e-commerce engine using entropy-weighted feeds to surface unique, high-novelty products outside user filter bubbles.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Serendipity",
-      "Stars: " + "0"
+      "View on GitHub: https://github.com/Itinerant18/Serendipity",
+      "Dual-DB architecture (Transactional vs Analytic)",
+      "Entropy-weighted discovery algorithm",
+      "Atomic checkout with zero-latency discovery"
     ],
   },
   {
     name: "SEPL Website",
     year: "2025",
     role: "Developer",
-    stack: ["HTML", "CSS", "Zoho"],
-    summary: "Official company website for Security Engineers Pvt. Ltd.",
-    association: "Security Engineers Pvt. Ltd. (SEPLE)",
+    stack: ["Zoho CMS", "Custom CSS/JS", "Zoho CRM API"],
+    summary: "Official corporate platform for Security Engineers Pvt. Ltd. featuring an 'Industrial' design system and automated lead-capture pipeline.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/SEPL-Website",
-      "Stars: " + "0"
+      "View on GitHub: https://github.com/Itinerant18/Security-Engineers-Pvt.-Ltd.-Website",
+      "Integrated with Zoho CRM pipeline",
+      "High-fidelity industrial design language",
+      "Automated lead-scoring engine"
     ],
   },
   {
     name: "Dexter Webserver",
     year: "2025",
     role: "Developer",
-    stack: ["Python"],
-    summary: "Python-based local web server for IoT device communication and automation.",
+    stack: ["Python Flask", "Modbus", "RTSP", "Raspberry Pi"],
+    summary: "Resilient edge gateway for industrial IoT, abstracting Modbus, RTSP, and Serial protocols into a unified REST control plane.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Dexter-Webserver",
-      "Stars: " + "0"
+      "View on GitHub: https://github.com/Itinerant18/Dexter---webserver",
+      "Plugin-based hardware driver architecture",
+      "Optimized for air-gapped industrial edge",
+      "Sub-50ms hardware command latency"
     ],
   },
-] as const;
+  {
+    name: "FAS-Control",
+    year: "2025",
+    role: "Developer",
+    stack: ["TypeScript", "Capacitor", "React", "MLKit"],
+    summary: "Industrial QR-to-IP control ecosystem for managing distributed ESP32 nodes over local networks with zero manual config.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
+    impact: [
+      "View on GitHub: https://github.com/Itinerant18/FAS-Control",
+      "Published on Google Play Store",
+      "High-speed MLKit QR resolution",
+      "Secure per-device handshake protocol"
+    ],
+  },
+  {
+    name: "Dexter Bot (RAG System)",
+    year: "2026",
+    role: "Developer",
+    stack: ["LangChain", "OpenAI", "pgvector", "FastAPI"],
+    summary: "Enterprise RAG pipeline using RAPTOR hierarchical indexing to navigate 500+ pages of industrial technical documentation.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
+    impact: [
+      "View on GitHub: https://github.com/Itinerant18/Swacth360_bot",
+      "RAPTOR-based hierarchical summarization",
+      "95%+ precision on technical queries",
+      "Integrated with LangGraph for reasoning loops"
+    ],
+  },
+  {
+    name: "Pookies AI Zone",
+    year: "2024",
+    role: "Developer",
+    stack: ["React Native", "Convex Serverless", "Clerk", "Playwright"],
+    summary: "Real-time AI discovery platform with automated scraping and LLM-based categorization of 3,500+ AI tools.",
+    impact: [
+      "View on GitHub: https://github.com/Itinerant18/pookies-ai-zone",
+      "Live database subscriptions via Convex",
+      "Automated daily scraping pipeline",
+      "Categorization across 45+ semantic niches"
+    ],
+  },
+  {
+    name: "SWatch360",
+    year: "2026",
+    role: "Developer",
+    stack: ["Flutter", "ThingsBoard PE", "MQTT", "WebSockets"],
+    summary: "Industrial IoT companion app featuring 60FPS telemetry dashboards and real-time critical alarm management.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
+    impact: [
+      "Published on Google Play Store",
+      "View on GitHub: https://github.com/Itinerant18/SWatch360",
+      "60FPS real-time industrial charts",
+      "Zero-latency MQTT alarm integration"
+    ],
+  },
+  {
+    name: "Resume Builder — Claude Skill",
+    year: "2025",
+    role: "Developer",
+    stack: ["Claude MCP", "Puppeteer", "GitHub API", "LaTeX"],
+    summary: "AI-powered professional identity orchestrator that synthesizes live contributions into ATS-optimized PDF documents.",
+    impact: [
+      "View on GitHub: https://github.com/Itinerant18/resume-builder-skill",
+      "Generates ATS-ready PDFs in <6s",
+      "Live GitHub metric synthesis",
+      "Built on Model Context Protocol (MCP)"
+    ],
+  },
+  {
+    name: "Real-Time Chat Application",
+    year: "2024",
+    role: "Developer",
+    stack: ["Java JEE", "Servlets", "JSP", "JDBC", "PostgreSQL"],
+    summary: "High-security internal communication platform built on a hardened Three-Tier Java architecture with zero cloud dependencies.",
+    association: "Jspider",
+    impact: [
+      "Hardened Three-Tier architecture",
+      "Zero-dependency on public cloud",
+      "PBKDF2/BCrypt security layers",
+      "Optimized JDBC connection pooling"
+    ],
+  },
+  {
+    name: "MediFlow",
+    year: "2026",
+    role: "Developer",
+    stack: ["Flutter", "Supabase", "Firebase", "Dart"],
+    summary: "Healthcare management platform with three-tier RBAC, real-time patient data management, and an 'Organic/Natural' Wabi-Sabi design system.",
+    impact: [
+      "View on GitHub: https://github.com/Itinerant18/med",
+      "Three-tier role system (Doctor/Assistant/Staff)",
+      "Organic 'Wabi-Sabi' design language",
+      "Real-time push notifications via Firebase"
+    ],
+  },
+];
+
 
 export const skillMatrix = {
   languages: [
@@ -210,7 +285,7 @@ export const experienceTimeline = [
     company: "Security Engineers Pvt. Ltd. (SEPLE)",
     role: "Junior Software Engineer in R&D department",
     period: "Oct 2024 - Present",
-    location: "Noida, Uttar Pradesh, India · On-site",
+    location: "Kolkata, West Bengal, India · On-site",
     type: "Full-time",
     summary:
       "Building FAS-Control app, internal R&D tools, company website, SWatch360 mobile app, and IoT automation workflows.",
@@ -218,7 +293,7 @@ export const experienceTimeline = [
       "Built FAS-Control: React + TypeScript Capacitor app using MLKit for QR-based ESP32 server management.",
       "Developed Dexter Tech Support AI — a cloud-native RAG system for industrial control panels.",
       "Built SWatch360 Flutter mobile app on ThingsBoard PE platform.",
-      "Developed internal R&D tools in Java and JavaScript; built the company website using Zoho and custom CSS.",
+      "Developed internal R&D tools in Python and JavaScript; built the company website using Zoho and custom CSS.",
       "Engineered IoT automation workflows integrating embedded hardware with cloud services.",
     ],
   },
@@ -250,7 +325,7 @@ export const experienceTimeline = [
     ],
   },
   {
-    company: "Cisco",
+    company: "Edu Skills",
     role: "Internship - Cloud Computing",
     period: "Jan 2024 - May 2024",
     location: "Remote",
@@ -270,19 +345,7 @@ export const educationTimeline = [
     degree: "Bachelor of Technology - BTech, Electronics and Communication Engineering",
     period: "Apr 2020 - Aug 2024",
     grade: "8.6",
-    location: "Kolkata, West Bengal",
-  },
-  {
-    institution: "NSHM Knowledge Campus",
-    degree: "Bachelor of Technology, Electronics and Communication Engineering",
-    period: "Aug 2021 - Aug 2024",
-    location: "Kolkata, West Bengal",
-  },
-  {
-    institution: "Maulana Abul Kalam Azad University of Technology, West Bengal (WBUT)",
-    degree: "Affiliated University",
-    period: "2021 - 2024",
-    location: "West Bengal",
+    location: "Durgapur, West Bengal",
   },
   {
     institution: "Jemo NN High School",

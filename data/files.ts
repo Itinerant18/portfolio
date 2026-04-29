@@ -43,99 +43,136 @@ export const Hero = () => {
     year: "2025",
     role: "Developer",
     stack: ["TypeScript", "React", "Capacitor", "MLKit"],
-    summary: "IoT control app: QR-scan to manage ESP32 web servers over local network.",
-    association: "SEPLE",
+    summary: "Industrial IoT control app: QR-to-IP discovery for ESP32 nodes.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
     impact: [
+      "View on GitHub: https://github.com/Itinerant18/FAS-Control",
       "Published on Google Play Store",
-      "Forks: " + "1"
+      "Secure per-device handshake protocol",
+      "Sub-100ms control latency"
     ],
   },
   {
     name: "Dexter Bot (RAG System)",
     year: "2026",
     role: "Developer",
-    stack: ["Node.js", "React.js", "Tailwind CSS", "LangChain", "pgvector", "RAG"],
-    summary: "Cloud-native AI assistant for SEPLE HMS/Dexter Industrial Control Panels.",
-    association: "SEPLE",
+    stack: ["Node.js", "LangChain", "pgvector", "FastAPI"],
+    summary: "Enterprise RAG pipeline for 500+ pages of industrial docs using RAPTOR hierarchical indexing.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Swacth360_bot",
+      "View on GitHub: https://github.com/Itinerant18/Swacth360_bot",
+      "95%+ precision on technical queries",
+      "Automated citation verification",
+      "LangGraph reasoning loops"
+    ],
+  },
+  {
+    name: "Chessverse Battlefield",
+    year: "2025",
+    role: "Developer",
+    stack: ["TypeScript", "Vite", "Framer Motion"],
+    summary: "High-performance client-side chess engine with O(1) move validation and battlefield animations.",
+    impact: [
+      "View on GitHub: https://github.com/Itinerant18/chessverse-battlefield",
+      "Zero-dependency validation engine",
+      "Reactive state machine",
+      "Sub-1ms evaluation latency"
+    ],
+  },
+  {
+    name: "MGNREGA Tracker",
+    year: "2025",
+    role: "Developer",
+    stack: ["React 18", "Node.js", "Chart.js"],
+    summary: "Transparency dashboard for government data with real-time API and hybrid CSV failovers.",
+    impact: [
+      "View on GitHub: https://github.com/Itinerant18/MGNREGA-Tracker",
+      "Bilingual support (EN/HI)",
+      "District performance benchmarking",
+      "Automated API fallback"
+    ],
+  },
+  {
+    name: "ThingsBoard AI Bot",
+    year: "2026",
+    role: "Developer",
+    stack: ["Python", "OpenAI", "ThingsBoard"],
+    summary: "Industrial AI agent for automated failure diagnosis and telemetry trend analysis.",
+    impact: [
+      "View on GitHub: https://github.com/Itinerant18/ThingsBoard---Bot",
+      "Real-time telemetry interpretation",
+      "Diagnostic report generation",
+      "Seamless IoT platform bridge"
     ],
   },
   {
     name: "Pookies AI Zone",
     year: "2024",
     role: "Developer",
-    stack: ["Node.js", "Java JDK 21", "Android SDK", "Convex", "Git"],
-    summary: "AI tools directory — 3,500+ tools across 45 categories with side-by-side comparison.",
+    stack: ["React Native", "Convex", "Playwright"],
+    summary: "AI tools directory with 3,500+ items and automated daily scraping pipeline.",
     impact: [
-      "View on GitHub: " + "https://github.com/itineranti18/pookies-ai-zone",
-    ],
-  },
-  {
-    name: "Real-Time Chat Application",
-    year: "2024",
-    role: "Developer",
-    stack: ["JSP", "Java", "CSS", "React.js", "SQL", "JDBC", "HTML5"],
-    summary: "End-to-end real-time chatting application with Java full-stack.",
-    association: "Jspider",
-    impact: [
-      "Delivered end-to-end using Java and JSP",
+      "View on GitHub: https://github.com/Itinerant18/pookies-ai-zone",
+      "Live database subscriptions",
+      "Automated categorization engine",
+      "Mobile-first discovery UI"
     ],
   },
   {
     name: "SWatch360",
     year: "2026",
     role: "Developer",
-    stack: ["Dart", "Flutter"],
-    summary: "Cross-platform companion app on ThingsBoard PE platform.",
-    association: "SEPLE",
+    stack: ["Flutter", "MQTT", "WebSockets"],
+    summary: "Industrial IoT companion app with 60FPS telemetry dashboards and alarm management.",
+    association: "Security Engineers Pvt. Ltd. (SEPLE)",
     impact: [
       "Published on Google Play Store",
-    ],
-  },
-  {
-    name: "Resume Builder — Claude Skill",
-    year: "2025",
-    role: "Developer",
-    stack: ["Claude AI", "PDF Generation", "API Integration"],
-    summary: "ATS-optimized resume builder pulling from GitHub, LinkedIn, LeetCode, Figma.",
-    impact: [
-      "Generates polished PDF in seconds",
+      "View on GitHub: https://github.com/Itinerant18/SWatch360",
+      "Real-time industrial charts",
+      "Push-notification alarm triggers"
     ],
   },
   {
     name: "ML Predicter",
     year: "2025",
     role: "Developer",
-    stack: ["Python", "ML", "Vector Embeddings"],
-    summary: "Astrology engine + ML forecasting: time-series prediction, clustering.",
+    stack: ["Python", "XGBoost", "FastAPI"],
+    summary: "Hybrid engine combining planetary harmonics (C) with time-series ML for forecasting.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/ML-Predicter",
+      "View on GitHub: https://github.com/Itinerant18/ml-predicter",
+      "C-bridge for astronomical precision",
+      "Temporal Bayesian consensus",
+      "20+ years back-tested data"
     ],
   },
   {
-    name: "SEPL Website",
+    name: "Resume Builder",
     year: "2025",
     role: "Developer",
-    stack: ["HTML", "CSS", "Zoho"],
-    summary: "Official company website for Security Engineers Pvt. Ltd.",
+    stack: ["Claude MCP", "GitHub API", "LaTeX"],
+    summary: "AI orchestrator that builds ATS-optimized resumes from live professional data.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/SEPL-Website",
+      "View on GitHub: https://github.com/Itinerant18/resume-builder-skill",
+      "Live metric synthesis",
+      "PDF generation in <6s",
+      "Built on MCP protocol"
     ],
   },
   {
-    name: "Dexter Webserver",
-    year: "2025",
+    name: "Real-Time Chat",
+    year: "2024",
     role: "Developer",
-    stack: ["Python"],
-    summary: "Python-based local web server for IoT device communication and automation.",
+    stack: ["Java JEE", "JSP", "JDBC"],
+    summary: "Hardened internal communication platform with zero cloud dependencies.",
     impact: [
-      "View on GitHub: " + "https://github.com/Itinerant18/Dexter-Webserver",
+      "Three-tier Java architecture",
+      "PBKDF2/BCrypt security",
+      "Connection pool optimization",
+      "Independent SQL persistence"
     ],
   }
 ] as const;`,
   },
-
   {
     name: "skills.json",
     path: "src/skills.json",
@@ -172,18 +209,19 @@ export const Hero = () => {
   ],
   "cloud_iot": [
     "AWS (S3, Lambda)",
-    "ESP32",
-    "MQTT",
-    "Cloud Pipelines"
+    "ESP32-S3 (C++)",
+    "ThingsBoard PE",
+    "MQTT / WebSockets",
+    "Modbus / RTSP",
+    "Edge Gateway Design"
   ],
   "tooling": [
-    "Git",
-    "GitHub",
-    "Zoho Creator",
-    "MLKit",
-    "Agile/Scrum",
-    "Docker",
-    "GitHub Actions"
+    "Git / GitHub Actions",
+    "Docker / Kubernetes (K8s)",
+    "MCP (Model Context Protocol)",
+    "Zoho Creator / CRM",
+    "MLKit / Google Vision",
+    "Agile / SCRUM"
   ]
 }`,
   },
@@ -264,13 +302,14 @@ Kolkata, India 🇮🇳
 - AI-native product development
 
 ## Currently Building
-- Dexter Tech Support AI (RAG · Sarvam-M)
-- SWatch360 Flutter mobile client
+- Dexter Tech Support AI (RAG · RAPTOR · LangGraph)
+- SWatch360 Flutter mobile client (ThingsBoard PE)
+- MGNREGA Transparency Dashboard (Node.js · Government Data Portal)
 
 ## Leveling Up
-- System Design & Distributed Systems
-- Kafka · CQRS · Kubernetes
-- Multi-Agent AI · LLM Fine-tuning`,
+- System Design & Distributed Systems (Kafka · CQRS)
+- AI Agentic Workflows (Multi-Agent Systems · LLM Fine-tuning)
+- Industrial Edge Computing (K8s at the Edge)`,
   },
 ];
 

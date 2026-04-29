@@ -25,6 +25,11 @@ export interface ProjectDetail {
   previewImage: string | null;
   previewImages: string[];
   liveUrl: string | null;
+  rationale?: string;
+  security?: string;
+  performance?: string;
+  testing?: string;
+  scalability?: string;
 }
 
 export type ProjectShape = Omit<Project, "changelog"> & {
@@ -50,6 +55,11 @@ export type ProjectShape = Omit<Project, "changelog"> & {
   mermaidDiagrams?: string[];
   highLevel?: string;
   why?: string;
+  rationale?: string;
+  security?: string;
+  performance?: string;
+  testing?: string;
+  scalability?: string;
 };
 
 export const TECH_MAP: ReadonlyArray<{ re: RegExp; color: string }> = [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   VscSearch,
@@ -13,17 +13,11 @@ import {
 import {
   FaGithub,
   FaGlobe,
-  FaCode,
-  FaSitemap,
-  FaTimeline,
-  FaWandMagicSparkles,
 } from "react-icons/fa6";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -39,7 +33,6 @@ import {
   LoadState,
   isProjectLike,
   asProjectShape,
-  getInitials,
   techColor,
   categoryOf,
   languageOf,
@@ -56,11 +49,18 @@ import { ProjectChangelog } from "./projects/ProjectChangelog";
 import { projectMotion } from "./projects/motion";
 
 const LANGS = ["All", "TypeScript", "Python", "Dart", "JavaScript"] as const;
+const SECTION_NAV = [
+  { key: "overview", label: "Overview" },
+  { key: "preview", label: "Preview" },
+  { key: "architecture", label: "Architecture" },
+  { key: "tech", label: "Tech" },
+  { key: "changelog", label: "Changelog" },
+] as const satisfies readonly { key: TabKey; label: string }[];
 
 const statusConfig = {
-  active: { color: "bg-[#1f8a65]", label: "Active", textColor: "text-[#1f8a65]" },
-  recent: { color: "bg-[#c08532]", label: "Recent", textColor: "text-[#c08532]" },
-  dormant: { color: "bg-[#cf2d56]", label: "Dormant", textColor: "text-[#cf2d56]" },
+  active: { color: "bg-[var(--success)]", label: "Active", textColor: "text-[var(--success)]" },
+  recent: { color: "bg-[var(--warning)]", label: "Recent", textColor: "text-[var(--warning)]" },
+  dormant: { color: "bg-[var(--error)]", label: "Dormant", textColor: "text-[var(--error)]" },
 };
 
 function activityState(updatedAt: string | undefined) {
@@ -76,6 +76,12 @@ function activityState(updatedAt: string | undefined) {
 
 export default function ProjectsTab() {
   const shouldReduceMotion = useReducedMotion();
+  const detailScrollRootRef = useRef<HTMLDivElement>(null);
+  const overviewRef = useRef<HTMLElement>(null);
+  const previewRef = useRef<HTMLElement>(null);
+  const architectureRef = useRef<HTMLElement>(null);
+  const techRef = useRef<HTMLElement>(null);
+  const changelogRef = useRef<HTMLElement>(null);
   const fallbackList = useMemo(
     () =>
       sortProjectsByUpdatedAt(
@@ -240,21 +246,83 @@ export default function ProjectsTab() {
     } satisfies ProjectDetail;
   }, [selectedProject]);
 
+  useEffect(() => {
+    if (!selectedProject) return;
+
+    setActiveTab("overview");
+    overviewRef.current?.scrollIntoView({
+      behavior: "auto",
+      block: "start",
+    });
+  }, [selectedProject?.id]);
+
+  useEffect(() => {
+    const viewport = detailScrollRootRef.current?.querySelector<HTMLElement>(
+      '[data-slot="scroll-area-viewport"]',
+    );
+
+    if (!viewport || !selectedProject) {
+      return;
+    }
+
+    let frameId = 0;
+
+    const syncActiveSection = () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      frameId = requestAnimationFrame(() => {
+        const viewportTop = viewport.getBoundingClientRect().top;
+        const activationTop = viewportTop + 140;
+        let nextActive: TabKey = "overview";
+
+        for (const section of SECTION_NAV) {
+          const top = sectionRefs[section.key].current?.getBoundingClientRect().top;
+          if (top === undefined) {
+            continue;
+          }
+
+          if (top <= activationTop) {
+            nextActive = section.key;
+            continue;
+          }
+
+          break;
+        }
+
+        setActiveTab((current) => (current === nextActive ? current : nextActive));
+      });
+    };
+
+    syncActiveSection();
+    viewport.addEventListener("scroll", syncActiveSection, { passive: true });
+    window.addEventListener("resize", syncActiveSection);
+
+    return () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+      viewport.removeEventListener("scroll", syncActiveSection);
+      window.removeEventListener("resize", syncActiveSection);
+    };
+  }, [selectedProject]);
+
   if (loadState === "loading") {
     return (
-      <div className="flex h-full w-full bg-[#f2f1ed]">
-        <aside className="hidden h-full w-80 flex-col border-r border-[var(--border-default)] bg-[#f7f7f4] md:flex">
+      <div className="flex h-full w-full bg-[var(--bg-base)]">
+        <aside className="hidden h-full w-80 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:flex">
           <div className="flex-shrink-0 border-b border-[var(--border-default)] p-6">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <VscProject className="h-5 w-5 text-[#f54e00]" />
-                <h2 className="type-title-sm font-semibold text-[#26251e]">Projects</h2>
+                <VscProject className="h-5 w-5 text-[var(--accent)]" />
+                <h2 className="type-title-sm font-semibold text-[var(--text-primary)]">Projects</h2>
               </div>
               <Badge variant="outline" className="gap-1 border-[var(--border-default)]">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-[#1f8a65]" /> Syncing
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--success)]" /> Syncing
               </Badge>
             </div>
-            <div className="h-9 rounded-md border border-[var(--border-default)] bg-[#ebeae5]" />
+            <div className="h-9 rounded-md border border-[var(--border-default)] bg-[var(--bg-muted)]" />
           </div>
           <div className="flex-1 p-4 space-y-2 overflow-hidden">
             {Array.from({ length: 9 }, (_, index) => (
@@ -271,16 +339,16 @@ export default function ProjectsTab() {
 
   if (!selectedProject || !detail) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-[#f2f1ed] p-8">
+      <div className="flex h-full w-full items-center justify-center bg-[var(--bg-base)] p-8">
         <div className="max-w-md text-center">
-          <VscProject className="mx-auto h-12 w-12 text-[#26251e]/20" />
-          <h2 className="mt-4 type-sub font-semibold text-[#26251e]">No matching projects</h2>
-          <p className="mt-2 type-body text-[#26251e]/60">
+          <VscProject className="mx-auto h-12 w-12 text-[var(--text-muted)]" />
+          <h2 className="mt-4 type-sub font-semibold text-[var(--text-primary)]">No matching projects</h2>
+          <p className="mt-2 type-body text-[var(--text-secondary)]">
             Adjust the search query or language filter to see more projects.
           </p>
           <Button
             variant="outline"
-            className="mt-6 border-[var(--border-default)] hover:text-[#cf2d56]"
+            className="mt-6 border-[var(--border-default)] hover:text-[var(--error)]"
             onClick={() => {
               setSearchQuery("");
               setLangFilter("All");
@@ -294,30 +362,58 @@ export default function ProjectsTab() {
   }
 
   const selectedProjectStatus = activityState(selectedProject.updatedAt);
+  const sectionRefs: Record<TabKey, React.RefObject<HTMLElement | null>> = {
+    overview: overviewRef,
+    preview: previewRef,
+    architecture: architectureRef,
+    tech: techRef,
+    changelog: changelogRef,
+  };
+  const activeSectionIndex = Math.max(
+    SECTION_NAV.findIndex((section) => section.key === activeTab),
+    0,
+  );
+
+  function scrollToSection(section: TabKey) {
+    setActiveTab(section);
+    sectionRefs[section].current?.scrollIntoView({
+      behavior: shouldReduceMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  }
+
+  function scrollByStep(direction: -1 | 1) {
+    const nextIndex = Math.min(
+      Math.max(activeSectionIndex + direction, 0),
+      SECTION_NAV.length - 1,
+    );
+
+    scrollToSection(SECTION_NAV[nextIndex].key);
+  }
 
   return (
-    <div className="flex h-full w-full bg-[#f2f1ed] overflow-hidden">
+    <div className="flex h-full w-full bg-[var(--bg-base)] overflow-hidden">
       {/* Sidebar */}
-      <aside className="hidden h-full w-80 flex-col border-r border-[var(--border-default)] bg-[#f7f7f4] md:flex">
+      <aside className="hidden h-full w-80 flex-col border-r border-[var(--border-default)] bg-[var(--bg-elevated)] md:flex">
         <div className="flex-shrink-0 border-b border-[var(--border-default)] p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <VscProject className="h-5 w-5 text-[#f54e00]" />
-              <h2 className="type-title-sm font-semibold text-[#26251e]">Projects</h2>
+              <VscProject className="h-5 w-5 text-[var(--accent)]" />
+              <h2 className="type-title-sm font-semibold text-[var(--text-primary)]">Projects</h2>
             </div>
             <Badge variant="outline" className="gap-1 border-[var(--border-default)] font-mono text-[10px]">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-[#1f8a65]" /> Live
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--success)]" /> Live
             </Badge>
           </div>
           <div className="relative">
-            <VscSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#26251e]/40" />
+            <VscSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
             <Input
               type="text"
               placeholder="Search projects..."
               aria-label="Search projects"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-[#f2f1ed] border-[var(--border-default)] focus-visible:border-[var(--border-active)]"
+              className="pl-9 bg-[var(--bg-base)] border-[var(--border-default)] focus-visible:border-[var(--border-active)]"
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-1.5">
@@ -327,8 +423,8 @@ export default function ProjectsTab() {
                 onClick={() => setLangFilter(lang)}
                 className={`pill-tag px-3 py-1 text-[11px] font-medium border transition-all ${
                   langFilter === lang 
-                    ? "bg-[#e1e0db] text-[#26251e] border-[#26251e]/15 shadow-sm" 
-                    : "bg-[#ebeae5] text-[#26251e]/60 border-transparent hover:text-[#cf2d56] hover:bg-[#e6e5e0]"
+                    ? "bg-[var(--bg-muted)] text-[var(--text-primary)] border-[var(--border-default)] shadow-sm" 
+                    : "bg-[var(--bg-muted)] text-[var(--text-secondary)] border-transparent hover:text-[var(--error)] hover:bg-[var(--bg-muted)]"
                 }`}
               >
                 {lang}
@@ -356,24 +452,24 @@ export default function ProjectsTab() {
                   whileTap={shouldReduceMotion ? undefined : { scale: 0.995 }}
                   className={`w-full rounded-lg border p-3 text-left transition-all ${
                     isActive
-                      ? "border-[#f54e00]/35 bg-[#f54e00]/6 shadow-sm"
-                      : "border-[var(--border-default)] bg-[#f7f7f4] hover:border-[#f54e00]/20 hover:bg-[#ebeae5]/50"
+                      ? "border-[var(--accent)]/[0.35] bg-[var(--accent)]/[0.06] shadow-sm"
+                      : "border-[var(--border-default)] bg-[var(--bg-elevated)] hover:border-[var(--accent)]/[0.2] hover:bg-[var(--bg-muted)]/[0.5]"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex items-center gap-2">
-                        {isActive ? <span className="h-4 w-[2px] rounded-full bg-[#f54e00]" /> : null}
+                        {isActive ? <span className="h-4 w-[2px] rounded-full bg-[var(--accent)]" /> : null}
                         <div
                           className="h-2.5 w-2.5 rounded-full shrink-0"
                           style={{ backgroundColor: techColor(project.primaryTech || language) }}
                         />
-                        <h3 className="truncate font-semibold text-[13px] text-[#26251e]">{project.name}</h3>
+                        <h3 className="truncate font-semibold text-[13px] text-[var(--text-primary)]">{project.name}</h3>
                       </div>
-                      <p className="line-clamp-1 type-caption text-[#26251e]/60 leading-tight">
+                      <p className="line-clamp-1 type-caption text-[var(--text-secondary)] leading-tight">
                         {project.shortDescription || "No description provided."}
                       </p>
-                      <div className="mt-2 flex items-center gap-2 type-mono-sm text-[#26251e]/40">
+                      <div className="mt-2 flex items-center gap-2 type-mono-sm text-[var(--text-muted)]">
                         <span>{language}</span>
                         {isActive ? (
                           <>
@@ -393,22 +489,22 @@ export default function ProjectsTab() {
               );
             })}
             {filteredProjects.length === 0 && (
-              <div className="py-8 text-center type-caption italic text-[#26251e]/40">
+              <div className="py-8 text-center type-caption italic text-[var(--text-muted)]">
                 No matching repositories.
               </div>
             )}
           </div>
         </ScrollArea>
 
-        <div className="flex-shrink-0 border-t border-[var(--border-default)] bg-[#f2f1ed]/50 p-4">
-          <div className="mb-3 type-sys-micro font-semibold text-[#26251e]/40">
+        <div className="flex-shrink-0 border-t border-[var(--border-default)] bg-[var(--bg-base)]/[0.5] p-4">
+          <div className="mb-3 type-sys-micro font-semibold text-[var(--text-muted)]">
             Activity Legend
           </div>
           <div className="space-y-2">
             {Object.entries(statusConfig).map(([key, value]) => (
               <div key={key} className="flex items-center gap-2 type-caption">
                 <span className={`h-1.5 w-1.5 rounded-full ${value.color}`} />
-                <span className="text-[#26251e]/60">
+                <span className="text-[var(--text-secondary)]">
                   {value.label} {key === "active" && "(<90d)"} {key === "recent" && "(<1y)"}
                 </span>
               </div>
@@ -418,19 +514,19 @@ export default function ProjectsTab() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex flex-1 flex-col overflow-hidden bg-[#f2f1ed]">
+      <main className="flex flex-1 flex-col overflow-hidden bg-[var(--bg-base)]">
         {/* Mobile Header Toggle */}
-        <div className="flex shrink-0 items-center justify-between border-b border-[var(--border-default)] bg-[#f7f7f4] px-4 py-3 md:hidden">
+        <div className="flex shrink-0 items-center justify-between border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-4 py-3 md:hidden">
           <Button
             variant="ghost"
             size="sm"
-            className="flex items-center gap-2 hover:text-[#cf2d56]"
+            className="flex items-center gap-2 hover:text-[var(--error)]"
             aria-label="Open project selector"
             onClick={() => setDrawerOpen(true)}
           >
             <VscProject className="h-4 w-4" />
-            <span className="font-semibold truncate max-w-[150px] text-[#26251e]">{selectedProject.name}</span>
-            <VscChevronDown className="h-4 w-4 text-[#26251e]/40" />
+            <span className="font-semibold truncate max-w-[150px] text-[var(--text-primary)]">{selectedProject.name}</span>
+            <VscChevronDown className="h-4 w-4 text-[var(--text-muted)]" />
           </Button>
         </div>
 
@@ -443,7 +539,7 @@ export default function ProjectsTab() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={projectMotion.transitions.overlayFade}
-                className="fixed inset-0 z-50 bg-[#26251e]/60 backdrop-blur-sm md:hidden"
+                className="fixed inset-0 z-50 bg-[var(--text-primary)]/[0.6] backdrop-blur-sm md:hidden"
                 onClick={() => setDrawerOpen(false)}
               />
               <motion.aside
@@ -451,24 +547,24 @@ export default function ProjectsTab() {
                 animate={{ y: 0 }}
                 exit={shouldReduceMotion ? { opacity: 0 } : { y: "100%" }}
                 transition={shouldReduceMotion ? projectMotion.transitions.overlayFade : projectMotion.transitions.drawer}
-                className="fixed bottom-0 inset-x-0 z-50 flex max-h-[85vh] flex-col rounded-t-2xl border-t border-[var(--border-default)] bg-[#f7f7f4] md:hidden"
+                className="fixed bottom-0 inset-x-0 z-50 flex max-h-[85vh] flex-col rounded-t-2xl border-t border-[var(--border-default)] bg-[var(--bg-elevated)] md:hidden"
               >
                 <div className="flex shrink-0 items-center justify-between border-b border-[var(--border-default)] px-6 py-4">
-                  <h2 className="type-sub font-semibold text-[#26251e]">Select Project</h2>
-                  <Button variant="ghost" size="icon" className="hover:text-[#cf2d56]" onClick={() => setDrawerOpen(false)}>
+                  <h2 className="type-sub font-semibold text-[var(--text-primary)]">Select Project</h2>
+                  <Button variant="ghost" size="icon" className="hover:text-[var(--error)]" onClick={() => setDrawerOpen(false)}>
                     <VscClose className="h-5 w-5" />
                   </Button>
                 </div>
                 <div className="flex shrink-0 flex-col gap-4 border-b border-[var(--border-default)] p-6">
                   <div className="relative">
-                    <VscSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#26251e]/40" />
+                    <VscSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
                     <Input
                       type="text"
                       placeholder="Search projects..."
                       aria-label="Search projects in mobile drawer"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 bg-[#f2f1ed] border-[var(--border-default)]"
+                      className="pl-9 bg-[var(--bg-base)] border-[var(--border-default)]"
                     />
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -478,8 +574,8 @@ export default function ProjectsTab() {
                         onClick={() => setLangFilter(lang)}
                         className={`pill-tag px-3 py-1 text-[11px] font-medium transition-all ${
                           langFilter === lang 
-                            ? "bg-[#e1e0db] text-[#26251e]" 
-                            : "bg-[#ebeae5] text-[#26251e]/60"
+                            ? "bg-[var(--bg-muted)] text-[var(--text-primary)]" 
+                            : "bg-[var(--bg-muted)] text-[var(--text-secondary)]"
                         }`}
                       >
                         {lang}
@@ -500,22 +596,22 @@ export default function ProjectsTab() {
                         }}
                         className={`w-full rounded-lg border p-4 text-left transition-all ${
                           selectedProject.id === project.id
-                            ? "border-[#f54e00]/30 bg-[#f54e00]/5"
-                            : "border-[var(--border-default)] bg-[#f7f7f4]"
+                            ? "border-[var(--accent)]/[0.3] bg-[var(--accent)]/[0.05]"
+                            : "border-[var(--border-default)] bg-[var(--bg-elevated)]"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2">
-                          <h3 className="font-semibold text-[#26251e]">{project.name}</h3>
+                          <h3 className="font-semibold text-[var(--text-primary)]">{project.name}</h3>
                           <span
                             className={`h-1.5 w-1.5 rounded-full ${
                               statusConfig[activityState(project.updatedAt) as keyof typeof statusConfig].color
                             }`}
                           />
                         </div>
-                        <p className="mt-1 type-caption text-[#26251e]/60 line-clamp-1">
+                        <p className="mt-1 type-caption text-[var(--text-secondary)] line-clamp-1">
                           {project.shortDescription}
                         </p>
-                        <p className="mt-1 type-mono-sm text-[#26251e]/40">{languageOf(project)}</p>
+                        <p className="mt-1 type-mono-sm text-[var(--text-muted)]">{languageOf(project)}</p>
                       </button>
                     ))}
                   </div>
@@ -531,12 +627,12 @@ export default function ProjectsTab() {
           initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={projectMotion.transitions.sectionIn}
-          className="flex-shrink-0 border-b border-[var(--border-default)] bg-gradient-to-br from-[#f54e00]/5 via-[#cf2d56]/5 to-transparent p-6 sm:p-10"
+          className="flex-shrink-0 border-b border-[var(--border-default)] bg-gradient-to-br from-[var(--accent)]/[0.05] via-[var(--error)]/[0.05] to-transparent p-6 sm:p-10"
         >
           <div className="mx-auto max-w-5xl">
             <div className="mb-6 flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="type-mono-sm border-[var(--border-default)] text-[#26251e]/60">{detail.language}</Badge>
-              <Badge variant="outline" className="type-mono-sm border-[var(--border-default)] text-[#26251e]/60">{detail.year}</Badge>
+              <Badge variant="outline" className="type-mono-sm border-[var(--border-default)] text-[var(--text-secondary)]">{detail.language}</Badge>
+              <Badge variant="outline" className="type-mono-sm border-[var(--border-default)] text-[var(--text-secondary)]">{detail.year}</Badge>
               <Badge
                 variant="outline"
                 className={`type-mono-sm border-[var(--border-default)] ${statusConfig[selectedProjectStatus as keyof typeof statusConfig].textColor}`}
@@ -544,16 +640,16 @@ export default function ProjectsTab() {
                 {statusConfig[selectedProjectStatus as keyof typeof statusConfig].label}
               </Badge>
             </div>
-            <h1 className="mb-4 type-section text-[#26251e]">
+            <h1 className="mb-4 type-section text-[var(--text-primary)]">
               {selectedProject.name}
             </h1>
-            <p className="mb-3 type-caption uppercase tracking-[0.1em] text-[#26251e]/45">Category • {detail.category}</p>
-            <p className="mb-8 type-body-lg text-[#26251e]/70 max-w-3xl leading-relaxed">
+            <p className="mb-3 type-caption uppercase tracking-[0.1em] text-[var(--text-muted)]">Category • {detail.category}</p>
+            <p className="mb-8 type-body-lg text-[var(--text-secondary)] max-w-3xl leading-relaxed">
               {detail.tagline}
             </p>
             <div className="flex flex-wrap gap-4">
               <Button
-                className="gap-2 bg-[#26251e] text-[#f2f1ed] hover:bg-[#26251e]/90 hover:text-[#cf2d56] px-5 py-2.5 rounded-lg"
+                className="gap-2 bg-[var(--text-primary)] text-[var(--bg-base)] hover:bg-[var(--text-primary)]/[0.9] hover:text-[var(--error)] px-5 py-2.5 rounded-lg"
                 asChild
               >
                   <a href={selectedProject.links.github} target="_blank" rel="noopener noreferrer">
@@ -563,7 +659,7 @@ export default function ProjectsTab() {
               {detail.liveUrl && (
                 <Button 
                   variant="outline" 
-                  className="gap-2 border-[#26251e]/10 bg-[#ebeae5] text-[#26251e] hover:text-[#cf2d56] px-5 py-2.5 rounded-lg" 
+                  className="gap-2 border-[var(--border-default)] bg-[var(--bg-muted)] text-[var(--text-primary)] hover:text-[var(--error)] px-5 py-2.5 rounded-lg" 
                   asChild
                 >
                   <a href={detail.liveUrl} target="_blank" rel="noopener noreferrer">
@@ -575,67 +671,121 @@ export default function ProjectsTab() {
           </div>
         </motion.div>
 
-        {/* Tabs */}
+        {/* Section Scroll Content */}
         <div className="flex-1 overflow-hidden flex flex-col">
-          <Tabs
-            value={activeTab}
-            onValueChange={(val) => setActiveTab(val as TabKey)}
-            className="flex h-full flex-col"
-          >
-            <div className="sticky top-0 z-10 flex-shrink-0 border-b border-[var(--border-default)] bg-[#f7f7f4]/90 px-6 sm:px-10 py-0 backdrop-blur-sm">
-              <div className="mx-auto max-w-5xl">
-                <TabsList className="bg-transparent p-0 h-auto gap-4 sm:gap-8">
-                  {[
-                    { value: "overview", icon: FaWandMagicSparkles, label: "Overview", mobile: "Over" },
-                    { value: "preview", icon: FaGlobe, label: "Preview", mobile: "Prev" },
-                    { value: "architecture", icon: FaSitemap, label: "Architecture", mobile: "Arch" },
-                    { value: "tech", icon: FaCode, label: "Tech", mobile: "Tech" },
-                    { value: "changelog", icon: FaTimeline, label: "Changelog", mobile: "Log" }
-                  ].map((tab) => (
-                    <TabsTrigger 
-                      key={tab.value}
-                      value={tab.value} 
-                      className="gap-2 py-4 px-0 data-[state=active]:bg-transparent data-[state=active]:text-[#26251e] data-[state=active]:border-b-2 data-[state=active]:border-[#f54e00] rounded-none shadow-none border-0 text-[#26251e]/40 hover:text-[#cf2d56] transition-all"
-                    >
-                      <tab.icon className="h-4 w-4 shrink-0" /> 
-                      <span className="inline sm:hidden type-sys-caption font-medium">{tab.mobile}</span>
-                      <span className="hidden sm:inline type-sys-caption font-medium">{tab.label}</span>
-                    </TabsTrigger>
+          <div className="sticky top-0 z-20 bg-[var(--bg-elevated)]/[0.95] backdrop-blur-sm border-b border-[var(--border-default)]">
+            <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3 sm:px-10">
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1.5">
+                  {SECTION_NAV.map((section) => (
+                    <button
+                      key={section.key}
+                      type="button"
+                      aria-label={`Scroll to ${section.label}`}
+                      onClick={() => scrollToSection(section.key)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        activeTab === section.key
+                          ? "w-6 bg-[var(--accent)]"
+                          : "w-1.5 bg-[var(--border-default)]"
+                      }`}
+                    />
                   ))}
-                </TabsList>
+                </div>
+                <span className="text-[11px] text-[var(--text-muted)] font-mono ml-2">
+                  {SECTION_NAV[activeSectionIndex]?.label ?? "Overview"}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => scrollByStep(-1)}
+                  disabled={activeSectionIndex <= 0}
+                  className="px-2 py-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors disabled:opacity-30 disabled:hover:text-[var(--text-muted)]"
+                >
+                  Prev
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollByStep(1)}
+                  disabled={activeSectionIndex >= SECTION_NAV.length - 1}
+                  className="px-2 py-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors disabled:opacity-30 disabled:hover:text-[var(--text-muted)]"
+                >
+                  Next
+                </button>
               </div>
             </div>
+          </div>
 
-            <ScrollArea className="flex-1 min-h-0">
-              <div className="mx-auto max-w-5xl p-6 sm:p-10">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`${selectedProject.id}-${activeTab}`}
-                    initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-                    transition={projectMotion.transitions.tabSwitch}
-                  >
-                    <TabsContent value="overview" className="mt-0 outline-none">
-                      <ProjectOverview detail={detail} project={selectedProject} />
-                    </TabsContent>
-                    <TabsContent value="preview" className="mt-0 outline-none">
-                      <ProjectPreview detail={detail} project={selectedProject} />
-                    </TabsContent>
-                    <TabsContent value="architecture" className="mt-0 outline-none">
-                      <ProjectArchitecture project={selectedProject} />
-                    </TabsContent>
-                    <TabsContent value="tech" className="mt-0 outline-none">
-                      <ProjectTech project={selectedProject} />
-                    </TabsContent>
-                    <TabsContent value="changelog" className="mt-0 outline-none">
-                      <ProjectChangelog project={selectedProject} />
-                    </TabsContent>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
+          <div ref={detailScrollRootRef} className="flex-1 min-h-0">
+            <ScrollArea className="h-full min-h-0">
+            <div className="mx-auto flex max-w-5xl flex-col gap-10 p-6 sm:p-10">
+              <motion.section
+                ref={overviewRef}
+                id="project-overview"
+                data-section="overview"
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={projectMotion.transitions.tabSwitch}
+                className="scroll-mt-20"
+              >
+                <ProjectOverview detail={detail} project={selectedProject} />
+              </motion.section>
+
+              <motion.section
+                ref={previewRef}
+                id="project-preview"
+                data-section="preview"
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={projectMotion.transitions.tabSwitch}
+                className="scroll-mt-20"
+              >
+                <ProjectPreview detail={detail} project={selectedProject} />
+              </motion.section>
+
+              <motion.section
+                ref={architectureRef}
+                id="project-architecture"
+                data-section="architecture"
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={projectMotion.transitions.tabSwitch}
+                className="scroll-mt-20"
+              >
+                <ProjectArchitecture project={selectedProject} />
+              </motion.section>
+
+              <motion.section
+                ref={techRef}
+                id="project-tech"
+                data-section="tech"
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={projectMotion.transitions.tabSwitch}
+                className="scroll-mt-20"
+              >
+                <ProjectTech project={selectedProject} />
+              </motion.section>
+
+              <motion.section
+                ref={changelogRef}
+                id="project-changelog"
+                data-section="changelog"
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={projectMotion.transitions.tabSwitch}
+                className="scroll-mt-20"
+              >
+                <ProjectChangelog project={selectedProject} />
+              </motion.section>
+            </div>
             </ScrollArea>
-          </Tabs>
+          </div>
         </div>
       </main>
     </div>
