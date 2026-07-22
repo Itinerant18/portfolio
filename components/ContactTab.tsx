@@ -29,10 +29,10 @@ export default function ContactTab() {
     },
     {
       title: "LINKEDIN",
-      detail: "linkedin.com/in/aniket-karmakar",
+      detail: "linkedin.com/in/itinerant018",
       icon: <FaLinkedin style={{ color: "var(--brand-linkedin)" }} />,
       tone: "color-mix(in srgb, var(--brand-linkedin) 10%, transparent)",
-      href: "https://linkedin.com/in/aniket-karmakar"
+      href: "https://linkedin.com/in/itinerant018"
     },
     {
       title: "GITHUB",
